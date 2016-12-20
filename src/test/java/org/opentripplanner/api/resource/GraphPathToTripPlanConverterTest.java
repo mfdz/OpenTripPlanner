@@ -304,6 +304,7 @@ public class GraphPathToTripPlanConverterTest {
         firstRoute.setType(2);
         firstRoute.setColor("White");
         firstRoute.setTextColor("Black");
+        firstRoute.setUrl("http://www.train.org/route/1");
         secondRoute.setId(new AgencyAndId(feedId, "B"));
         secondRoute.setAgency(trainAgency);
         secondRoute.setShortName("B");
@@ -311,6 +312,7 @@ public class GraphPathToTripPlanConverterTest {
         secondRoute.setType(2);
         secondRoute.setColor("Cyan");
         secondRoute.setTextColor("Yellow");
+        secondRoute.setUrl("http://www.train.org/route/2");
         thirdRoute.setId(new AgencyAndId(feedId, "C"));
         thirdRoute.setAgency(ferryAgency);
         thirdRoute.setShortName("C");
@@ -318,6 +320,7 @@ public class GraphPathToTripPlanConverterTest {
         thirdRoute.setType(4);
         thirdRoute.setColor("Black");
         thirdRoute.setTextColor("White");
+        thirdRoute.setUrl("http://www.train.org/route/3");
 
         // Trips for legs 1, 2 and 4, plus initialization
         Trip firstTrip = new Trip();
@@ -1039,6 +1042,7 @@ public class GraphPathToTripPlanConverterTest {
         assertEquals(2, legs[1].routeType.intValue());
         assertEquals("White", legs[1].routeColor);
         assertEquals("Black", legs[1].routeTextColor);
+        assertEquals("http://www.train.org/route/1", legs[1].routeUrl);
         assertEquals("A", legs[1].tripId.getId());
         assertEquals("A", legs[1].tripShortName);
         assertEquals("Alock", legs[1].tripBlockId);
@@ -1086,6 +1090,7 @@ public class GraphPathToTripPlanConverterTest {
         assertEquals(2, legs[2].routeType.intValue());
         assertEquals("Cyan", legs[2].routeColor);
         assertEquals("Yellow", legs[2].routeTextColor);
+        assertEquals("http://www.train.org/route/2", legs[2].routeUrl);
         assertEquals("B", legs[2].tripId.getId());
         assertEquals("B", legs[2].tripShortName);
         assertEquals("Block", legs[2].tripBlockId);
@@ -1120,6 +1125,7 @@ public class GraphPathToTripPlanConverterTest {
         assertNull(legs[3].routeType);
         assertNull(legs[3].routeColor);
         assertNull(legs[3].routeTextColor);
+        assertNull(legs[3].routeUrl);
         assertNull(legs[3].tripId);
         assertNull(legs[3].tripShortName);
         assertNull(legs[3].tripBlockId);
@@ -1160,6 +1166,7 @@ public class GraphPathToTripPlanConverterTest {
         assertEquals(4, legs[4].routeType.intValue());
         assertEquals("Black", legs[4].routeColor);
         assertEquals("White", legs[4].routeTextColor);
+        assertEquals("http://www.train.org/route/3", legs[4].routeUrl);
         assertEquals("C", legs[4].tripId.getId());
         assertEquals("C", legs[4].tripShortName);
         assertEquals("Clock", legs[4].tripBlockId);
@@ -1194,6 +1201,7 @@ public class GraphPathToTripPlanConverterTest {
         assertNull(legs[5].routeType);
         assertNull(legs[5].routeColor);
         assertNull(legs[5].routeTextColor);
+        assertNull(legs[5].routeUrl);
         assertNull(legs[5].tripId);
         assertNull(legs[5].tripShortName);
         assertNull(legs[5].tripBlockId);
@@ -1228,6 +1236,7 @@ public class GraphPathToTripPlanConverterTest {
         assertNull(legs[6].routeType);
         assertNull(legs[6].routeColor);
         assertNull(legs[6].routeTextColor);
+        assertNull(legs[6].routeUrl);
         assertNull(legs[6].tripId);
         assertNull(legs[6].tripShortName);
         assertNull(legs[6].tripBlockId);
@@ -1263,6 +1272,7 @@ public class GraphPathToTripPlanConverterTest {
         assertNull(legs[7].routeType);
         assertNull(legs[7].routeColor);
         assertNull(legs[7].routeTextColor);
+        assertNull(legs[7].routeUrl);
         assertNull(legs[7].tripId);
         assertNull(legs[7].tripShortName);
         assertNull(legs[7].tripBlockId);
@@ -1297,6 +1307,7 @@ public class GraphPathToTripPlanConverterTest {
         assertNull(legs[8].routeType);
         assertNull(legs[8].routeColor);
         assertNull(legs[8].routeTextColor);
+        assertNull(legs[8].routeUrl);
         assertNull(legs[8].tripId);
         assertNull(legs[8].tripShortName);
         assertNull(legs[8].tripBlockId);
