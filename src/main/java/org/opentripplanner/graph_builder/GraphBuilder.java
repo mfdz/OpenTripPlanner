@@ -244,8 +244,13 @@ public class GraphBuilder implements Runnable {
             osmModule.staticBikeRental = builderParams.staticBikeRental;
             osmModule.staticBikeParkAndRide = builderParams.staticBikeParkAndRide;
             osmModule.staticParkAndRide = builderParams.staticParkAndRide;
+            osmModule.banDiscouragedWalking = builderParams.banDiscouragedWalking;
+            osmModule.banDiscouragedBiking = builderParams.banDiscouragedBiking;
             graphBuilder.addModule(osmModule);
-            graphBuilder.addModule(new PruneFloatingIslands());
+            PruneFloatingIslands pruneFloatingIslands = new PruneFloatingIslands();
+            pruneFloatingIslands.setPruningThresholdIslandWithoutStops(builderParams.pruningThresholdIslandWithoutStops);
+            pruneFloatingIslands.setPruningThresholdIslandWithStops(builderParams.pruningThresholdIslandWithStops);
+            graphBuilder.addModule(pruneFloatingIslands);
         }
         if ( hasGTFS ) {
             List<GtfsBundle> gtfsBundles = Lists.newArrayList();

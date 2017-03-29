@@ -116,6 +116,30 @@ public class GraphBuilderParameters {
      * Maximal distance between stops in meters that will connect consecutive trips that are made with same vehicle
      */
     public int maxInterlineDistance = 200;
+    
+    /**
+     * This field indicates the pruning threshold for islands without stops.
+     * Any such island under this size will be pruned.
+     */
+    public final int pruningThresholdIslandWithoutStops;
+    
+    /**
+     * This field indicates the pruning threshold for islands with stops.
+     * Any such island under this size will be pruned.
+     */
+    public final int pruningThresholdIslandWithStops;
+
+    /**
+     * This field indicates whether walking should be allowed on OSM ways
+     * tagged with "foot=discouraged".
+     */
+    public final boolean banDiscouragedWalking;
+
+    /**
+     * This field indicates whether bicycling should be allowed on OSM ways
+     * tagged with "bicycle=discouraged".
+     */
+    public final boolean banDiscouragedBiking;
 
     /**
      * Set all parameters from the given Jackson JSON tree, applying defaults.
@@ -123,6 +147,7 @@ public class GraphBuilderParameters {
      * This could be done automatically with the "reflective query scraper" but it's less type safe and less clear.
      * Until that class is more type safe, it seems simpler to just list out the parameters by name here.
      */
+
     public GraphBuilderParameters(JsonNode config) {
 
         htmlAnnotations = config.path("htmlAnnotations").asBoolean(false);
@@ -144,6 +169,10 @@ public class GraphBuilderParameters {
         staticBikeParkAndRide = config.path("staticBikeParkAndRide").asBoolean(false);
         maxHtmlAnnotationsPerFile = config.path("maxHtmlAnnotationsPerFile").asInt(1000);
         maxInterlineDistance = config.path("maxInterlineDistance").asInt(200);
+        pruningThresholdIslandWithoutStops = config.path("islandWithoutStopsMaxSize").asInt(40);
+        pruningThresholdIslandWithStops = config.path("islandWithStopsMaxSize").asInt(5);
+        banDiscouragedWalking = config.path("banDiscouragedWalking").asBoolean(false);
+        banDiscouragedBiking = config.path("banDiscouragedBiking").asBoolean(false);
     }
 
 }
