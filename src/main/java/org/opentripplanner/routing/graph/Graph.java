@@ -741,7 +741,7 @@ public class Graph implements Serializable {
             // vertex list is transient because it can be reconstructed from edges
             LOG.debug("Loading edges...");
             List<Edge> edges = (ArrayList<Edge>) in.readObject();
-            graph.vertices = new HashMap<String, Vertex>();
+            graph.vertices = new ConcurrentHashMap<String, Vertex>();
             
             for (Edge e : edges) {
                 graph.vertices.put(e.getFromVertex().getLabel(), e.getFromVertex());
@@ -752,6 +752,9 @@ public class Graph implements Serializable {
             graph.index(indexFactory);
 
             if (level == LoadLevel.FULL) {
+            	// Add empty graphBuilderAnnotations to allow reuse as baseGraph 
+            	// addBuilderAnnotation is prepared for an unset value, but  summarizeBuilderAnnotations is not
+                graph.graphBuilderAnnotations = new LinkedList<GraphBuilderAnnotation>();
                 return graph;
             }
             
@@ -950,6 +953,11 @@ public class Graph implements Serializable {
 
     public void summarizeBuilderAnnotations() {
         List<GraphBuilderAnnotation> gbas = this.graphBuilderAnnotations;
+        if (gbas == null) {
+        	LOG.info("Summary not available.");
+        	return;
+        }
+        
         Multiset<Class<? extends GraphBuilderAnnotation>> classes = HashMultiset.create();
         LOG.info("Summary (number of each type of annotation):");
         for (GraphBuilderAnnotation gba : gbas)

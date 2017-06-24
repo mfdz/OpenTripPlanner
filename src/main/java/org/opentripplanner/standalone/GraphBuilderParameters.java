@@ -142,6 +142,11 @@ public class GraphBuilderParameters {
     public final boolean banDiscouragedBiking;
 
     /**
+     * Path to a serialized graph which, if specified, will be used as base graph. 
+     */
+    public final String baseGraph;
+    
+    /**
      * Set all parameters from the given Jackson JSON tree, applying defaults.
      * Supplying MissingNode.getInstance() will cause all the defaults to be applied.
      * This could be done automatically with the "reflective query scraper" but it's less type safe and less clear.
@@ -149,7 +154,6 @@ public class GraphBuilderParameters {
      */
 
     public GraphBuilderParameters(JsonNode config) {
-
         htmlAnnotations = config.path("htmlAnnotations").asBoolean(false);
         transit = config.path("transit").asBoolean(true);
         useTransfersTxt = config.path("useTransfersTxt").asBoolean(false);
@@ -173,6 +177,7 @@ public class GraphBuilderParameters {
         pruningThresholdIslandWithStops = config.path("islandWithStopsMaxSize").asInt(5);
         banDiscouragedWalking = config.path("banDiscouragedWalking").asBoolean(false);
         banDiscouragedBiking = config.path("banDiscouragedBiking").asBoolean(false);
+        baseGraph = config.path("baseGraph").asText(null);
     }
 
 }
