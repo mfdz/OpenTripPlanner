@@ -427,6 +427,11 @@
             <name>Conveyal Maven Repository</name>
             <url>https://maven.conveyal.com/</url>
         </repository>
+        <repository>
+            <id>onebusaway</id>
+            <name>OneBusAway Maven Repository</name>
+            <url>https://nexus.onebusaway.com/nexus/</url>
+        </repository>
     </repositories>
 
     <dependencies>
