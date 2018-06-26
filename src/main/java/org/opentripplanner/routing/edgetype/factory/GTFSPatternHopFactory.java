@@ -688,6 +688,7 @@ public class GTFSPatternHopFactory {
                 //fall back to nearest segment
                 stopSegments.add(bestSegment);
                 minSegmentIndex = bestSegment.index;
+                maxSegmentIndex = bestSegment.index;
             } else {
                 minSegmentIndex = minSegmentIndexForThisStop;
                 Collections.sort(stopSegments, new IndexedLineSegmentComparator(coord));
