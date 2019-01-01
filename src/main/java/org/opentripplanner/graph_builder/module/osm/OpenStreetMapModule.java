@@ -289,8 +289,10 @@ public class OpenStreetMapModule implements GraphBuilderModule {
                 if (operators != null)
                     networkSet.addAll(Arrays.asList(operators.split(";")));
                 if (networkSet.isEmpty()) {
-                    LOG.warn("Bike rental station at osm node " + node.getId() + " ("
-                            + creativeName + ") with no network; including as compatible-with-all.");
+                    LOG.warn(graph
+                            .addBuilderAnnotation(new BikeRentalStationNoNetwork(node.getId(),
+                                    creativeName, node.lon, node.lat))
+                            + " Including as compatible-with-all.");
                     networkSet = null; // Special "catch-all" value
                 }
                 BikeRentalStation station = new BikeRentalStation();
