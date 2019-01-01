@@ -34,6 +34,11 @@ public class GraphBuilderParameters {
     public final boolean htmlAnnotations;
 
     /**
+     * Generates osmoscope layers of Graph errors/warnings (annotations) in the osmoscope format. They are stored in the same location as the graph in 'report_osmoscope' subdirectory.
+     */
+    public final boolean osmoscopeAnnotations;
+
+    /**
      * If number of annotations is larger then specified number annotations will be split in multiple files.
      * Since browsers have problems opening large HTML files.
      */
@@ -192,6 +197,7 @@ public class GraphBuilderParameters {
      */
     public GraphBuilderParameters(JsonNode config) {
         htmlAnnotations = config.path("htmlAnnotations").asBoolean(false);
+        osmoscopeAnnotations = config.path("osmoscopeAnnotations").asBoolean(false);
         transit = config.path("transit").asBoolean(true);
         useTransfersTxt = config.path("useTransfersTxt").asBoolean(false);
         parentStopLinking = config.path("parentStopLinking").asBoolean(false);
