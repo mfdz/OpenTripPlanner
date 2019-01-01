@@ -829,9 +829,9 @@ public class OpenStreetMapModule implements GraphBuilderModule {
                         }
                         for (StreetEdge to : restrictionTag.possibleTo) {
                             if (from == null || to == null) {
-                                graph.addBuilderAnnotation(
-                                    new TurnRestrictionBad(restrictionTag.relationOSMID,
-                                        "to-edge is null"));
+                                graph.addBuilderAnnotation(new TurnRestrictionBad(
+                                        restrictionTag.relationOSMID, "to-edge is null",
+                                        from.getToVertex().getLon(), from.getToVertex().getLat()));
                                 continue;
                             }
                             int angleDiff = from.getOutAngle() - to.getInAngle();
@@ -842,32 +842,40 @@ public class OpenStreetMapModule implements GraphBuilderModule {
                             case LEFT:
                                 if (angleDiff >= 160) {
                                     graph.addBuilderAnnotation(
-                                        new TurnRestrictionBad(restrictionTag.relationOSMID,
-                                            "Left turn restriction is not on edges which turn left"));
+                                            new TurnRestrictionBad(restrictionTag.relationOSMID,
+                                                    "Left turn restriction is not on edges which turn left",
+                                                    from.getToVertex().getLon(),
+                                                    from.getToVertex().getLat()));
                                     continue; // not a left turn
                                 }
                                 break;
                             case RIGHT:
                                 if (angleDiff <= 200) {
                                     graph.addBuilderAnnotation(
-                                        new TurnRestrictionBad(restrictionTag.relationOSMID,
-                                            "Right turn restriction is not on edges which turn right"));
+                                            new TurnRestrictionBad(restrictionTag.relationOSMID,
+                                                    "Right turn restriction is not on edges which turn right",
+                                                    from.getToVertex().getLon(),
+                                                    from.getToVertex().getLat()));
                                     continue; // not a right turn
                                 }
                                 break;
                             case U:
                                 if ((angleDiff <= 150 || angleDiff > 210)) {
                                     graph.addBuilderAnnotation(
-                                        new TurnRestrictionBad(restrictionTag.relationOSMID,
-                                            "U-turn restriction is not on U-turn"));
+                                            new TurnRestrictionBad(restrictionTag.relationOSMID,
+                                                    "U-turn restriction is not on U-turn",
+                                                    from.getToVertex().getLon(),
+                                                    from.getToVertex().getLat()));
                                     continue; // not a U turn
                                 }
                                 break;
                             case STRAIGHT:
                                 if (angleDiff >= 30 && angleDiff < 330) {
                                     graph.addBuilderAnnotation(
-                                        new TurnRestrictionBad(restrictionTag.relationOSMID,
-                                            "Straight turn restriction is not on edges which go straight"));
+                                            new TurnRestrictionBad(restrictionTag.relationOSMID,
+                                                    "Straight turn restriction is not on edges which go straight",
+                                                    from.getToVertex().getLon(),
+                                                    from.getToVertex().getLat()));
                                     continue; // not straight
                                 }
                                 break;

@@ -304,6 +304,67 @@ public class OSMDatabase implements OpenStreetMapContentHandler {
 
         // intersect non connected areas with ways
         processUnconnectedAreas();
+        // enhance annotations with coords
+        enhanceAnnotationsWithCoords();
+    }
+
+    private void enhanceAnnotationsWithCoords() {
+        for (GraphBuilderAnnotation annotation : annotations) {
+            if (annotation instanceof GraphBuilderOSMAnnotation) {
+                GraphBuilderOSMAnnotation osmAnnotation = (GraphBuilderOSMAnnotation) annotation;
+                osmAnnotation.setCoordinates(
+                        getCoords(osmAnnotation.getOsmType(), osmAnnotation.getOsmId()));
+            }
+        }
+
+    }
+
+    private Coordinate getCoords(GraphBuilderOSMAnnotation.OsmType osmType, long osmId) {
+        OSMNode node = null;
+
+        switch (osmType) {
+        case NODE:
+            node = nodesById.get(osmId);
+            break;
+        case WAY:
+            OSMWay way = waysById.get(osmId);
+            if (way == null) {
+                way = areaWaysById.get(osmId);
+            }
+            if (way != null) {
+                List<Long> nodes = way.getNodeRefs();
+                node = nodesById.get(nodes.get(nodes.size() / 2));
+            }
+            break;
+        case RELATION:
+            OSMRelation rel = relationsById.get(osmId);
+            if (rel != null) {
+                long relWay = 0;
+                for (OSMRelationMember member : rel.getMembers()) {
+                    if ("node".equals(member.getType())) {
+                        node = nodesById.get(member.getRef());
+                        if (node != null) {
+                            break;
+                        }
+                    } else if ("way".equals(member.getType())) {
+                        relWay = member.getRef();
+                    }
+                }
+                if (node == null && relWay != 0L) {
+                    return getCoords(GraphBuilderOSMAnnotation.OsmType.WAY, Long.valueOf(relWay));
+                }
+            }
+            break;
+        default:
+            break;
+        }
+
+        if (node != null) {
+            return new Coordinate(node.lon, node.lat);
+        } else {
+            LOG.warn("Could not retrieve coord for {} {} ", osmType, osmId);
+            return new Coordinate(0, 0);
+        }
     }
 
     /**
