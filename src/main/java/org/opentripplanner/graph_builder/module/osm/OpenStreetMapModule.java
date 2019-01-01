@@ -463,6 +463,9 @@ public class OpenStreetMapModule implements GraphBuilderModule {
                     }
                 }
             }
+            // Place the P+R at the center of the envelope
+            double centerX = (envelope.getMinX() + envelope.getMaxX()) / 2;
+            double centerY = (envelope.getMinY() + envelope.getMaxY()) / 2;
             // Check P+R accessibility by walking and driving.
             TraversalRequirements walkReq = new TraversalRequirements(new RoutingRequest(
                     TraverseMode.WALK));
@@ -495,7 +498,9 @@ public class OpenStreetMapModule implements GraphBuilderModule {
             }
             if (!walkAccessibleOut || !carAccessibleIn) {
                 // This will prevent the P+R to be useful.
-                LOG.warn(graph.addBuilderAnnotation(new ParkAndRideUnlinked((creativeName != null ? creativeName.toString() : "null"), osmId)));
+                LOG.warn(graph.addBuilderAnnotation(new ParkAndRideUnlinked(
+                        (creativeName != null ? creativeName.toString() : "null"), osmId, centerX,
+                        centerY)));
                 return false;
             }
             if (!walkAccessibleIn || !carAccessibleOut) {
@@ -503,10 +508,8 @@ public class OpenStreetMapModule implements GraphBuilderModule {
                 // This does not prevent routing as we only use P+R for car dropoff,
                 // but this is an issue with OSM data.
             }
-            // Place the P+R at the center of the envelope
             ParkAndRideVertex parkAndRideVertex = new ParkAndRideVertex(graph, "P+R" + osmId,
-                    "P+R_" + osmId, (envelope.getMinX() + envelope.getMaxX()) / 2,
-                    (envelope.getMinY() + envelope.getMaxY()) / 2, creativeName);
+                    "P+R_" + osmId, centerX, centerY, creativeName);
             new ParkAndRideEdge(parkAndRideVertex);
             for (OsmVertex accessVertex : accessVertexes) {
                 new ParkAndRideLinkEdge(parkAndRideVertex, accessVertex);
