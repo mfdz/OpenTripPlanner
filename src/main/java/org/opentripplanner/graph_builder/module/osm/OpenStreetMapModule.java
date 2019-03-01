@@ -289,8 +289,10 @@ public class OpenStreetMapModule implements GraphBuilderModule {
                 if (operators != null)
                     networkSet.addAll(Arrays.asList(operators.split(";")));
                 if (networkSet.isEmpty()) {
-                    LOG.warn("Bike rental station at osm node " + node.getId() + " ("
-                            + creativeName + ") with no network; including as compatible-with-all.");
+                    LOG.warn(graph
+                            .addBuilderAnnotation(new BikeRentalStationNoNetwork(node.getId(),
+                                    creativeName, node.lon, node.lat))
+                            + " Including as compatible-with-all.");
                     networkSet = null; // Special "catch-all" value
                 }
                 BikeRentalStation station = new BikeRentalStation();
@@ -463,6 +465,9 @@ public class OpenStreetMapModule implements GraphBuilderModule {
                     }
                 }
             }
+            // Place the P+R at the center of the envelope
+            double centerX = (envelope.getMinX() + envelope.getMaxX()) / 2;
+            double centerY = (envelope.getMinY() + envelope.getMaxY()) / 2;
             // Check P+R accessibility by walking and driving.
             TraversalRequirements walkReq = new TraversalRequirements(new RoutingRequest(
                     TraverseMode.WALK));
@@ -495,7 +500,9 @@ public class OpenStreetMapModule implements GraphBuilderModule {
             }
             if (!walkAccessibleOut || !carAccessibleIn) {
                 // This will prevent the P+R to be useful.
-                LOG.warn(graph.addBuilderAnnotation(new ParkAndRideUnlinked((creativeName != null ? creativeName.toString() : "null"), osmId)));
+                LOG.warn(graph.addBuilderAnnotation(new ParkAndRideUnlinked(
+                        (creativeName != null ? creativeName.toString() : "null"), osmId, centerX,
+                        centerY)));
                 return false;
             }
             if (!walkAccessibleIn || !carAccessibleOut) {
@@ -503,10 +510,8 @@ public class OpenStreetMapModule implements GraphBuilderModule {
                 // This does not prevent routing as we only use P+R for car dropoff,
                 // but this is an issue with OSM data.
             }
-            // Place the P+R at the center of the envelope
             ParkAndRideVertex parkAndRideVertex = new ParkAndRideVertex(graph, "P+R" + osmId,
-                    "P+R_" + osmId, (envelope.getMinX() + envelope.getMaxX()) / 2,
-                    (envelope.getMinY() + envelope.getMaxY()) / 2, creativeName);
+                    "P+R_" + osmId, centerX, centerY, creativeName);
             new ParkAndRideEdge(parkAndRideVertex);
             for (OsmVertex accessVertex : accessVertexes) {
                 new ParkAndRideLinkEdge(parkAndRideVertex, accessVertex);
@@ -824,9 +829,9 @@ public class OpenStreetMapModule implements GraphBuilderModule {
                         }
                         for (StreetEdge to : restrictionTag.possibleTo) {
                             if (from == null || to == null) {
-                                graph.addBuilderAnnotation(
-                                    new TurnRestrictionBad(restrictionTag.relationOSMID,
-                                        "to-edge is null"));
+                                graph.addBuilderAnnotation(new TurnRestrictionBad(
+                                        restrictionTag.relationOSMID, "to-edge is null",
+                                        from.getToVertex().getLon(), from.getToVertex().getLat()));
                                 continue;
                             }
                             int angleDiff = from.getOutAngle() - to.getInAngle();
@@ -837,32 +842,40 @@ public class OpenStreetMapModule implements GraphBuilderModule {
                             case LEFT:
                                 if (angleDiff >= 160) {
                                     graph.addBuilderAnnotation(
-                                        new TurnRestrictionBad(restrictionTag.relationOSMID,
-                                            "Left turn restriction is not on edges which turn left"));
+                                            new TurnRestrictionBad(restrictionTag.relationOSMID,
+                                                    "Left turn restriction is not on edges which turn left",
+                                                    from.getToVertex().getLon(),
+                                                    from.getToVertex().getLat()));
                                     continue; // not a left turn
                                 }
                                 break;
                             case RIGHT:
                                 if (angleDiff <= 200) {
                                     graph.addBuilderAnnotation(
-                                        new TurnRestrictionBad(restrictionTag.relationOSMID,
-                                            "Right turn restriction is not on edges which turn right"));
+                                            new TurnRestrictionBad(restrictionTag.relationOSMID,
+                                                    "Right turn restriction is not on edges which turn right",
+                                                    from.getToVertex().getLon(),
+                                                    from.getToVertex().getLat()));
                                     continue; // not a right turn
                                 }
                                 break;
                             case U:
                                 if ((angleDiff <= 150 || angleDiff > 210)) {
                                     graph.addBuilderAnnotation(
-                                        new TurnRestrictionBad(restrictionTag.relationOSMID,
-                                            "U-turn restriction is not on U-turn"));
+                                            new TurnRestrictionBad(restrictionTag.relationOSMID,
+                                                    "U-turn restriction is not on U-turn",
+                                                    from.getToVertex().getLon(),
+                                                    from.getToVertex().getLat()));
                                     continue; // not a U turn
                                 }
                                 break;
                             case STRAIGHT:
                                 if (angleDiff >= 30 && angleDiff < 330) {
                                     graph.addBuilderAnnotation(
-                                        new TurnRestrictionBad(restrictionTag.relationOSMID,
-                                            "Straight turn restriction is not on edges which go straight"));
+                                            new TurnRestrictionBad(restrictionTag.relationOSMID,
+                                                    "Straight turn restriction is not on edges which go straight",
+                                                    from.getToVertex().getLon(),
+                                                    from.getToVertex().getLat()));
                                     continue; // not straight
                                 }
                                 break;

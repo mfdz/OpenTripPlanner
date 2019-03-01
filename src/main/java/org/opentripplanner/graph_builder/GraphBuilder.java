@@ -311,6 +311,10 @@ public class GraphBuilder implements Runnable {
         if (builderParams.htmlAnnotations) {
             graphBuilder.addModule(new AnnotationsToHTML(params.build, builderParams.maxHtmlAnnotationsPerFile));
         }
+        if (builderParams.osmoscopeAnnotations){
+            graphBuilder.addModule(new AnnotationsToOsmoscope(params.build));
+        }
+        
         graphBuilder.serializeGraph = ( ! params.inMemory ) || params.preFlight;
         return graphBuilder;
     }
