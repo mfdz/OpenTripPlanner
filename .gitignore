@@ -29,3 +29,4 @@ _site/
 /otp
 /otp-batch-analyst
 /lucene
+*.DS_Store
