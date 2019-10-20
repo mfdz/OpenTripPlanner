@@ -105,6 +105,11 @@ public class OpenStreetMapModule implements GraphBuilderModule {
      */
     public boolean staticBikeParkAndRide;
 
+    /**
+     * OSM key used to specify stop ref (per default ref, in Germany usuallly "ref:IFOPT"
+     */
+    public String osmStopRefKey = "ref";
+
     public List<String> provides() {
         return Arrays.asList("streets", "turns");
     }
@@ -1217,7 +1222,7 @@ public class OpenStreetMapModule implements GraphBuilderModule {
 
                 /* If the OSM node represents a transit stop and has a ref=(stop_code) tag, make a special vertex for it. */
                 if (node.isStop()) {
-                    String ref = node.getTag("ref");
+                    String ref = node.getTag(osmStopRefKey);
                     String name = node.getTag("name");
                     if (ref != null) {
                         TransitStopStreetVertex tsv = new TransitStopStreetVertex(graph, label, coordinate.x, coordinate.y, nid, name, ref);
