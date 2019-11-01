@@ -123,6 +123,12 @@ public class Leg {
     public String routeTextColor = null;
 
     /**
+     * For transit leg, the route's URL (if one exists). For non-transit legs, null.
+     */
+    @JsonSerialize
+    public String routeUrl = null;
+
+    /**
      * For transit legs, if the rider should stay on the vehicle as it changes route names.
      */
     @JsonSerialize

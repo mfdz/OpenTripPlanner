@@ -236,7 +236,12 @@ public class IndexAPI {
        for (TripPattern pattern : index.patternsForStop.get(stop)) {
            routes.add(pattern.route);
        }
-       return Response.status(Status.OK).entity(RouteShort.list(routes)).build();
+       if (detail){
+           return Response.status(Status.OK).entity(routes).build();
+       }
+       else {
+           return Response.status(Status.OK).entity(RouteShort.list(routes)).build();
+       }
    }
 
    @GET

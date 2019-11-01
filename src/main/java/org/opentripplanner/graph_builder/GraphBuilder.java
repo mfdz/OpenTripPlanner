@@ -89,11 +89,6 @@ public class GraphBuilder implements Runnable {
     
     public void setBaseGraph(String baseGraph) {
         this.baseGraph = baseGraph;
-        try {
-            graph = Graph.load(new File(baseGraph));
-        } catch (Exception e) {
-            throw new RuntimeException("error loading base graph");
-        }
     }
 
     public void addMode(RoutingRequest mo) {
@@ -140,6 +135,14 @@ public class GraphBuilder implements Runnable {
             builder.checkInputs();
         }
         
+        if (baseGraph != null) {
+            try {
+                graph = Graph.load(new File(baseGraph));
+            } catch (Exception e) {
+                throw new RuntimeException("error loading base graph");
+            }
+        }
+        
         HashMap<Class<?>, Object> extra = new HashMap<Class<?>, Object>();
         for (GraphBuilderModule load : _graphBuilderModules)
             load.buildGraph(graph, extra);
@@ -182,9 +185,15 @@ public class GraphBuilder implements Runnable {
         // Find and parse config files first to reveal syntax errors early without waiting for graph build.
         builderConfig = OTPMain.loadJson(new File(dir, BUILDER_CONFIG_FILENAME));
         GraphBuilderParameters builderParams = new GraphBuilderParameters(builderConfig);
-
         GraphBuilder graphBuilder = new GraphBuilder(dir, builderParams);
-
+        if (builderParams.baseGraph != null) {
+            if (new File(builderParams.baseGraph).canRead()) {
+                graphBuilder.setBaseGraph(builderParams.baseGraph);
+            } else {
+                LOG.error("Base graph file {} is not readable.", builderParams.baseGraph);
+                return null;
+            }
+        }
         // Load the router config JSON to fail fast, but we will only apply it later when a router starts up
         routerConfig = OTPMain.loadJson(new File(dir, Router.ROUTER_CONFIG_FILENAME));
         LOG.info(ReflectionLibrary.dumpFields(builderParams));
@@ -308,6 +317,10 @@ public class GraphBuilder implements Runnable {
         if (builderParams.htmlAnnotations) {
             graphBuilder.addModule(new AnnotationsToHTML(params.build, builderParams.maxHtmlAnnotationsPerFile));
         }
+        if (builderParams.osmoscopeAnnotations){
+            graphBuilder.addModule(new AnnotationsToOsmoscope(params.build));
+        }
+        
         graphBuilder.serializeGraph = ( ! params.inMemory ) || params.preFlight;
         return graphBuilder;
     }

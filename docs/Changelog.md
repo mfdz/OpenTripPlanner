@@ -1,5 +1,14 @@
 # Changelog
 
+## mfdz extensions
+- Add support for no_entry/no_exit restrictions (#2731)
+- Add support for RIDESHARING mode (to be renamed to CARPOOL)
+- Add osmoscope annotation format
+- Add routeUrl to leg details
+- Support OSM baseGraph reuse
+- Add BikeRentalStationNoNetwork annotation
+- Increase maxStopToShapeDistance to support more distant park & ride hov parkings as stops
+
 ## 1.5.0 (in progress)
 
 - Add application/x-protobuf to accepted protobuf content-types (#2839)
@@ -33,6 +42,7 @@
 - Add bicimad bike rental updater (#2503)
 - Add Smoove citybikes updater (#2515)
 - Switched to single license file, removing all OTP and OBA file license headers
+- Remove CarFreeAtoZ from list of deployments
 
 ## 1.3 (2018-08-03)
 

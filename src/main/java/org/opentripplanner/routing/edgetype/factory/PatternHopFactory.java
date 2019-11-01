@@ -270,7 +270,8 @@ public class PatternHopFactory {
 
     public int subwayAccessTime = 0;
 
-    private double maxStopToShapeSnapDistance = 150;
+    // Allow distance of 500m so optional stops may be beside standard route
+    private double maxStopToShapeSnapDistance = 500;
 
     public int maxInterlineDistance = 200;
 
@@ -653,6 +654,7 @@ public class PatternHopFactory {
                 //fall back to nearest segment
                 stopSegments.add(bestSegment);
                 minSegmentIndex = bestSegment.index;
+                maxSegmentIndex = bestSegment.index;
             } else {
                 minSegmentIndex = minSegmentIndexForThisStop;
                 Collections.sort(stopSegments, new IndexedLineSegmentComparator(coord));
