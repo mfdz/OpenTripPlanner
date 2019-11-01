@@ -1,10 +1,10 @@
-package org.opentripplanner.ridesharing;
+package org.opentripplanner.carpool;
 
 import org.junit.Test;
 import org.opentripplanner.GtfsTest;
 import org.opentripplanner.api.model.Leg;
 
-public class RidesharingTest extends GtfsTest {
+public class CarpoolTest extends GtfsTest {
 
 	@Override
 	public String getFeedName() {

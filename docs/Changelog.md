@@ -2,7 +2,7 @@
 
 ## mfdz extensions
 - Add support for no_entry/no_exit restrictions (#2731)
-- Add support for RIDESHARING mode (to be renamed to CARPOOL)
+- Add support for CARPOOL mode
 - Add osmoscope annotation format
 - Add routeUrl to leg details
 - Support OSM baseGraph reuse
