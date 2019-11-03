@@ -2,10 +2,8 @@ package org.opentripplanner.routing.impl;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.opentripplanner.api.parameter.QualifiedMode;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.TraverseMode;
-import org.opentripplanner.routing.core.TraverseModeSet;
 import org.opentripplanner.routing.spt.GraphPath;
 import org.opentripplanner.standalone.Router;
 import org.slf4j.Logger;
@@ -38,10 +36,10 @@ public class ComparingGraphPathFinder extends GraphPathFinder {
         if (options.parkAndRide) {
             LOG.debug("Detected a P&R routing request. Will execute two requests to also get car-only routes.");
 
-            // cloning needs to be happen beforehand to prevent a race condition
-            RoutingRequest clonedOptions = options.clone();
+            // in order to avoid a race condition, this has to happen beforehand
+            RoutingRequest clone = options.clone();
             // car-only
-            CompletableFuture<List<GraphPath>> carOnlyF = CompletableFuture.supplyAsync(() -> runCarOnlyRequest(clonedOptions));
+            CompletableFuture<List<GraphPath>> carOnlyF = CompletableFuture.supplyAsync(() -> runCarOnlyRequest(clone));
             // the normal P&R
             CompletableFuture<List<GraphPath>> parkAndRideF = CompletableFuture.supplyAsync(() -> new GraphPathFinder(router).graphPathFinderEntryPoint(options));
             // the CompletableFutures are there to make sure that the computations run in parallel
@@ -62,17 +60,18 @@ public class ComparingGraphPathFinder extends GraphPathFinder {
     }
 
 
-    private List<GraphPath> runCarOnlyRequest(RoutingRequest clonedOptions) {
-        clonedOptions.parkAndRide = false;
-        clonedOptions.setModes(new TraverseModeSet(TraverseMode.CAR));
+    private List<GraphPath> runCarOnlyRequest(RoutingRequest clonedRequest) {
+        clonedRequest.parkAndRide = false;
+        clonedRequest.setMode(TraverseMode.CAR);
+
         List<GraphPath> results;
         try {
-             results = new GraphPathFinder(router).graphPathFinderEntryPoint(clonedOptions);
+             results = new GraphPathFinder(router).graphPathFinderEntryPoint(clonedRequest);
         } catch(Exception e)  {
             throw e;
         }
         finally {
-            clonedOptions.cleanup();
+            clonedRequest.cleanup();
         }
 
         return results;
