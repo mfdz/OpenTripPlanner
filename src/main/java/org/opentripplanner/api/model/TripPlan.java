@@ -35,4 +35,6 @@ public class TripPlan {
     public void addItinerary(Itinerary itinerary) {
         this.itinerary.add(itinerary);
     }
+
+
 }

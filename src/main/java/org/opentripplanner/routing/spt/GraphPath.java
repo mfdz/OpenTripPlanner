@@ -48,7 +48,7 @@ public class GraphPath {
      */
     public double streetMeters() {
         return edges.stream()
-                .filter(e -> e.getClass() == StreetEdge.class)
+                .filter(e -> e instanceof StreetEdge)
                 .map(e -> (StreetEdge) e)
                 .map(StreetEdge::getDistance)
                 .mapToDouble(Double::doubleValue)

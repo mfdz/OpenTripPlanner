@@ -2,6 +2,8 @@ package org.opentripplanner.routing.impl;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import org.opentripplanner.api.model.TripPlan;
+import org.opentripplanner.api.resource.GraphPathToTripPlanConverter;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.spt.GraphPath;
@@ -9,10 +11,9 @@ import org.opentripplanner.standalone.Router;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * This variant of the GraphPathFinder "fans out" a routing request into potentially multiple ones and compares the
@@ -36,19 +37,10 @@ public class ComparingGraphPathFinder extends GraphPathFinder {
         if (options.parkAndRide) {
             LOG.debug("Detected a P&R routing request. Will execute two requests to also get car-only routes.");
 
-            // in order to avoid a race condition, this has to happen beforehand
-            RoutingRequest clone = options.clone();
-            // car-only
-            CompletableFuture<List<GraphPath>> carOnlyF = CompletableFuture.supplyAsync(() -> runCarOnlyRequest(clone));
             // the normal P&R
-            CompletableFuture<List<GraphPath>> parkAndRideF = CompletableFuture.supplyAsync(() -> new GraphPathFinder(router).graphPathFinderEntryPoint(options));
-            // the CompletableFutures are there to make sure that the computations run in parallel
-            List<List<GraphPath>> allResults = Stream.of(parkAndRideF, carOnlyF)
-                    .map(CompletableFuture::join)
-                    .collect(Collectors.toList());
-
-            List<GraphPath> parkAndRide = allResults.get(0);
-            List<GraphPath> carOnly = allResults.get(1);
+            List<GraphPath> parkAndRide = super.graphPathFinderEntryPoint(options);
+            // car-only
+            List<GraphPath> carOnly = runCarOnlyRequest(options);
 
             results = filterOut(parkAndRide, carOnly);
 
@@ -60,18 +52,28 @@ public class ComparingGraphPathFinder extends GraphPathFinder {
     }
 
 
-    private List<GraphPath> runCarOnlyRequest(RoutingRequest clonedRequest) {
-        clonedRequest.parkAndRide = false;
-        clonedRequest.setMode(TraverseMode.CAR);
+    private List<GraphPath> runCarOnlyRequest(RoutingRequest orig) {
+        // this is probably not necessary but I had to try everything!
+        RoutingRequest clone = router.defaultRoutingRequest.clone();
+        clone.routerId = router.id;
+        clone.parkAndRide = false;
+        clone.setMode(TraverseMode.CAR);
+        clone.setFromString(orig.getFromPlace().getRepresentation());
+        clone.setToString(orig.getToPlace().getRepresentation());
+        clone.setDateTime(orig.getDateTime());
+        clone.setArriveBy(orig.arriveBy);
+        clone.setRoutingContext(router.graph);
+        clone.compactLegsByReversedSearch = false;
 
         List<GraphPath> results;
         try {
-             results = new GraphPathFinder(router).graphPathFinderEntryPoint(clonedRequest);
+             results = new GraphPathFinder(router).graphPathFinderEntryPoint(clone);
         } catch(Exception e)  {
+            LOG.debug("Could not find car-only trip", e);
             throw e;
         }
         finally {
-            clonedRequest.cleanup();
+            clone.cleanup();
         }
 
         return results;
@@ -84,13 +86,17 @@ public class ComparingGraphPathFinder extends GraphPathFinder {
      * driving all the way to the destination.
      */
     private List<GraphPath> filterOut(List<GraphPath> parkAndRide, List<GraphPath> carOnly) {
-        if (!carOnly.isEmpty()) {
+        if (carOnly.isEmpty()) {
+            return parkAndRide;
+        } else {
             double halfDistanceOfCarOnly = carOnly.get(0).streetMeters() / 2;
             List<GraphPath> onlyFastOnes = parkAndRide.stream().filter(graphPath -> graphPath.streetMeters() < halfDistanceOfCarOnly).collect(Collectors.toList());
+            LOG.debug("Found only {} routes that had less than half the amount of driving than the car only one. Their driving distances are {}", onlyFastOnes.size(), onlyFastOnes.stream().map(g -> g.streetMeters()));
+            LOG.debug("Car-only driving distance {}", carOnly.get(0).streetMeters());
             if (haveGraphsBeenFilteredOut(parkAndRide, onlyFastOnes)) {
                 return Lists.newArrayList(Iterables.concat(onlyFastOnes, carOnly));
             } else return parkAndRide;
-        } else return parkAndRide;
+        }
     }
 
     private boolean haveGraphsBeenFilteredOut(List<GraphPath> parkAndRide, List<GraphPath> onlyFastOnes) {

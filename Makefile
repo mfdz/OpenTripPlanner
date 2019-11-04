@@ -50,7 +50,7 @@ build-herrenberg: graphs/default/vvs-with-shapes.gtfs.zip graphs/default/stuttga
 	java -Xmx4G -jar otp.jar --build ./graphs/default
 
 run:
-	java -Xmx5G -server -jar otp.jar --server --basePath ./ --router default --insecure
+	java -Xmx5G -server -Dmaven.javadoc.skip=true -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000 -jar otp.jar --server --basePath ./ --router default --insecure
 
 rebuild:
 	mvn package -DskipTests
