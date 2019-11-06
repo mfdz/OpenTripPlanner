@@ -7,6 +7,7 @@ import java.net.URLDecoder;
 
 import junit.framework.TestCase;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opentripplanner.common.TurnRestriction;
@@ -35,10 +36,19 @@ import org.opentripplanner.util.LocalizedString;
 public class TestOpenStreetMapGraphBuilder extends TestCase {
 
     private HashMap<Class<?>, Object> extra;
+    private Locale defaultLocale;
+
     
     @Before
     public void setUp() {
         extra = new HashMap<Class<?>, Object>();
+        defaultLocale = Locale.getDefault();
+        Locale.setDefault(Locale.US);
+    }
+
+    @After
+    public void tearDown() {
+        Locale.setDefault(defaultLocale);
     }
 
     @Test
