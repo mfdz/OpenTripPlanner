@@ -85,7 +85,7 @@ otp.util.Itin = {
     },
 
     isTransit : function(mode) {
-        return mode === "TRANSIT" || mode === "SUBWAY" || mode === "RAIL" || mode === "BUS" || mode === "TRAM" || mode === "GONDOLA" || mode === "AIRPLANE";
+        return mode === "TRANSIT" || mode === "SUBWAY" || mode === "RAIL" || mode === "BUS" || mode === "TRAM" || mode === "GONDOLA" || mode === "AIRPLANE" || mode === "CARPOOL";
     },
 
     includesTransit : function(mode) {
@@ -212,6 +212,7 @@ otp.util.Itin = {
         //cable cars where the car is suspended from the cable.
         'GONDOLA' : _tr('Aerial Tram'),
         'AIRPLANE' : _tr('Airplane'),
+        'CARPOOL' : _tr('Carpool'),
     },
 
     modeString : function(mode) {

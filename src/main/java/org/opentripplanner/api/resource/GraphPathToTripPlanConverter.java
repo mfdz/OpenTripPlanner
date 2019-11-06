@@ -609,6 +609,7 @@ public abstract class GraphPathToTripPlanConverter {
             leg.routeShortName = route.getShortName();
             leg.routeTextColor = route.getTextColor();
             leg.routeType = route.getType();
+            leg.routeUrl = route.getUrl();
             leg.routeBrandingUrl = route.getBrandingUrl();
             leg.tripId = trip.getId();
             leg.tripShortName = trip.getTripShortName();

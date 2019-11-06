@@ -14,7 +14,7 @@ import org.opentripplanner.routing.edgetype.StreetEdge;
 class TurnRestrictionTag {
 
     enum Direction {
-        LEFT, RIGHT, U, STRAIGHT;
+        LEFT, RIGHT, U, STRAIGHT, ENTRY, EXIT;
     }
 
     long via;

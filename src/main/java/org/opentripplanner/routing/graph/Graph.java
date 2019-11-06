@@ -735,6 +735,9 @@ public class Graph implements Serializable {
 
         LOG.info("Main graph read. |V|={} |E|={}", graph.countVertices(), graph.countEdges());
         graph.index(new DefaultStreetVertexIndexFactory());
+            	// Add empty graphBuilderAnnotations to allow reuse as baseGraph 
+            	// addBuilderAnnotation is prepared for an unset value, but  summarizeBuilderAnnotations is not
+                graph.graphBuilderAnnotations = new LinkedList<GraphBuilderAnnotation>();
         return graph;
     }
 
@@ -964,6 +967,11 @@ public class Graph implements Serializable {
 
     public void summarizeBuilderAnnotations() {
         List<GraphBuilderAnnotation> gbas = this.graphBuilderAnnotations;
+        if (gbas == null) {
+        	LOG.info("Summary not available.");
+        	return;
+        }
+        
         Multiset<Class<? extends GraphBuilderAnnotation>> classes = HashMultiset.create();
         LOG.info("Summary (number of each type of annotation):");
         

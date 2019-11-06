@@ -32,3 +32,4 @@ graphs/
 taggedStops.log
 *.DS_Store
 otp.jar
+/lucene

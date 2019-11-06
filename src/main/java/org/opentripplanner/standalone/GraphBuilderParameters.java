@@ -34,6 +34,11 @@ public class GraphBuilderParameters {
     public final boolean htmlAnnotations;
 
     /**
+     * Generates osmoscope layers of Graph errors/warnings (annotations) in the osmoscope format. They are stored in the same location as the graph in 'report_osmoscope' subdirectory.
+     */
+    public final boolean osmoscopeAnnotations;
+
+    /**
      * If number of annotations is larger then specified number annotations will be split in multiple files.
      * Since browsers have problems opening large HTML files.
      */
@@ -188,6 +193,12 @@ public class GraphBuilderParameters {
      * This will determine what logic we should use when connecting stops to OSM nodes
      */
     public final String vertexConnectorName;
+
+    /**
+     * Path to a serialized graph which, if specified, will be used as base graph.
+     */
+    public final String baseGraph;
+
     /**
      * Set all parameters from the given Jackson JSON tree, applying defaults.
      * Supplying MissingNode.getInstance() will cause all the defaults to be applied.
@@ -196,6 +207,7 @@ public class GraphBuilderParameters {
      */
     public GraphBuilderParameters(JsonNode config) {
         htmlAnnotations = config.path("htmlAnnotations").asBoolean(false);
+        osmoscopeAnnotations = config.path("osmoscopeAnnotations").asBoolean(false);
         transit = config.path("transit").asBoolean(true);
         useTransfersTxt = config.path("useTransfersTxt").asBoolean(false);
         parentStopLinking = config.path("parentStopLinking").asBoolean(false);
@@ -223,6 +235,7 @@ public class GraphBuilderParameters {
         banDiscouragedWalking = config.path("banDiscouragedWalking").asBoolean(false);
         banDiscouragedBiking = config.path("banDiscouragedBiking").asBoolean(false);
         maxTransferDistance = config.path("maxTransferDistance").asDouble(2000);
+        baseGraph = config.path("baseGraph").asText(null);
         extraEdgesStopPlatformLink = config.path("extraEdgesStopPlatformLink").asBoolean(false);
         vertexConnectorName = config.path("vertexConnector").asText("");
     }
