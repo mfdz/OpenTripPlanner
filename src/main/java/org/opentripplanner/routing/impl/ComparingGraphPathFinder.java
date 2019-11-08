@@ -41,14 +41,7 @@ public class ComparingGraphPathFinder extends GraphPathFinder {
             // in order to avoid race conditions we have to clone beforehand
             RoutingRequest clone = options.clone();
             // the normal P&R
-            List<GraphPath> parkAndRide;
-
-            try {
-                parkAndRide = super.graphPathFinderEntryPoint(clone);
-            } catch (PathNotFoundException e) {
-                LOG.debug("Could not find park & ride trips.", e);
-                parkAndRide = Lists.newArrayList();
-            }
+            List<GraphPath> parkAndRide = runParkAndRideRequest(clone);
             // car-only
             List<GraphPath> carOnly = runCarOnlyRequest(options);
 
@@ -63,6 +56,16 @@ public class ComparingGraphPathFinder extends GraphPathFinder {
         }
 
         return results;
+    }
+
+    private List<GraphPath> runParkAndRideRequest(RoutingRequest clone) {
+        try {
+            return super.graphPathFinderEntryPoint(clone);
+        } catch (PathNotFoundException e) {
+            LOG.debug("Could not find park & ride trips.", e);
+            // we don't need to call cleanup here because it is called in PlannerResource/GraphQLResource
+            return Lists.newArrayList();
+        }
     }
 
 
