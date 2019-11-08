@@ -6,6 +6,7 @@ import org.opentripplanner.api.model.TripPlan;
 import org.opentripplanner.api.resource.GraphPathToTripPlanConverter;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.TraverseMode;
+import org.opentripplanner.routing.error.PathNotFoundException;
 import org.opentripplanner.routing.spt.GraphPath;
 import org.opentripplanner.standalone.Router;
 import org.slf4j.Logger;
@@ -37,12 +38,25 @@ public class ComparingGraphPathFinder extends GraphPathFinder {
         if (options.parkAndRide) {
             LOG.debug("Detected a P&R routing request. Will execute two requests to also get car-only routes.");
 
+            // in order to avoid race conditions we have to clone beforehand
+            RoutingRequest clone = options.clone();
             // the normal P&R
-            List<GraphPath> parkAndRide = super.graphPathFinderEntryPoint(options);
+            List<GraphPath> parkAndRide;
+
+            try {
+                parkAndRide = super.graphPathFinderEntryPoint(clone);
+            } catch (PathNotFoundException e) {
+                LOG.debug("Could not find park & ride trips.", e);
+                parkAndRide = Lists.newArrayList();
+            }
             // car-only
             List<GraphPath> carOnly = runCarOnlyRequest(options);
 
             results = filterOut(parkAndRide, carOnly);
+
+            if(results == null || results.isEmpty()) {
+                throw new PathNotFoundException();
+            }
 
         } else {
             results = super.graphPathFinderEntryPoint(options);
@@ -52,25 +66,16 @@ public class ComparingGraphPathFinder extends GraphPathFinder {
     }
 
 
-    private List<GraphPath> runCarOnlyRequest(RoutingRequest orig) {
-        // this is probably not necessary but I had to try everything!
-        RoutingRequest clone = router.defaultRoutingRequest.clone();
-        clone.routerId = router.id;
+    private List<GraphPath> runCarOnlyRequest(RoutingRequest clone) {
         clone.parkAndRide = false;
         clone.setMode(TraverseMode.CAR);
-        clone.setFromString(orig.getFromPlace().getRepresentation());
-        clone.setToString(orig.getToPlace().getRepresentation());
-        clone.setDateTime(orig.getDateTime());
-        clone.setArriveBy(orig.arriveBy);
-        clone.setRoutingContext(router.graph);
-        clone.compactLegsByReversedSearch = false;
 
         List<GraphPath> results;
         try {
              results = new GraphPathFinder(router).graphPathFinderEntryPoint(clone);
-        } catch(Exception e)  {
-            LOG.debug("Could not find car-only trip", e);
-            throw e;
+        } catch(PathNotFoundException e)  {
+            LOG.debug("Could not find car-only trip.", e);
+            results = Lists.newArrayList();
         }
         finally {
             clone.cleanup();
