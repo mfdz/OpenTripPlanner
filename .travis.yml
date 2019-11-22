@@ -10,6 +10,7 @@ install: true
 language: C
 
 env:
-  - ROUTERS=hb
-  - ORG=mfdz
+  global:
+    - ROUTERS=hb
+    - ORG=mfdz
 script: ./travis-build.sh
