@@ -185,14 +185,15 @@ public class OSMWithTags {
     }
 
     /**
-     * Returns true if this tag is explicitly access to this entity.
+     * Returns true if this tag explicitly denies access to this entity.
      * 
      * @param tagName
      * @return
      */
     private boolean isTagDeniedAccess(String tagName) {
         String tagValue = getTag(tagName);
-        return "no".equals(tagValue) || "license".equals(tagValue);
+        return "no".equals(tagValue) || "license".equals(tagValue)
+                || "agricultural".equals(tagValue) || "forestry".equals(tagValue);
     }
 
     /**

@@ -123,5 +123,27 @@ public class OSMWithTagsTest {
         
         o.addTag("access", "private");
         assertTrue(o.isThroughTrafficExplicitlyDisallowed());
-    }   
+    }
+
+    @Test
+    public void testIsMotorcarExplicitlyDenied() {
+        OSMWithTags o = new OSMWithTags();
+        assertFalse(o.isMotorcarExplicitlyDenied());
+
+        o.addTag("motorcar", "something");
+        assertFalse(o.isMotorcarExplicitlyDenied());
+
+        o.addTag("motorcar", "no");
+        assertTrue(o.isMotorcarExplicitlyDenied());
+
+        o.addTag("motorcar", "license");
+        assertTrue(o.isMotorcarExplicitlyDenied());
+
+        o.addTag("motorcar", "forestry");
+        assertTrue(o.isMotorcarExplicitlyDenied());
+
+        o.addTag("motorcar", "agricultural");
+        assertTrue(o.isMotorcarExplicitlyDenied());
+    }
+
 }
