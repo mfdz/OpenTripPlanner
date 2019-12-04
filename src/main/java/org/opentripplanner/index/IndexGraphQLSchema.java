@@ -2982,6 +2982,11 @@ public class IndexGraphQLSchema {
                                 .type(new GraphQLList(Scalars.GraphQLString))
                                 .build())
                         .argument(GraphQLArgument.newArgument()
+                                .name("feeds")
+                                .description("Only return routes with these feedIds")
+                                .type(new GraphQLList(Scalars.GraphQLString))
+                                .build())
+                        .argument(GraphQLArgument.newArgument()
                                 .name("name")
                                 .description("Query routes by this name")
                                 .type(Scalars.GraphQLString)
@@ -3011,6 +3016,12 @@ public class IndexGraphQLSchema {
                                         .collect(Collectors.toList());
                             }
                             Stream<Route> stream = index.routeForId.values().stream();
+                            if (environment.getArgument("feeds") instanceof List) {
+                                stream = stream
+                                        .filter(route -> ((List<String>) environment.getArgument("feeds")).contains(
+                                                route.getId().getAgencyId())
+                                        );
+                            }
                             if (environment.getArgument("name") != null) {
                                 stream = stream
                                         .filter(route -> route.getShortName() != null)
@@ -3052,7 +3063,21 @@ public class IndexGraphQLSchema {
                         .name("trips")
                         .description("Get all trips")
                         .type(new GraphQLList(tripType))
-                        .dataFetcher(environment -> new ArrayList<>(index.tripForId.values()))
+                        .argument(GraphQLArgument.newArgument()
+                                .name("feeds")
+                                .description("Only return trips with these feedIds")
+                                .type(new GraphQLList(Scalars.GraphQLString))
+                                .build())
+                        .dataFetcher(environment -> {
+                                Stream<Trip> stream = index.tripForId.values().stream();
+                                if (environment.getArgument("feeds") instanceof List) {
+                                        stream = stream
+                                                .filter(trip -> ((List<String>) environment.getArgument("feeds")).contains(
+                                                        trip.getId().getAgencyId())
+                                        );
+                                }
+                                return stream.collect(Collectors.toList());
+                        })
                         .build())
                 .field(GraphQLFieldDefinition.newFieldDefinition()
                         .name("trip")
@@ -3330,12 +3355,24 @@ public class IndexGraphQLSchema {
                                 .description("Only return alerts with these causes")
                                 .type(new GraphQLList(new GraphQLNonNull(alertCauseEnum)))
                                 .build())
+                        .argument(GraphQLArgument.newArgument()
+                                .name("route")
+                                .description("Only return alerts affecting these routes")
+                                .type(new GraphQLList(new GraphQLNonNull(Scalars.GraphQLString)))
+                                .build())
+                        .argument(GraphQLArgument.newArgument()
+                                .name("stop")
+                                .description("Only return alerts affecting these stops")
+                                .type(new GraphQLList(new GraphQLNonNull(Scalars.GraphQLString)))
+                                .build())
                         .dataFetcher(environment -> {
                             return index.getAlerts().stream()
                                     .filter(alert -> environment.getArgument("feeds") == null || ((List)environment.getArgument("feeds")).contains(alert.getFeedId()))
                                     .filter(alert -> environment.getArgument("severityLevel") == null || ((List)environment.getArgument("severityLevel")).contains(alert.getAlert().severityLevel))
                                     .filter(alert -> environment.getArgument("effect") == null || ((List)environment.getArgument("effect")).contains(alert.getAlert().effect))
                                     .filter(alert -> environment.getArgument("cause") == null || ((List)environment.getArgument("cause")).contains(alert.getAlert().cause))
+                                    .filter(alert -> environment.getArgument("route") == null || (alert.getRoute() != null && ((List)environment.getArgument("route")).contains(FeedScopedId.convertToString(alert.getRoute()))))
+                                    .filter(alert -> environment.getArgument("stop") == null || (alert.getStop() != null && ((List)environment.getArgument("stop")).contains(FeedScopedId.convertToString(alert.getStop()))))
                                     .collect(Collectors.toList());
                         })
                         .build())
