@@ -2371,6 +2371,13 @@ public class IndexGraphQLSchema {
                         .type(Scalars.GraphQLFloat)
                         .dataFetcher(environment -> ((BikeRentalStation) environment.getSource()).y)
                         .build())
+                .field(GraphQLFieldDefinition.newFieldDefinition()
+                        .name("rentalUriWeb")
+                        .description("A URL that can be used by a web browser to show more information about renting a vehicle at this station. ")
+                        .type(Scalars.GraphQLString)
+                        .dataFetcher(environment -> ((BikeRentalStation) environment.getSource()).rentalUriWeb)
+                        .build())
+
                 .build();
 
         bikeParkType = GraphQLObjectType.newObject()

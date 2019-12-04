@@ -1,0 +1,19 @@
+{
+  "data": {
+    "de": {
+      "feeds": [
+        {
+          "name": "system_information",
+          "url": "system_information.json"
+        },
+        {
+          "name": "station_information",
+          "url": "station_information.json"
+        }
+      ]
+    }
+  },
+  "last_updated": 1564493539,
+  "ttl": 0,
+  "version": "1.0"
+}

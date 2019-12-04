@@ -62,6 +62,13 @@ public class BikeRentalStation implements Serializable, Cloneable {
     public Locale locale = ResourceBundleSingleton.INSTANCE.getLocale(null);
 
     /**
+     * A URL that can be used by a web browser to show more information about renting a vehicle at this station.
+     * With https://github.com/NABSA/gbfs/pull/25 support of deep linking for stations and bikes will
+     * be introduced. */
+    @JsonSerialize
+    public String rentalUriWeb;
+
+    /**
      * FIXME nonstandard definition of equals, relying on only the station field.
      * We should probably be keying collections on station ID rather than the station object with nonstandard equals.
      */
