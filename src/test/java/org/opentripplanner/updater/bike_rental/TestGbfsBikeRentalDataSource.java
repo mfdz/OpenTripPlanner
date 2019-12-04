@@ -39,5 +39,6 @@ public class TestGbfsBikeRentalDataSource extends TestCase {
                 assertEquals(51.909579, fahrradFunke.y);
                 assertEquals(1, fahrradFunke.spacesAvailable);
                 assertEquals(1, fahrradFunke.bikesAvailable);
+                assertEquals("https://buchen.leihleeze.de/verleiher/42/ausleihen/neu", fahrradFunke.rentalUriWeb);
         }
 }

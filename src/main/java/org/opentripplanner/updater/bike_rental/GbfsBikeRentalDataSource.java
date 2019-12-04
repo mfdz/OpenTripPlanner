@@ -119,6 +119,7 @@ public class GbfsBikeRentalDataSource implements BikeRentalDataSource, JsonConfi
             brstation.y = stationNode.path("lat").asDouble();
             brstation.name =  new NonLocalizedString(stationNode.path("name").asText());
             brstation.isCarStation = routeAsCar;
+            brstation.rentalUriWeb = stationNode.path("rental_uris").path("web").asText();
             return brstation;
         }
     }
@@ -136,6 +137,7 @@ public class GbfsBikeRentalDataSource implements BikeRentalDataSource, JsonConfi
             brstation.bikesAvailable = stationNode.path("num_bikes_available").asInt();
             brstation.spacesAvailable = stationNode.path("num_docks_available").asInt();
             brstation.isCarStation = routeAsCar;
+            brstation.rentalUriWeb = stationNode.path("rental_uris").path("web").asText();
             return brstation;
         }
     }
@@ -158,6 +160,7 @@ public class GbfsBikeRentalDataSource implements BikeRentalDataSource, JsonConfi
             brstation.allowDropoff = false;
             brstation.isFloatingBike = true;
             brstation.isCarStation = routeAsCar;
+            brstation.rentalUriWeb = stationNode.path("rental_uris").path("web").asText();
             return brstation;
         }
     }
