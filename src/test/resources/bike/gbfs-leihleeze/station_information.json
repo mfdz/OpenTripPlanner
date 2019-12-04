@@ -1,0 +1,19 @@
+{
+  "data": {
+    "stations": [
+      {
+        "capacity": 1,
+        "lat": 51.909579,
+        "lon": 6.855784,
+        "name": "Fahrrad Funke",
+        "station_id": "de_leihleeze_station_42",
+        "rental_uris": {
+          "web": "https://buchen.leihleeze.de/verleiher/42/ausleihen/neu"
+        }
+      }
+    ]
+  },
+  "last_updated": 1564493539,
+  "ttl": 0,
+  "version": "1.0"
+}

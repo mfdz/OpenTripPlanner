@@ -1,0 +1,19 @@
+{
+  "data": {
+    "stations": [
+      {
+        "is_installed": 1,
+        "is_renting": 1,
+        "is_returning": 1,
+        "last_reported": 1575412170,
+        "name": "Fahrrad Funke",
+        "num_bikes_available": 1,
+        "num_docks_available": 1,
+        "station_id": "de_leihleeze_station_42"
+      }
+    ]
+  },
+  "last_updated": 1564493539,
+  "ttl": 0,
+  "version": "1.0"
+}
