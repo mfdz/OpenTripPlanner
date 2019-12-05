@@ -55,7 +55,8 @@ function download_graph {
   done
 
   if [ -f graph-$NAME.zip ]; then
-    unzip $GRAPH_FILE  -d ./graphs
+    # if the graph already exists then overwrite it, otherwise we need to build a new one on every start
+    unzip -o $GRAPH_FILE  -d ./graphs
     return $?;
   else
     return 1;
@@ -83,7 +84,7 @@ function process {
 
 #workaround for azure DNS issue
 
-if [ -n "$MESOS_CONTAINER_NAME"  ]; then 
+if [ -n "$MESOS_CONTAINER_NAME"  ]; then
   echo "search marathon.l4lb.thisdcos.directory" >> /etc/resolv.conf
 fi
 
