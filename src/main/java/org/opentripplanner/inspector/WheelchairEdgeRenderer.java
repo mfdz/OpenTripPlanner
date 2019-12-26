@@ -1,6 +1,7 @@
 package org.opentripplanner.inspector;
 
 import org.opentripplanner.inspector.EdgeVertexTileRenderer.EdgeVertexRenderer;
+import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.edgetype.StreetEdge;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Vertex;
@@ -16,7 +17,7 @@ import java.awt.Color;
 public class WheelchairEdgeRenderer implements EdgeVertexRenderer {
 
 
-    private ScalarColorPalette slopePalette = new DefaultScalarColorPalette(0.0, 0.08, 1.0);
+    private ScalarColorPalette slopePalette;
 
 
     private static final Color NO_WHEELCHAIR_COLOR = Color.RED;
@@ -24,7 +25,8 @@ public class WheelchairEdgeRenderer implements EdgeVertexRenderer {
     private static final Color NO_WHEELCHAIR_INFORMATION_COLOR = Color.ORANGE;
 
 
-    public WheelchairEdgeRenderer() {
+    public WheelchairEdgeRenderer(RoutingRequest routingRequest) {
+        this.slopePalette = new DefaultScalarColorPalette(0.0, routingRequest.maxSlope, 1.0);
     }
 
     @Override

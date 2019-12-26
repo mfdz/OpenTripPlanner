@@ -8,6 +8,7 @@ import org.geotools.geometry.Envelope2D;
 import org.opentripplanner.analyst.request.TileRequest;
 import org.opentripplanner.api.resource.GraphInspectorTileResource;
 import org.opentripplanner.inspector.TileRenderer.TileRenderContext;
+import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.services.GraphService;
 import org.slf4j.Logger;
@@ -35,14 +36,14 @@ public class TileRendererManager {
 
     private Graph graph;
 
-    public TileRendererManager(Graph graph) {
+    public TileRendererManager(Graph graph, RoutingRequest routingRequest) {
         this.graph = graph;
 
         // Register layers.
         renderers.put("bike-safety", new EdgeVertexTileRenderer(new BikeSafetyEdgeRenderer()));
         renderers.put("traversal", new EdgeVertexTileRenderer(
                 new TraversalPermissionsEdgeRenderer()));
-        renderers.put("wheelchair", new EdgeVertexTileRenderer(new WheelchairEdgeRenderer()));
+        renderers.put("wheelchair", new EdgeVertexTileRenderer(new WheelchairEdgeRenderer(routingRequest)));
     }
 
     public void registerRenderer(String layer, TileRenderer tileRenderer) {

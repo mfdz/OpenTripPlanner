@@ -1431,6 +1431,12 @@ public class RoutingRequest implements Cloneable, Serializable {
         }
     }
 
+    public void setMaxSlope(double maxSlope) {
+        if (maxSlope >= 0 && maxSlope <= 1) {
+            this.maxSlope = maxSlope;
+        }
+    }
+
     public void setModeWeight(TraverseMode traverseMode, Double weight) {
         if (weight > 0) {
             this.modeWeights.put(traverseMode, weight);

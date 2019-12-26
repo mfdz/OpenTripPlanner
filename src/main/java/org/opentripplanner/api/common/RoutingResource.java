@@ -91,6 +91,13 @@ public abstract class RoutingResource {
     protected Integer maxPreTransitTime;
 
     /**
+     * The maximum slope, up or downhill, that can be used in wheelchair accessible routing.
+     * Value is between 0 and 1, and calculated by dividing change of elevation by change of distance.
+     */
+    @QueryParam("maxSlope")
+    protected Double maxSlope;
+
+    /**
      * A multiplier for how bad walking is, compared to being in transit for equal lengths of time.
      * Defaults to 2. Empirically, values between 10 and 20 seem to correspond well to the concept
      * of not wanting to walk too much without asking for totally ridiculous itineraries, but this
@@ -536,6 +543,9 @@ public abstract class RoutingResource {
 
         if (maxPreTransitTime != null)
             request.setMaxPreTransitTime(maxPreTransitTime);
+
+        if (maxSlope != null)
+            request.setMaxSlope(maxSlope);
 
         if(carParkCarLegWeight != null) {
             request.setCarParkCarLegWeight(carParkCarLegWeight);
