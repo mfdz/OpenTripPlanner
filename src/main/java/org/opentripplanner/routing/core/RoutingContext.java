@@ -2,13 +2,12 @@ package org.opentripplanner.routing.core;
 
 import com.google.common.collect.Iterables;
 import org.locationtech.jts.geom.LineString;
-import org.opentripplanner.model.Agency;
+import org.opentripplanner.api.resource.DebugOutput;
+import org.opentripplanner.common.geometry.GeometryUtils;
+import org.opentripplanner.model.CalendarService;
 import org.opentripplanner.model.FeedScopedId;
 import org.opentripplanner.model.Stop;
 import org.opentripplanner.model.calendar.ServiceDate;
-import org.opentripplanner.model.CalendarService;
-import org.opentripplanner.api.resource.DebugOutput;
-import org.opentripplanner.common.geometry.GeometryUtils;
 import org.opentripplanner.routing.algorithm.strategies.EuclideanRemainingWeightHeuristic;
 import org.opentripplanner.routing.algorithm.strategies.RemainingWeightHeuristic;
 import org.opentripplanner.routing.algorithm.strategies.TrivialRemainingWeightHeuristic;
@@ -32,17 +31,7 @@ import org.opentripplanner.util.NonLocalizedString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.*;
 
 /**
  * A RoutingContext holds information needed to carry out a search for a particular TraverseOptions, on a specific graph.
@@ -87,9 +76,6 @@ public class RoutingContext implements Cloneable {
 
     /** The timetableSnapshot is a {@link TimetableSnapshot} for looking up real-time updates. */
     public final TimetableSnapshot timetableSnapshot;
-
-    /** Central storage to check if a street is blocked due to roadworks **/
-    public final RoadworksSource roadworksSource = new RoadworksSource();
 
     /**
      * Cache lists of which transit services run on which midnight-to-midnight periods. This ties a TraverseOptions to a particular start time for the
@@ -363,6 +349,10 @@ public class RoutingContext implements Cloneable {
             // but the date provided is outside those covered by the transit feed.
             throw new TransitTimesException();
         }
+    }
+
+    public RoadworksSource getRoadworksSource() {
+        return Optional.ofNullable(graph.roadworksSource).orElse(new RoadworksSource());
     }
 
     /**

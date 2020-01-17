@@ -14,6 +14,7 @@
 package org.opentripplanner.routing.core;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.geotools.geojson.geom.GeometryJSON;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -29,32 +30,37 @@ import org.opentripplanner.openstreetmap.impl.AnyFileBasedOpenStreetMapProviderI
 import org.opentripplanner.openstreetmap.services.OpenStreetMapProvider;
 import org.opentripplanner.routing.algorithm.AStar;
 import org.opentripplanner.routing.edgetype.StreetEdge;
-import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.impl.DefaultStreetVertexIndexFactory;
+import org.opentripplanner.routing.roadworks.RoadworksSource;
 import org.opentripplanner.routing.spt.GraphPath;
 import org.opentripplanner.routing.spt.ShortestPathTree;
 import org.opentripplanner.util.TestUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class RoadworksTest {
 
+    private static final Logger LOG = LoggerFactory.getLogger(RoadworksTest.class);
     AStar aStar = new AStar();
 
     static Graph graph;
+    static Long blockedWayId = 30082004L;
 
-    GenericLocation steinbeissStr = new GenericLocation(48.59559,8.85901);
-    GenericLocation horberStr = new GenericLocation(48.59463, 8.86649);
+    GenericLocation zeppelinstr = new GenericLocation(48.59654,8.86100);
+    GenericLocation hildrizhauserStr = new GenericLocation(48.60008,8.88863);
     // needs to be in 2017 because that's when the Oslo GTFS feed is valid. probably want to get a slimmed down Herrenberg feed.
     long dateTime = TestUtils.dateInSeconds("Europe/Berlin", 2017, 10, 15, 7, 0, 0);
     GeometryJSON geojson = new GeometryJSON();
+
 
     @BeforeClass
     public static void setUp() {
@@ -77,14 +83,15 @@ public class RoadworksTest {
         graphBuilder.run();
 
         graph = graphBuilder.getGraph();
+        graph.roadworksSource = new RoadworksSource(blockedWayId);
         graph.index(new DefaultStreetVertexIndexFactory());
     }
 
-    private RoutingRequest buildRoutingRequest() {
+    private RoutingRequest buildRoutingRequest(Graph graph) {
         RoutingRequest request = new RoutingRequest();
         request.dateTime = dateTime;
-        request.from = steinbeissStr;
-        request.to = horberStr;
+        request.from = zeppelinstr;
+        request.to = hildrizhauserStr;
 
         request.setNumItineraries(1);
         request.setRoutingContext(graph);
@@ -94,17 +101,20 @@ public class RoadworksTest {
     }
 
     @Test
-    public void withoutRoadworks() {
-        RoutingRequest options = buildRoutingRequest();
+    public void withStreetBlockedDueToRoadworks() {
+        RoutingRequest options = buildRoutingRequest(graph);
         ShortestPathTree tree = aStar.getShortestPathTree(options);
         GraphPath path = tree.getPaths().get(0);
 
-        System.out.println(geojson.toString(path.getGeometry()));
+        LOG.info(geojson.toString(path.getGeometry()));
 
-        assertThat(path.streetMeters(), is(713.91));
+        List<Long> wayIds = path.edges.stream()
+                .filter(e -> e instanceof StreetEdge)
+                .map(e -> (StreetEdge) e)
+                .map(e -> e.wayId)
+                .collect(Collectors.toList());
 
-        List<Integer> edgeIds = path.edges.stream().map(Edge::getId).collect(Collectors.toList());
-        assertThat(edgeIds, is(Arrays.asList(7189, 6197, 6159, 6157, 788, 6076, 6078, 4956, 1102, 1104, 1106, 1116, 1118, 3818, 3702, 3704, 5422, 508, 3512, 7187)));
+        assertThat(wayIds, not(hasItem(blockedWayId)));
     }
 
 }
