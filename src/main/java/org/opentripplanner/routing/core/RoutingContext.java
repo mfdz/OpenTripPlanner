@@ -23,6 +23,7 @@ import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.location.StreetLocation;
 import org.opentripplanner.routing.location.TemporaryStreetLocation;
+import org.opentripplanner.routing.roadworks.RoadworksSource;
 import org.opentripplanner.routing.services.OnBoardDepartService;
 import org.opentripplanner.routing.vertextype.TemporaryVertex;
 import org.opentripplanner.routing.vertextype.TransitStop;
@@ -86,6 +87,9 @@ public class RoutingContext implements Cloneable {
 
     /** The timetableSnapshot is a {@link TimetableSnapshot} for looking up real-time updates. */
     public final TimetableSnapshot timetableSnapshot;
+
+    /** Central storage to check if a street is blocked due to roadworks **/
+    public final RoadworksSource roadworksSource = new RoadworksSource();
 
     /**
      * Cache lists of which transit services run on which midnight-to-midnight periods. This ties a TraverseOptions to a particular start time for the
