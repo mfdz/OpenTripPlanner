@@ -193,9 +193,7 @@ public class StreetEdge extends Edge implements Cloneable {
                 return false;
             }
         }
-        if(mode.isDriving() && options.getRoutingContext().getRoadworksSource().isBlocked(this)) {
-            return false;
-        } else return canTraverseIncludingBarrier(mode);
+        return canTraverseIncludingBarrier(mode);
     }
 
     /**

@@ -130,7 +130,7 @@ public class Graph implements Serializable {
 
     public transient TimetableSnapshotSource timetableSnapshotSource = null;
 
-    public transient RoadworksSource roadworksSource = new RoadworksSource();
+    public transient RoadworksSource roadworksSource = new RoadworksSource(30082004L);
 
     private transient List<GraphBuilderAnnotation> graphBuilderAnnotations = new LinkedList<GraphBuilderAnnotation>(); // initialize for tests
 
