@@ -1,8 +1,6 @@
 package org.opentripplanner.updater.roadworks;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.SetMultimap;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.data.wfs.WFSDataStore;
@@ -14,14 +12,9 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.FactoryException;
 import org.opentripplanner.common.geometry.SphericalDistanceLibrary;
-import org.opentripplanner.common.model.T2;
-import org.opentripplanner.routing.alertpatch.Alert;
-import org.opentripplanner.routing.edgetype.StreetEdge;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.roadworks.RoadworksSource;
-import org.opentripplanner.routing.services.notes.DynamicStreetNotesSource;
-import org.opentripplanner.routing.services.notes.MatcherAndAlert;
 import org.opentripplanner.routing.services.notes.NoteMatcher;
 import org.opentripplanner.routing.services.notes.StreetNotesService;
 import org.opentripplanner.updater.GraphUpdaterManager;
@@ -32,8 +25,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * A graph updater that reads a WFS-interface and updates a RoadworksSource.
@@ -44,8 +41,14 @@ import java.util.*;
  * into notes. Also the implementing classes should be added to the GraphUpdaterConfigurator
  *
  * @see WinkkiPollingGraphUpdater
+ * <pre>
+ *    type = wfs-roadworks-updater
+ *    frequencySec = 21600
+ *    url = https://baustellen.strassen.baden-wuerttemberg.de/bis_wfs/wfs&Version=1.1.0&Request=GetCapabilities
+ *    featureType = bis:Baustelle
+ * </pre>
  *
- * @author hannesj
+ * @author Leonard Ehrenfried
  */
 public class WFSRoadworksPollingGraphUpdater extends PollingGraphUpdater {
     protected Graph graph;
@@ -95,8 +98,9 @@ public class WFSRoadworksPollingGraphUpdater extends PollingGraphUpdater {
     @Override
     public void setup(Graph graph) throws IOException, FactoryException {
         LOG.info("Setup WFS polling updater");
-        HashMap<String, Object> connectionParameters = new HashMap<>();
+        HashMap<String, Serializable> connectionParameters = new HashMap<>();
         connectionParameters.put(WFSDataStoreFactory.URL.key, url);
+        connectionParameters.put(WFSDataStoreFactory.LENIENT.key, true);
         WFSDataStore data = (new WFSDataStoreFactory()).createDataStore(connectionParameters);
         query = new Query(featureType); // Read only single feature type from the source
         query.setCoordinateSystem(CRS.decode("EPSG:4326", true)); // Get coordinates in WGS-84

@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
@@ -104,7 +105,7 @@ public abstract class WFSNotePollingGraphUpdater extends PollingGraphUpdater {
     @Override
     public void setup(Graph graph) throws IOException, FactoryException {
         LOG.info("Setup WFS polling updater");
-        HashMap<String, Object> connectionParameters = new HashMap<>();
+        HashMap<String, Serializable> connectionParameters = new HashMap<>();
         connectionParameters.put(WFSDataStoreFactory.URL.key, url);
         WFSDataStore data = (new WFSDataStoreFactory()).createDataStore(connectionParameters);
         query = new Query(featureType); // Read only single feature type from the source
