@@ -19,6 +19,8 @@ public interface WayPropertySetSource {
 		// build-config.json
 		if ("default".equals(type)) {
 			return new DefaultWayPropertySetSource();
+		} else if ("germany".equals(type)) {
+			return new GermanyWayPropertySetSource();
 		} else if ("norway".equals(type)) {
 			return new NorwayWayPropertySetSource();
 		} else if ("finland".equals(type)) {
