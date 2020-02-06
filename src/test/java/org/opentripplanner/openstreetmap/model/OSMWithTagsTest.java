@@ -117,9 +117,6 @@ public class OSMWithTagsTest {
         
         o.addTag("access", "destination");
         assertTrue(o.isThroughTrafficExplicitlyDisallowed());
-
-        o.addTag("access", "forestry");
-        assertTrue(o.isThroughTrafficExplicitlyDisallowed());
         
         o.addTag("access", "private");
         assertTrue(o.isThroughTrafficExplicitlyDisallowed());
