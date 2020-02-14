@@ -143,6 +143,7 @@ public class IndexGraphQLSchema {
             .value("TRAM", TraverseMode.TRAM, "TRAM")
             .value("TRANSIT", TraverseMode.TRANSIT, "A special transport mode, which includes all public transport.")
             .value("WALK", TraverseMode.WALK, "WALK")
+            .value("CARPOOL", TraverseMode.CARPOOL, "CARPOOL")
             .build();
 
     public static GraphQLEnumType qualifierEnum = GraphQLEnumType.newEnum()
