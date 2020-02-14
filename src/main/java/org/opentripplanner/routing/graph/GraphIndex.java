@@ -537,7 +537,13 @@ public class GraphIndex {
         }
 
         private static String toId(Stop stop, TripPattern pattern) {
-            return stop.getId().getAgencyId() + ";" + stop.getId().getId() + ";" + pattern.code;
+            FeedScopedId id =  stop.getId();
+            if(id != null) {
+                return id.getAgencyId() + ";" + id.getId() + ";" + pattern.code;
+            } else {
+                LOG.error("Stop {} with name {} does not contain an id.", stop, stop.getName());
+                return "unknown";
+            }
         }
 
         public List<TripTimeShort> getStoptimes(GraphIndex index, long startTime, int timeRange, int numberOfDepartures, boolean omitNonPickups, boolean omitCanceled) {
