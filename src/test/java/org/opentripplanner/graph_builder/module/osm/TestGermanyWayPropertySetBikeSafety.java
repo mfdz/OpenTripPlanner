@@ -6,11 +6,11 @@ import org.opentripplanner.openstreetmap.model.OSMWithTags;
 import sun.jvm.hotspot.utilities.AssertionFailure;
 
 /**
- * Test the bike safety ratings for GermanWayPropertySet.
+ * Test the bike safety ratings for GermanyWayPropertySet.
  *
  * @author hbruch
  */
-public class TestGermanWayPropertySetBikeSafety extends TestCase {
+public class TestGermanyWayPropertySetBikeSafety extends TestCase {
     
     /**
      * Test that bike safety factors are calculated accurately
