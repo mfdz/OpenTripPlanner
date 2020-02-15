@@ -44,6 +44,8 @@ public class GermanyWayPropertySetSource implements WayPropertySetSource {
         props.setCarSpeed("highway=primary", 27.27f); // 100kph
         props.setCarSpeed("highway=primary_link", 15); // = 54kph
 
+        // Pedestrian zones in Germany are forbidden for bicycles by default
+        props.setProperties("highway=pedestrian", StreetTraversalPermission.PEDESTRIAN);
         props.setProperties("highway=residential;maxspeed=30", StreetTraversalPermission.ALL, 0.9, 0.9);
         props.setProperties("highway=footway;bicycle=yes",
                 StreetTraversalPermission.PEDESTRIAN_AND_BICYCLE, 0.9, 0.9);
