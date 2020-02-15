@@ -414,7 +414,7 @@ public class WalkableAreaBuilder {
             OSMWithTags areaEntity = area.parent;
 
             StreetTraversalPermission areaPermissions = OSMFilter.getPermissionsForEntity(
-                    areaEntity, StreetTraversalPermission.PEDESTRIAN_AND_BICYCLE);
+                    areaEntity, StreetTraversalPermission.PEDESTRIAN);
 
             float carSpeed = wayPropertySet.getCarSpeedForWay(areaEntity, false);
 
@@ -549,7 +549,7 @@ public class WalkableAreaBuilder {
             namedArea.setOriginalEdges(intersection);
 
             StreetTraversalPermission permission = OSMFilter.getPermissionsForEntity(areaEntity,
-                    StreetTraversalPermission.PEDESTRIAN_AND_BICYCLE);
+                    StreetTraversalPermission.PEDESTRIAN);
             namedArea.setPermission(permission);
 
             edgeList.addArea(namedArea);
