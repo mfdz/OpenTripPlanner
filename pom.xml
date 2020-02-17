@@ -264,7 +264,6 @@
                 <!-- Fixes issue with tests failing in some environments. Replace this when proper version of 3.0 is released. -->
                 <version>3.0.0-M3</version>
                 <configuration>
-                    <argLine>-XX:+UseParNewGC</argLine>
                     <argLine>-Xms5G</argLine>
                     <argLine>-Xmx5G</argLine>
                     <argLine>-XX:NewRatio=5</argLine>
