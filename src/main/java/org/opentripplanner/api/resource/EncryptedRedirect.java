@@ -21,11 +21,11 @@ public class EncryptedRedirect {
     public static Response redirect(@PathParam("cipherText") String cipherText) {
         try {
             Crypto.DecryptionResult res = Crypto.decryptWithExpiry(cipherText);
-            if(res.expiry.isBefore(OffsetDateTime.now())){
+            if(res.expiry.isAfter(OffsetDateTime.now())){
                 return Response.temporaryRedirect(new URI(res.plainText)).build();
-            } else return Response.serverError().build();
+            } else return Response.status(Response.Status.FORBIDDEN).entity("URL redirect has expired.").build();
         } catch (GeneralSecurityException | URISyntaxException e) {
-            return Response.serverError().build();
+            return Response.serverError().entity(e.getMessage()).build();
         }
     }
 
