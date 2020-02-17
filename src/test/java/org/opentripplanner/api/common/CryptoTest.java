@@ -33,6 +33,15 @@ public class CryptoTest {
 
         assertThat(result.expiry.isEqual(expiry), is(true));
         assertThat(result.plainText, is(plainText));
+    }
 
+    @Test
+    public void shouldDecryptUrls() throws Exception {
+        String cipherText = "iHZUunQLPB_iGqxydlOUb-uwA7EjBpxzHJOpuCNUjBpKfVg7MljdxM2QiRz_i0zt4eqHMCVLj6u8d1lYApjssw";
+
+        Crypto.DecryptionResult result = Crypto.decryptWithExpiry(cipherText);
+
+        assertThat(result.expiry.toString(), is("2020-02-17T17:48:08Z"));
+        assertThat(result.plainText, is("https://de.wikipedia.org/wiki/Mitfahrzentrale"));
     }
 }

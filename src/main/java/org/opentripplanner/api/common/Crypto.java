@@ -13,7 +13,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.List;
@@ -50,11 +49,16 @@ public class Crypto {
         return Cipher.getInstance("AES/ECB/PKCS5Padding");
     }
 
-    public static String encrypt(String plainText) throws GeneralSecurityException {
-        Cipher cipher = getCipher();
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec);
-        byte[] encrypted = cipher.doFinal(plainText.getBytes());
-        return Base64.encodeBase64URLSafeString(encrypted);
+    public static String encrypt(String plainText) {
+        try {
+            Cipher cipher = getCipher();
+            cipher.init(Cipher.ENCRYPT_MODE, keySpec);
+            byte[] encrypted = cipher.doFinal(plainText.getBytes());
+            return Base64.encodeBase64URLSafeString(encrypted);
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public static String decrypt(String cipherText) throws GeneralSecurityException {
@@ -63,7 +67,7 @@ public class Crypto {
         return new String(cipher.doFinal(Base64.decodeBase64(cipherText)));
     }
 
-    public static String encryptWithExpiry(String plainText, OffsetDateTime expiry) throws GeneralSecurityException {
+    public static String encryptWithExpiry(String plainText, OffsetDateTime expiry) {
         long time = expiry.toInstant().getEpochSecond();
         String withSeparator = plainText + separator + time;
         return encrypt(withSeparator);
@@ -81,9 +85,8 @@ public class Crypto {
     }
 
     public static DecryptionResult decryptWithExpiry(String cipherText) throws GeneralSecurityException {
-        List<String> plainTextWithExpiry = Arrays.asList(decrypt(cipherText).split(separator));
-        System.out.println(plainTextWithExpiry);
-        OffsetDateTime expiry = OffsetDateTime.ofInstant(Instant.ofEpochSecond(Long.parseLong(plainTextWithExpiry.get(1))), ZoneOffset.UTC);
-        return new DecryptionResult(expiry, plainTextWithExpiry.get(0));
+        String[] plainTextWithExpiry = decrypt(cipherText).split(separator);
+        OffsetDateTime expiry = OffsetDateTime.ofInstant(Instant.ofEpochSecond(Long.parseLong(plainTextWithExpiry[1])), ZoneOffset.UTC);
+        return new DecryptionResult(expiry, plainTextWithExpiry[0]);
     }
 }
