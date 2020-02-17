@@ -11,12 +11,21 @@ import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 public class Crypto {
 
-    private static SecretKeySpec keySpec;
     private static final Logger LOG = LoggerFactory.getLogger(Crypto.class);
+
+    private static SecretKeySpec keySpec;
+
+    private static String separator = "___-___";
 
     static {
 
@@ -52,5 +61,29 @@ public class Crypto {
         Cipher cipher = getCipher();
         cipher.init(Cipher.DECRYPT_MODE, keySpec);
         return new String(cipher.doFinal(Base64.decodeBase64(cipherText)));
+    }
+
+    public static String encryptWithExpiry(String plainText, OffsetDateTime expiry) throws GeneralSecurityException {
+        long time = expiry.toInstant().getEpochSecond();
+        String withSeparator = plainText + separator + time;
+        return encrypt(withSeparator);
+    }
+
+    static class DecryptionResult {
+
+        public final OffsetDateTime expiry;
+        public final String plainText;
+
+        DecryptionResult(OffsetDateTime expiry, String plainText) {
+            this.expiry = expiry;
+            this.plainText = plainText;
+        }
+    }
+
+    public static DecryptionResult decryptWithExpiry(String cipherText) throws GeneralSecurityException {
+        List<String> plainTextWithExpiry = Arrays.asList(decrypt(cipherText).split(separator));
+        System.out.println(plainTextWithExpiry);
+        OffsetDateTime expiry = OffsetDateTime.ofInstant(Instant.ofEpochSecond(Long.parseLong(plainTextWithExpiry.get(1))), ZoneOffset.UTC);
+        return new DecryptionResult(expiry, plainTextWithExpiry.get(0));
     }
 }
