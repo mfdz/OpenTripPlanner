@@ -93,6 +93,7 @@ public class OTPApplication extends Application {
             UpdaterStatusResource.class,
             ScenarioResource.class,
             RepeatedRaptorTestResource.class,
+            EncryptedRedirect.class,
             /* Features and Filters: extend Jersey, manipulate requests and responses. */
             CorsFilter.class,
             MultiPartFeature.class

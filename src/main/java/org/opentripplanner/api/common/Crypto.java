@@ -14,8 +14,6 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 public class Crypto {
@@ -73,7 +71,7 @@ public class Crypto {
         return encrypt(withSeparator);
     }
 
-    static class DecryptionResult {
+    public static class DecryptionResult {
 
         public final OffsetDateTime expiry;
         public final String plainText;
