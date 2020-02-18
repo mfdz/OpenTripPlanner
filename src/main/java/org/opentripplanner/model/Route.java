@@ -2,6 +2,7 @@
 package org.opentripplanner.model;
 
 import org.opentripplanner.api.common.Crypto;
+import org.opentripplanner.api.resource.EncryptedRedirect;
 
 import java.security.GeneralSecurityException;
 import java.time.OffsetDateTime;
@@ -94,7 +95,7 @@ public final class Route extends IdentityBean<FeedScopedId> {
     public String getUrl() {
         if(url != null) {
             String cipherText = Crypto.encryptWithExpiry(url, OffsetDateTime.now().plusMinutes(15));
-            return "/otp/redirect/" + cipherText;
+            return EncryptedRedirect.REDIRECT_PATH + cipherText;
         }
         return url;
     }

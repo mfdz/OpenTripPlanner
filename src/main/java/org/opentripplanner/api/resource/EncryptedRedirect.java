@@ -16,6 +16,8 @@ import java.time.OffsetDateTime;
 @Path("/redirect/{cipherText}")
 public class EncryptedRedirect {
 
+    public static String REDIRECT_PATH = "/otp/redirect/";
+
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     public static Response redirect(@PathParam("cipherText") String cipherText) {
