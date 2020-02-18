@@ -12,11 +12,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import java.time.OffsetDateTime;
+import java.util.Optional;
 
 @Path("/redirect/{cipherText}")
 public class EncryptedRedirect {
 
-    public static String REDIRECT_PATH = "/otp/redirect/";
+    public static String API_URL = Optional.ofNullable(System.getenv("API_URL")).filter(s -> !s.trim().isEmpty()).orElse("").replaceAll("/$","");
+    public static String REDIRECT_PREFIX = API_URL + "/redirect/";
 
     @GET
     @Produces({ MediaType.APPLICATION_JSON })

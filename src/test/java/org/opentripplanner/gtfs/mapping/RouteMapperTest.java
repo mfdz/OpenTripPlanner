@@ -79,7 +79,7 @@ public class RouteMapperTest {
         assertEquals(LONG_NAME, result.getLongName());
         assertEquals(DESC, result.getDesc());
         assertEquals(TYPE, result.getType());
-        assertThat(result.getUrl(), startsWith("/otp/redirect/EofieChH7Rc0IBy1S"));
+        assertThat(result.getUrl(), startsWith("https://secret.org/api/redirect/EofieChH7Rc0IBy1S"));
         assertEquals(COLOR, result.getColor());
         assertEquals(TEXT_COLOR, result.getTextColor());
         assertEquals(BIKES_ALLOWED, result.getBikesAllowed());
