@@ -1,6 +1,7 @@
 package org.opentripplanner.api.common;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,8 +30,8 @@ public class Crypto {
         String secretKey = Optional.ofNullable(System.getenv("ENCRYPTION_SECRET_KEY"))
                 .filter(s -> !s.trim().isEmpty())
                 .orElseGet(() -> {
-                    LOG.error("No environment variable ENCRYPTION_SECRET_KEY defined! Falling back on default secret key!");
-                    return "very secret key";
+                    LOG.error("No environment variable ENCRYPTION_SECRET_KEY defined! Falling back on a random secret key. This means that your redirect URLs will be invalid after restarting OTP.");
+                    return RandomStringUtils.random(64);
                 });
 
         MessageDigest sha;
@@ -39,7 +40,7 @@ public class Crypto {
             byte[] keyBytes = sha.digest(secretKey.getBytes(StandardCharsets.UTF_8));
             keySpec = new SecretKeySpec(keyBytes, "AES");
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            LOG.error("Could not initialise encryption library.", e);
         }
     }
 
