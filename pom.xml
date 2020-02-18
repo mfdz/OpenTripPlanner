@@ -264,7 +264,11 @@
                 <!-- Fixes issue with tests failing in some environments. Replace this when proper version of 3.0 is released. -->
                 <version>3.0.0-M3</version>
                 <configuration>
-                    <argLine>-XX:+UseParNewGC</argLine>
+                    <forkCount>2</forkCount>
+                    <environmentVariables>
+                        <ENCRYPTION_SECRET_KEY>very secret key</ENCRYPTION_SECRET_KEY>
+                        <API_URL>https://secret.org/api/</API_URL>
+                    </environmentVariables>
                     <argLine>-Xms5G</argLine>
                     <argLine>-Xmx5G</argLine>
                     <argLine>-XX:NewRatio=5</argLine>

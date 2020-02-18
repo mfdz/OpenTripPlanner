@@ -1,5 +1,6 @@
 package org.opentripplanner.gtfs.mapping;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.model.AgencyAndId;
@@ -8,11 +9,8 @@ import org.onebusaway.gtfs.model.Route;
 import java.util.Collection;
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.startsWith;
+import static org.junit.Assert.*;
 
 public class RouteMapperTest {
 
@@ -81,7 +79,7 @@ public class RouteMapperTest {
         assertEquals(LONG_NAME, result.getLongName());
         assertEquals(DESC, result.getDesc());
         assertEquals(TYPE, result.getType());
-        assertEquals(URL, result.getUrl());
+        assertThat(result.getUrl(), startsWith("https://secret.org/api/redirect/EofieChH7Rc0IBy1S"));
         assertEquals(COLOR, result.getColor());
         assertEquals(TEXT_COLOR, result.getTextColor());
         assertEquals(BIKES_ALLOWED, result.getBikesAllowed());
