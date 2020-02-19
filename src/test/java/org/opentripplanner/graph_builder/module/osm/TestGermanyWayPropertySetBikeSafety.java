@@ -3,7 +3,6 @@ package org.opentripplanner.graph_builder.module.osm;
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.opentripplanner.openstreetmap.model.OSMWithTags;
-import sun.jvm.hotspot.utilities.AssertionFailure;
 
 /**
  * Test the bike safety ratings for GermanyWayPropertySet.
