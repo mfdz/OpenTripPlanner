@@ -561,6 +561,9 @@ public class StreetEdge extends Edge implements Cloneable {
     public double calculateSpeed(RoutingRequest options, TraverseMode traverseMode, long timeMillis) {
         if (traverseMode == null) {
             return Double.NaN;
+        } else if (traverseMode.isDriving() && options.getRoutingContext().getRoadworksSource().isBlocked(this)) {
+            // if the street blocked due to roadworks then the driving speed is set to 0 meters/second, ie. not traversable
+            return 1;
         } else if (traverseMode.isDriving()) {
             // NOTE: Automobiles have variable speeds depending on the edge type
             return calculateCarSpeed(options);

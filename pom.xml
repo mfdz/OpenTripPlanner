@@ -79,7 +79,7 @@
 
     <properties>
         <geotools.version>20.1</geotools.version>
-        <geotools.wfs.version>16.5</geotools.wfs.version>
+        <geotools.wfs.version>20.1</geotools.wfs.version>
         <!-- Upgrading jackson version might break serialization of null values for GraphQL output fields. -->
         <jackson.version>2.8.11</jackson.version>
         <jersey.version>2.18</jersey.version>
@@ -512,7 +512,7 @@
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
-            <artifactId>gt-wfs</artifactId>
+            <artifactId>gt-wfs-ng</artifactId>
             <version>${geotools.wfs.version}</version>
         </dependency>
         <!-- provides EPSG database for projections (shapefile loading) -->

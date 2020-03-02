@@ -2,13 +2,12 @@ package org.opentripplanner.routing.core;
 
 import com.google.common.collect.Iterables;
 import org.locationtech.jts.geom.LineString;
-import org.opentripplanner.model.Agency;
+import org.opentripplanner.api.resource.DebugOutput;
+import org.opentripplanner.common.geometry.GeometryUtils;
+import org.opentripplanner.model.CalendarService;
 import org.opentripplanner.model.FeedScopedId;
 import org.opentripplanner.model.Stop;
 import org.opentripplanner.model.calendar.ServiceDate;
-import org.opentripplanner.model.CalendarService;
-import org.opentripplanner.api.resource.DebugOutput;
-import org.opentripplanner.common.geometry.GeometryUtils;
 import org.opentripplanner.routing.algorithm.strategies.EuclideanRemainingWeightHeuristic;
 import org.opentripplanner.routing.algorithm.strategies.RemainingWeightHeuristic;
 import org.opentripplanner.routing.algorithm.strategies.TrivialRemainingWeightHeuristic;
@@ -23,6 +22,7 @@ import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.location.StreetLocation;
 import org.opentripplanner.routing.location.TemporaryStreetLocation;
+import org.opentripplanner.routing.roadworks.RoadworksSource;
 import org.opentripplanner.routing.services.OnBoardDepartService;
 import org.opentripplanner.routing.vertextype.TemporaryVertex;
 import org.opentripplanner.routing.vertextype.TransitStop;
@@ -31,17 +31,7 @@ import org.opentripplanner.util.NonLocalizedString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.*;
 
 /**
  * A RoutingContext holds information needed to carry out a search for a particular TraverseOptions, on a specific graph.
@@ -359,6 +349,10 @@ public class RoutingContext implements Cloneable {
             // but the date provided is outside those covered by the transit feed.
             throw new TransitTimesException();
         }
+    }
+
+    public RoadworksSource getRoadworksSource() {
+        return Optional.ofNullable(graph.roadworksSource).orElse(new RoadworksSource());
     }
 
     /**

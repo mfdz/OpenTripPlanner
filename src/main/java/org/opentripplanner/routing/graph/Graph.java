@@ -49,6 +49,7 @@ import org.opentripplanner.routing.edgetype.StreetEdge;
 import org.opentripplanner.routing.edgetype.TripPattern;
 import org.opentripplanner.routing.flex.FlexIndex;
 import org.opentripplanner.routing.impl.DefaultStreetVertexIndexFactory;
+import org.opentripplanner.routing.roadworks.RoadworksSource;
 import org.opentripplanner.routing.services.StreetVertexIndexFactory;
 import org.opentripplanner.routing.services.StreetVertexIndexService;
 import org.opentripplanner.routing.services.notes.StreetNotesService;
@@ -128,6 +129,8 @@ public class Graph implements Serializable {
     public final Map<FeedScopedId, Integer> serviceCodes = Maps.newHashMap();
 
     public transient TimetableSnapshotSource timetableSnapshotSource = null;
+
+    public transient RoadworksSource roadworksSource = new RoadworksSource(30082004L);
 
     private transient List<GraphBuilderAnnotation> graphBuilderAnnotations = new LinkedList<GraphBuilderAnnotation>(); // initialize for tests
 
@@ -1105,4 +1108,6 @@ public class Graph implements Serializable {
         }
         this.useFlexService = useFlexService;
     }
+
+    public RoadworksSource getRoadworksSource() { return roadworksSource; }
 }

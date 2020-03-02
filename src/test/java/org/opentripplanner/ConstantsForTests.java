@@ -36,6 +36,8 @@ public class ConstantsForTests {
 
     public static final String OSLO_MINIMAL_OSM = "src/test/resources/oslo/oslo_osm_minimal.pbf";
 
+    public static final String HERRENBERG_OSM = "src/test/resources/herrenberg/herrenberg.osm.pbf";
+
     public static final String HSL_MINIMAL_GTFS = "src/test/resources/hsl/hsl_gtfs_minimal.zip";
 
     public static final String VERMONT_GTFS = "/vermont/ruralcommunity-flex-vt-us.zip";
