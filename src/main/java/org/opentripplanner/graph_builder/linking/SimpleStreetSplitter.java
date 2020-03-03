@@ -436,7 +436,7 @@ public class SimpleStreetSplitter {
             TurnRestriction splitTurnRestriction = new TurnRestriction(fromEdge, restriction.to,
                     restriction.type, restriction.modes);
             splitTurnRestriction.time = restriction.time;
-            LOG.debug("Recreate new restriction "+splitTurnRestriction+ " with split edge as from edge" + fromEdge);
+            LOG.debug("Recreate new restriction {} with split edge as from edge {}", splitTurnRestriction, fromEdge);
             graph.addTurnRestriction(fromEdge, splitTurnRestriction);
         }
         for (Edge incomingEdge: fromVertex.getIncoming()) {
@@ -445,7 +445,7 @@ public class SimpleStreetSplitter {
                     TurnRestriction splitTurnRestriction = new TurnRestriction(restriction.from,
                             toEdge, restriction.type, restriction.modes);
                     splitTurnRestriction.time = restriction.time;
-                    LOG.debug("Recreate new restriction " + splitTurnRestriction + " with split edge as to edge" + toEdge);
+                    LOG.debug("Recreate new restriction {} with split edge as to edge {}", splitTurnRestriction, toEdge);
                     graph.addTurnRestriction(restriction.from, splitTurnRestriction);
                 }
             }
