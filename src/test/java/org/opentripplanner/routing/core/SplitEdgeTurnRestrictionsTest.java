@@ -101,6 +101,11 @@ public class SplitEdgeTurnRestrictionsTest {
         // make sure that going straight on a straight-only turn direction also works
         String straightAhead = computeCarPolyline(hardtheimerWeg, k1022);
         assertThat(straightAhead, is("ijbhHuycu@g@Uq@[e@|BENGVYxA]xAXn@Hd@"));
+
+        // make sure that turning left onto the minor road works even when the opposite direction has a straight-only
+        // restriction
+        String leftTurnAllowed = computeCarPolyline(k1022, steinhaldenWeg);
+        assertThat(leftTurnAllowed, is("kobhHwmcu@Ie@Yo@\\yAXyACGAIB]j@_DPaA@e@MDCB"));
     }
 
 }
