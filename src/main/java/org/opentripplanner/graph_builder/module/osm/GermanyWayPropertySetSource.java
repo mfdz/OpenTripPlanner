@@ -44,6 +44,13 @@ public class GermanyWayPropertySetSource implements WayPropertySetSource {
         props.setCarSpeed("highway=primary", 27.27f); // 100kph
         props.setCarSpeed("highway=primary_link", 15); // = 54kph
 
+        /*
+         * Many agricultural ways are tagged as 'track' but have no access tags. We assume this to mean that cars
+         * are prohibited.
+         * https://www.openstreetmap.org/way/124263424
+         */
+        props.setProperties("highway=track", StreetTraversalPermission.PEDESTRIAN_AND_BICYCLE);
+
         // Pedestrian zones in Germany are forbidden for bicycles by default
         props.setProperties("highway=pedestrian", StreetTraversalPermission.PEDESTRIAN);
         props.setProperties("highway=residential;maxspeed=30", StreetTraversalPermission.ALL, 0.9, 0.9);
