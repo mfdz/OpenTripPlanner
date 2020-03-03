@@ -39,6 +39,7 @@ public class SplitEdgeTurnRestrictionsTest {
 
     static GenericLocation hardtheimerWeg = new GenericLocation(48.67765, 8.87212);
     static GenericLocation steinhaldenWeg = new GenericLocation(48.67815, 8.87305);
+    static GenericLocation k1022 = new GenericLocation(48.67846, 8.87021);
     static long dateTime = TestUtils.dateInSeconds("Europe/Berlin", 2020, 03, 3, 7, 0, 0);
 
     @BeforeClass
@@ -86,11 +87,20 @@ public class SplitEdgeTurnRestrictionsTest {
 
     @Test
     public void shouldTakeTurnRestrictionsIntoAccount() {
+        // https://www.openstreetmap.org/relation/10264251 has a turn restriction so when leaving Hardtheimer Weg
+        // you must turn right and take the long way to Steinhaldenweg.
+        // on top of this, it has a bus stop so this test also makes sure that the turn restrictions work
+        // even when the streets are split.
         String noRightTurnPermitted = computeCarPolyline(hardtheimerWeg, steinhaldenWeg);
         assertThat(noRightTurnPermitted, is("ijbhHuycu@g@Uq@[VeAj@iCTsANoAJiAHsAFuDLoG@_@?YBeGCaAO@C?KBKBKFIJKREf@?d@?h@\\TNb@Ff@?bAMnEKjEOxDWbCc@vCIDMDCB"));
 
+        // when to drive in reverse direction it's fine to go this way
         String leftTurnOk = computeCarPolyline(steinhaldenWeg, hardtheimerWeg);
         assertThat(leftTurnOk, is("kmbhHo_du@BCLEAd@Q`Ak@~CC\\@HBFFWDOd@}Bp@Zf@T"));
+
+        // make sure that going straight on a straight-only turn direction also works
+        String straightAhead = computeCarPolyline(hardtheimerWeg, k1022);
+        assertThat(straightAhead, is("ijbhHuycu@g@Uq@[e@|BENGVYxA]xAXn@Hd@"));
     }
 
 }
