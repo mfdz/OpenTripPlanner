@@ -32,7 +32,7 @@ public class CarRoutingTest {
     static Graph graph;
 
     static GenericLocation seeStrasse = new GenericLocation(48.59724504108028,8.868606090545656);
-    static GenericLocation offTübingerStr = new GenericLocation(48.58529481682537, 8.888196945190431);
+    static GenericLocation offTuebingerStr = new GenericLocation(48.58529481682537, 8.888196945190431);
     static long dateTime = TestUtils.dateInSeconds("Europe/Berlin", 2020, 03, 2, 7, 0, 0);
 
     @BeforeClass
@@ -59,7 +59,7 @@ public class CarRoutingTest {
         RoutingRequest request = new RoutingRequest();
         request.dateTime = dateTime;
         request.from = seeStrasse;
-        request.to = offTübingerStr;
+        request.to = offTuebingerStr;
 
         request.modes = new TraverseModeSet(TraverseMode.CAR);
 
