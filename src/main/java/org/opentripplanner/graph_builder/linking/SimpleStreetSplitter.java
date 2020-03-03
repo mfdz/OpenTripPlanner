@@ -436,9 +436,9 @@ public class SimpleStreetSplitter {
             TurnRestriction splitTurnRestriction = new TurnRestriction(fromEdge, restriction.to,
                     restriction.type, restriction.modes);
             splitTurnRestriction.time = restriction.time;
-            LOG.debug("Recreate new restriction {} with split edge as from edge {}", splitTurnRestriction, fromEdge);
+            LOG.error("Recreate new restriction {} with split edge as from edge {}", splitTurnRestriction, fromEdge);
             graph.addTurnRestriction(fromEdge, splitTurnRestriction);
-            // Not absolutly necessary, as old edge will not be accessible, but for good housekeeping
+            // Not absolutely necessary, as old edge will not be accessible, but for good housekeeping
             graph.removeTurnRestriction(edge, restriction);
         }
         for (Edge incomingEdge: fromVertex.getIncoming()) {
@@ -447,10 +447,10 @@ public class SimpleStreetSplitter {
                     TurnRestriction splitTurnRestriction = new TurnRestriction(restriction.from,
                             toEdge, restriction.type, restriction.modes);
                     splitTurnRestriction.time = restriction.time;
-                    LOG.debug("Recreate new restriction {} with split edge as to edge {}", splitTurnRestriction, toEdge);
+                    LOG.error("Recreate new restriction {} with split edge as to edge {}", splitTurnRestriction, toEdge);
                     graph.addTurnRestriction(restriction.from, splitTurnRestriction);
                     // Former turn restriction needs to be removed. Especially no only_turn
-                    // restriction to a non existant edge must survive
+                    // restriction to a non existent edge must survive
                     graph.removeTurnRestriction(restriction.from, restriction);
                 }
             }
