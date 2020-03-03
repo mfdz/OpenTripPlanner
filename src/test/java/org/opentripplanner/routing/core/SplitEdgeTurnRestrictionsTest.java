@@ -66,29 +66,31 @@ public class SplitEdgeTurnRestrictionsTest {
         graph.index(new DefaultStreetVertexIndexFactory());
     }
 
-    private static RoutingRequest buildRoutingRequest(Graph graph) {
+    private static String computeCarPolyline(GenericLocation from, GenericLocation to) {
         RoutingRequest request = new RoutingRequest();
         request.dateTime = dateTime;
-        request.from = hardtheimerWeg;
-        request.to = steinhaldenWeg;
+        request.from = from;
+        request.to = to;
 
         request.modes = new TraverseModeSet(TraverseMode.CAR);
 
         request.setNumItineraries(1);
         request.setRoutingContext(graph);
 
-        return request;
+        GraphPathFinder gpf = new GraphPathFinder(new Router(graph.routerId, graph));
+        List<GraphPath> paths = gpf.graphPathFinderEntryPoint(request);
+
+        TripPlan plan = GraphPathToTripPlanConverter.generatePlan(paths, request);
+        return plan.itinerary.get(0).legs.get(0).legGeometry.getPoints();
     }
 
     @Test
     public void shouldTakeTurnRestrictionsIntoAccount() {
-        RoutingRequest req = buildRoutingRequest(graph);
-        GraphPathFinder gpf = new GraphPathFinder(new Router(graph.routerId, graph));
-        List<GraphPath> paths = gpf.graphPathFinderEntryPoint(req);
+        String noRightTurnPermitted = computeCarPolyline(hardtheimerWeg, steinhaldenWeg);
+        assertThat(noRightTurnPermitted, is("ijbhHuycu@g@Uq@[VeAj@iCTsANoAJiAHsAFuDLoG@_@?YBeGCaAO@C?KBKBKFIJKREf@?d@?h@\\TNb@Ff@?bAMnEKjEOxDWbCc@vCIDMDCB"));
 
-        TripPlan plan = GraphPathToTripPlanConverter.generatePlan(paths, req);
-        String polyline = plan.itinerary.get(0).legs.get(0).legGeometry.getPoints();
-        assertThat(polyline, is("ijbhHuycu@g@Uq@[VeAj@iCTsANoAJiAHsAFuDLoG@_@?YBeGCaAO@C?KBKBKFIJKREf@?d@?h@\\TNb@Ff@?bAMnEKjEOxDWbCc@vCIDMDCB"));
+        String leftTurnOk = computeCarPolyline(steinhaldenWeg, hardtheimerWeg);
+        assertThat(leftTurnOk, is("kmbhHo_du@BCLEAd@Q`Ak@~CC\\@HBFFWDOd@}Bp@Zf@T"));
     }
 
 }
