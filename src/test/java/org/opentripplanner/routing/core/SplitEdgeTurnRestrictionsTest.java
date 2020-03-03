@@ -3,7 +3,6 @@ package org.opentripplanner.routing.core;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opentripplanner.ConstantsForTests;
 import org.opentripplanner.api.model.TripPlan;
@@ -42,8 +41,8 @@ public class SplitEdgeTurnRestrictionsTest {
     static GenericLocation k1022 = new GenericLocation(48.67846, 8.87021);
 
     // Böblingen
-    static GenericLocation paulGerhardtWeg = new GenericLocation(48.67765, 8.87212);
-    static GenericLocation parkStrasse = new GenericLocation(48.68357, 9.00827);
+    static GenericLocation paulGerhardtWeg = new GenericLocation(48.68363, 9.00728);
+    static GenericLocation parkStrasse = new GenericLocation(48.68358, 9.00826);
 
     static long dateTime = TestUtils.dateInSeconds("Europe/Berlin", 2020, 03, 3, 7, 0, 0);
 
@@ -118,8 +117,11 @@ public class SplitEdgeTurnRestrictionsTest {
     public void shouldTakeBoeblingenTurnRestrictionsIntoAccount() throws IOException {
         Graph graph = buildGraph(ConstantsForTests.BOEBLINGEN_OSM, ConstantsForTests.BOEBLINGEN_GTFS);
 
-        String noRightTurnPermitted = computeCarPolyline(graph, paulGerhardtWeg, parkStrasse);
-        assertThat(noRightTurnPermitted, is("ijbhHuycu@g@Uq@[VeAj@iCTsANoAJiAHsAFuDLoG@_@?YBeGCaAO@C?KBKBKFIJKREf@?d@?h@\\TNb@Ff@?bAMnEKjEOxDWbCc@vCIDMDCB"));
+        String turnLeft = computeCarPolyline(graph, parkStrasse, paulGerhardtWeg);
+        assertThat(turnLeft, is("kochHsl~u@HQL]N_@v@mBDKIK{@~BKXWj@KRKPCFYj@DP^lAJX"));
+
+        String noLeftTurnPermitted = computeCarPolyline(graph, paulGerhardtWeg, parkStrasse);
+        assertThat(noLeftTurnPermitted, is("???"));
 
     }
 }
