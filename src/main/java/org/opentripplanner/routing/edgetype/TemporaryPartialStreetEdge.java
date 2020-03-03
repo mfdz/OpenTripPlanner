@@ -105,7 +105,7 @@ final public class TemporaryPartialStreetEdge extends StreetWithElevationEdge im
      */
     @Override
     public boolean isEquivalentTo(Edge e) {
-        return (e == this || e == parentEdge);
+        return (this.equals(e) || parentEdge.equals(e));
     }
 
     @Override

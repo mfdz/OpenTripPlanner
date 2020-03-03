@@ -11,6 +11,7 @@ import org.locationtech.jts.linearref.LocationIndexedLine;
 import gnu.trove.map.TIntDoubleMap;
 import gnu.trove.map.hash.TIntDoubleHashMap;
 import jersey.repackaged.com.google.common.collect.Lists;
+import org.opentripplanner.common.TurnRestriction;
 import org.opentripplanner.common.geometry.GeometryUtils;
 import org.opentripplanner.common.geometry.HashGridSpatialIndex;
 import org.opentripplanner.common.geometry.SphericalDistanceLibrary;
@@ -435,9 +436,42 @@ public class SimpleStreetSplitter {
             // remove original edge from the graph
             edge.getToVertex().removeIncoming(edge);
             edge.getFromVertex().removeOutgoing(edge);
+
+            // As edges created via destructive splitting don't know their parentEdge,
+            // it's restrictions need to be handled explicitly
+            copyRestrictionsToSplitEdges(edge, edges);
         }
 
         return v;
+    }
+
+    /** Copy restrictions having former edge as from to appropriate split edge, as well as
+     * restrictions on incoming edges.
+     */
+    private void copyRestrictionsToSplitEdges(StreetEdge edge, P2<StreetEdge> edges) {
+        StreetEdge fromEdge = !edge.isBack() ? edges.first : edges.second;
+        StreetEdge toEdge = !edge.isBack() ? edges.second : edges.first ;
+        Vertex fromVertex =  !edge.isBack() ? edge.getToVertex() : edge.getFromVertex();
+
+        // TODO back edges probably need to be handled the other way round...
+        for (TurnRestriction restriction: graph.getTurnRestrictions(edge)) {
+            TurnRestriction splitTurnRestriction = new TurnRestriction(fromEdge, restriction.to,
+                    restriction.type, restriction.modes);
+            splitTurnRestriction.time = restriction.time;
+            LOG.debug("Recreate new restriction "+splitTurnRestriction+ " with split edge as from edge" + fromEdge);
+            graph.addTurnRestriction(fromEdge, splitTurnRestriction);
+        }
+        for (Edge incomingEdge: fromVertex.getIncoming()) {
+            for (TurnRestriction restriction : graph.getTurnRestrictions(incomingEdge)) {
+                if (restriction.to.equals(edge)) {
+                    TurnRestriction splitTurnRestriction = new TurnRestriction(restriction.from,
+                            toEdge, restriction.type, restriction.modes);
+                    splitTurnRestriction.time = restriction.time;
+                    LOG.debug("Recreate new restriction " + splitTurnRestriction + " with split edge as to edge" + toEdge);
+                    graph.addTurnRestriction(restriction.from, splitTurnRestriction);
+                }
+            }
+        }
     }
 
     /** Make the appropriate type of link edges from a vertex */
