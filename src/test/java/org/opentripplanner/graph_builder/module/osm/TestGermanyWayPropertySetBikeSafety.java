@@ -3,6 +3,7 @@ package org.opentripplanner.graph_builder.module.osm;
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.opentripplanner.openstreetmap.model.OSMWithTags;
+import org.opentripplanner.routing.edgetype.StreetTraversalPermission;
 
 /**
  * Test the bike safety ratings for GermanyWayPropertySet.
@@ -78,5 +79,12 @@ public class TestGermanyWayPropertySetBikeSafety extends TestCase {
         way.addTag("traffic_sign", "DE:260,1026-36");
         way.addTag("width", "2.5");
         assertEquals(1.3, wps.getDataForWay(way).getSafetyFeatures().first, epsilon);
+
+        // https://www.openstreetmap.org/way/124263424
+        way = new OSMWithTags();
+        way.addTag("highway", "track");
+        way.addTag("tracktype", "grade1");
+        assertEquals(wps.getDataForWay(way).getPermission(), StreetTraversalPermission.PEDESTRIAN_AND_BICYCLE);
+
     }
 }

@@ -47,6 +47,7 @@ public class GermanyWayPropertySetSource implements WayPropertySetSource {
         /*
          * Many agricultural ways are tagged as 'track' but have no access tags. We assume this to mean that cars
          * are prohibited.
+         * https://www.openstreetmap.org/way/124263424
          */
         props.setProperties("highway=track", StreetTraversalPermission.PEDESTRIAN_AND_BICYCLE);
 
