@@ -35,39 +35,44 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class SplitEdgeTurnRestrictionsTest {
 
-    static Graph graph;
 
+    // Deufringen
     static GenericLocation hardtheimerWeg = new GenericLocation(48.67765, 8.87212);
     static GenericLocation steinhaldenWeg = new GenericLocation(48.67815, 8.87305);
     static GenericLocation k1022 = new GenericLocation(48.67846, 8.87021);
+
+    // Böblingen
+    static GenericLocation paulGerhardtWeg = new GenericLocation(48.67765, 8.87212);
+    static GenericLocation parkStrasse = new GenericLocation(48.68357, 9.00827);
+
     static long dateTime = TestUtils.dateInSeconds("Europe/Berlin", 2020, 03, 3, 7, 0, 0);
 
-    @BeforeClass
-    public static void setUp() throws IOException {
+    public static Graph buildGraph(String osmFile, String gtfsFile) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode node = mapper.createObjectNode();
         GraphBuilder graphBuilder = new GraphBuilder(Files.createTempDirectory("otp-").toFile(), new GraphBuilderParameters(node));
 
         List<OpenStreetMapProvider> osmProviders = Lists.newArrayList();
-        OpenStreetMapProvider osmProvider = new AnyFileBasedOpenStreetMapProviderImpl(new File(ConstantsForTests.DEUFRINGEN_OSM));
+        OpenStreetMapProvider osmProvider = new AnyFileBasedOpenStreetMapProviderImpl(new File(osmFile));
         osmProviders.add(osmProvider);
         OpenStreetMapModule osmModule = new OpenStreetMapModule(osmProviders);
         osmModule.edgeFactory = new DefaultStreetEdgeFactory();
         osmModule.skipVisibility = true;
         graphBuilder.addModule(osmModule);
         List<GtfsBundle> gtfsBundles = Lists.newArrayList();
-        GtfsBundle gtfsBundle = new GtfsBundle(new File(ConstantsForTests.DEUFRINGEN_GTFS));
+        GtfsBundle gtfsBundle = new GtfsBundle(new File(gtfsFile));
         gtfsBundles.add(gtfsBundle);
         GtfsModule gtfsModule = new GtfsModule(gtfsBundles);
         graphBuilder.addModule(gtfsModule);
         graphBuilder.addModule(new StreetLinkerModule());
         graphBuilder.serializeGraph = false;
         graphBuilder.run();
-        graph = graphBuilder.getGraph();
-        graph.index(new DefaultStreetVertexIndexFactory());
+        Graph output = graphBuilder.getGraph();
+        output.index(new DefaultStreetVertexIndexFactory());
+        return output;
     }
 
-    private static String computeCarPolyline(GenericLocation from, GenericLocation to) {
+    private static String computeCarPolyline(Graph graph, GenericLocation from, GenericLocation to) {
         RoutingRequest request = new RoutingRequest();
         request.dateTime = dateTime;
         request.from = from;
@@ -86,26 +91,35 @@ public class SplitEdgeTurnRestrictionsTest {
     }
 
     @Test
-    public void shouldTakeTurnRestrictionsIntoAccount() {
+    public void shouldTakeDeufringenTurnRestrictionsIntoAccount() throws IOException {
+        Graph graph = buildGraph(ConstantsForTests.DEUFRINGEN_OSM, ConstantsForTests.DEUFRINGEN_GTFS);
         // https://www.openstreetmap.org/relation/10264251 has a turn restriction so when leaving Hardtheimer Weg
         // you must turn right and take the long way to Steinhaldenweg.
         // on top of this, it has a bus stop so this test also makes sure that the turn restrictions work
         // even when the streets are split.
-        String noRightTurnPermitted = computeCarPolyline(hardtheimerWeg, steinhaldenWeg);
+        String noRightTurnPermitted = computeCarPolyline(graph, hardtheimerWeg, steinhaldenWeg);
         assertThat(noRightTurnPermitted, is("ijbhHuycu@g@Uq@[VeAj@iCTsANoAJiAHsAFuDLoG@_@?YBeGCaAO@C?KBKBKFIJKREf@?d@?h@\\TNb@Ff@?bAMnEKjEOxDWbCc@vCIDMDCB"));
 
         // when to drive in reverse direction it's fine to go this way
-        String leftTurnOk = computeCarPolyline(steinhaldenWeg, hardtheimerWeg);
+        String leftTurnOk = computeCarPolyline(graph, steinhaldenWeg, hardtheimerWeg);
         assertThat(leftTurnOk, is("kmbhHo_du@BCLEAd@Q`Ak@~CC\\@HBFFWDOd@}Bp@Zf@T"));
 
         // make sure that going straight on a straight-only turn direction also works
-        String straightAhead = computeCarPolyline(hardtheimerWeg, k1022);
+        String straightAhead = computeCarPolyline(graph, hardtheimerWeg, k1022);
         assertThat(straightAhead, is("ijbhHuycu@g@Uq@[e@|BENGVYxA]xAXn@Hd@"));
 
         // make sure that turning left onto the minor road works even when the opposite direction has a straight-only
         // restriction
-        String leftTurnAllowed = computeCarPolyline(k1022, steinhaldenWeg);
+        String leftTurnAllowed = computeCarPolyline(graph, k1022, steinhaldenWeg);
         assertThat(leftTurnAllowed, is("kobhHwmcu@Ie@Yo@\\yAXyACGAIB]j@_DPaA@e@MDCB"));
     }
 
+    @Test
+    public void shouldTakeBoeblingenTurnRestrictionsIntoAccount() throws IOException {
+        Graph graph = buildGraph(ConstantsForTests.BOEBLINGEN_OSM, ConstantsForTests.BOEBLINGEN_GTFS);
+
+        String noRightTurnPermitted = computeCarPolyline(graph, paulGerhardtWeg, parkStrasse);
+        assertThat(noRightTurnPermitted, is("ijbhHuycu@g@Uq@[VeAj@iCTsANoAJiAHsAFuDLoG@_@?YBeGCaAO@C?KBKBKFIJKREf@?d@?h@\\TNb@Ff@?bAMnEKjEOxDWbCc@vCIDMDCB"));
+
+    }
 }
