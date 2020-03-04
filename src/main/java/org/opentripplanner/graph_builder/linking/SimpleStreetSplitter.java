@@ -1,6 +1,9 @@
 package org.opentripplanner.graph_builder.linking;
 
 import com.google.common.collect.Iterables;
+import gnu.trove.map.TIntDoubleMap;
+import gnu.trove.map.hash.TIntDoubleHashMap;
+import jersey.repackaged.com.google.common.collect.Lists;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -8,9 +11,7 @@ import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.index.SpatialIndex;
 import org.locationtech.jts.linearref.LinearLocation;
 import org.locationtech.jts.linearref.LocationIndexedLine;
-import gnu.trove.map.TIntDoubleMap;
-import gnu.trove.map.hash.TIntDoubleHashMap;
-import jersey.repackaged.com.google.common.collect.Lists;
+import org.opentripplanner.common.TurnRestriction;
 import org.opentripplanner.common.geometry.GeometryUtils;
 import org.opentripplanner.common.geometry.HashGridSpatialIndex;
 import org.opentripplanner.common.geometry.SphericalDistanceLibrary;
@@ -18,36 +19,21 @@ import org.opentripplanner.common.model.GenericLocation;
 import org.opentripplanner.common.model.P2;
 import org.opentripplanner.graph_builder.annotation.BikeParkUnlinked;
 import org.opentripplanner.graph_builder.annotation.BikeRentalStationUnlinked;
+import org.opentripplanner.graph_builder.annotation.StopLinkedTooFar;
 import org.opentripplanner.graph_builder.annotation.StopUnlinked;
 import org.opentripplanner.graph_builder.services.DefaultStreetEdgeFactory;
 import org.opentripplanner.graph_builder.services.StreetEdgeFactory;
 import org.opentripplanner.openstreetmap.model.OSMWithTags;
-import org.opentripplanner.graph_builder.annotation.StopLinkedTooFar;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.core.TraverseModeSet;
 import org.opentripplanner.routing.edgetype.ParkAndRideLinkEdge;
-import org.opentripplanner.routing.edgetype.StreetBikeParkLink;
-import org.opentripplanner.routing.edgetype.StreetBikeRentalLink;
-import org.opentripplanner.routing.edgetype.StreetEdge;
-import org.opentripplanner.routing.edgetype.StreetTransitLink;
-import org.opentripplanner.routing.edgetype.TemporaryFreeEdge;
-import org.opentripplanner.routing.edgetype.AreaEdgeList;
-import org.opentripplanner.routing.edgetype.AreaEdge;
-import org.opentripplanner.routing.edgetype.StreetTraversalPermission;
+import org.opentripplanner.routing.edgetype.*;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.location.TemporaryStreetLocation;
-import org.opentripplanner.routing.vertextype.BikeParkVertex;
-import org.opentripplanner.routing.vertextype.BikeRentalStationVertex;
-import org.opentripplanner.routing.vertextype.ParkAndRideVertex;
-import org.opentripplanner.routing.vertextype.SplitterVertex;
-import org.opentripplanner.routing.vertextype.StreetVertex;
-import org.opentripplanner.routing.vertextype.TemporarySplitterVertex;
-import org.opentripplanner.routing.vertextype.TemporaryVertex;
-import org.opentripplanner.routing.vertextype.TransitStop;
-import org.opentripplanner.routing.vertextype.IntersectionVertex;
+import org.opentripplanner.routing.vertextype.*;
 import org.opentripplanner.util.I18NString;
 import org.opentripplanner.util.LocalizedString;
 import org.opentripplanner.util.NonLocalizedString;
@@ -435,9 +421,51 @@ public class SimpleStreetSplitter {
             // remove original edge from the graph
             edge.getToVertex().removeIncoming(edge);
             edge.getFromVertex().removeOutgoing(edge);
+
+            // As edges created via destructive splitting don't know their parentEdge,
+            // it's restrictions need to be handled explicitly
+            copyRestrictionsToSplitEdges(edge, edges);
         }
 
         return v;
+    }
+
+    /** Copy restrictions having former edge as from to appropriate split edge, as well as
+     * restrictions on incoming edges.
+     */
+    private void copyRestrictionsToSplitEdges(StreetEdge edge, P2<StreetEdge> edges) {
+        StreetEdge fromEdge = !edge.isBack() ? edges.first : edges.second;
+
+        graph.getTurnRestrictions(edge).forEach(restriction -> {
+            TurnRestriction splitTurnRestriction = new TurnRestriction(fromEdge, restriction.to,
+                    restriction.type, restriction.modes);
+            splitTurnRestriction.time = restriction.time;
+            LOG.debug("Recreate new restriction {} with split edge as from edge {}", splitTurnRestriction, fromEdge);
+            graph.addTurnRestriction(fromEdge, splitTurnRestriction);
+            // Not absolutely necessary, as old edge will not be accessible, but for good housekeeping
+            graph.removeTurnRestriction(edge, restriction);
+        });
+
+        applyToAdjacentEdges(edge, edges.second, edge.getToVertex().getOutgoing(), graph);
+        applyToAdjacentEdges(edge, edges.first, edge.getFromVertex().getIncoming(), graph);
+    }
+
+    private static void applyToAdjacentEdges(StreetEdge formerEdge, StreetEdge newToEdge, Collection<Edge> adjacentEdges, Graph graph) {
+        adjacentEdges.stream()
+                .flatMap(originatingEdge -> graph.getTurnRestrictions(originatingEdge).stream())
+                .filter(restriction -> restriction.to == formerEdge)
+                .forEach(restriction -> applyRestrictionsToNewEdge(newToEdge, restriction, graph));
+    }
+
+    private static void applyRestrictionsToNewEdge(StreetEdge newEdge, TurnRestriction restriction, Graph graph) {
+        TurnRestriction splitTurnRestriction = new TurnRestriction(restriction.from,
+                newEdge, restriction.type, restriction.modes);
+        splitTurnRestriction.time = restriction.time;
+        LOG.debug("Recreate new restriction {} with split edge as to edge {}", splitTurnRestriction, newEdge);
+        graph.addTurnRestriction(restriction.from, splitTurnRestriction);
+        // Former turn restriction needs to be removed. Especially no only_turn
+        // restriction to a non existent edge must survive
+        graph.removeTurnRestriction(restriction.from, restriction);
     }
 
     /** Make the appropriate type of link edges from a vertex */
@@ -500,7 +528,7 @@ public class SimpleStreetSplitter {
         new ParkAndRideLinkEdge(to, from);
     }
 
-    /** 
+    /**
      * Make street transit link edges, unless they already exist.
      */
     private void makeTransitLinkEdges (TransitStop tstop, StreetVertex v) {

@@ -44,6 +44,12 @@ public class ConstantsForTests {
 
     public static final String VERMONT_OSM = "/vermont/vermont-rct.osm.pbf";
 
+    public static final String DEUFRINGEN_OSM = "src/test/resources/deufringen/deufringen.osm.pbf" ;
+    public static final String DEUFRINGEN_GTFS = "src/test/resources/deufringen/bus-764-only.gtfs.zip" ;
+
+    public static final String BOEBLINGEN_OSM = "src/test/resources/boeblingen/boeblingen.osm.pbf" ;
+    public static final String BOEBLINGEN_GTFS = "src/test/resources/boeblingen/bus-751-only.gtfs.zip" ;
+
     private static ConstantsForTests instance = null;
 
     private Graph portlandGraph = null;
