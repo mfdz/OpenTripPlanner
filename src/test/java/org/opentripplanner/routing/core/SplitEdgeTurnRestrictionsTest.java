@@ -2,7 +2,7 @@ package org.opentripplanner.routing.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.opentripplanner.ConstantsForTests;
 import org.opentripplanner.api.model.TripPlan;
@@ -34,7 +34,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class SplitEdgeTurnRestrictionsTest {
 
-
     // Deufringen
     static GenericLocation hardtheimerWeg = new GenericLocation(48.67765, 8.87212);
     static GenericLocation steinhaldenWeg = new GenericLocation(48.67815, 8.87305);
@@ -43,6 +42,7 @@ public class SplitEdgeTurnRestrictionsTest {
     // Böblingen
     static GenericLocation paulGerhardtWeg = new GenericLocation(48.68363, 9.00728);
     static GenericLocation parkStrasse = new GenericLocation(48.68358, 9.00826);
+    static GenericLocation herrenbergerStrasse = new GenericLocation(48.68497, 9.00909);
 
     static long dateTime = TestUtils.dateInSeconds("Europe/Berlin", 2020, 03, 3, 7, 0, 0);
 
@@ -51,21 +51,19 @@ public class SplitEdgeTurnRestrictionsTest {
         ObjectNode node = mapper.createObjectNode();
         GraphBuilder graphBuilder = new GraphBuilder(Files.createTempDirectory("otp-").toFile(), new GraphBuilderParameters(node));
 
-        List<OpenStreetMapProvider> osmProviders = Lists.newArrayList();
-        OpenStreetMapProvider osmProvider = new AnyFileBasedOpenStreetMapProviderImpl(new File(osmFile));
-        osmProviders.add(osmProvider);
+        List<OpenStreetMapProvider> osmProviders = ImmutableList.of(new AnyFileBasedOpenStreetMapProviderImpl(new File(osmFile)));
         OpenStreetMapModule osmModule = new OpenStreetMapModule(osmProviders);
         osmModule.edgeFactory = new DefaultStreetEdgeFactory();
         osmModule.skipVisibility = true;
         graphBuilder.addModule(osmModule);
-        List<GtfsBundle> gtfsBundles = Lists.newArrayList();
-        GtfsBundle gtfsBundle = new GtfsBundle(new File(gtfsFile));
-        gtfsBundles.add(gtfsBundle);
-        GtfsModule gtfsModule = new GtfsModule(gtfsBundles);
+
+        GtfsModule gtfsModule = new GtfsModule(ImmutableList.of(new GtfsBundle(new File(gtfsFile))));
         graphBuilder.addModule(gtfsModule);
+
         graphBuilder.addModule(new StreetLinkerModule());
         graphBuilder.serializeGraph = false;
         graphBuilder.run();
+
         Graph output = graphBuilder.getGraph();
         output.index(new DefaultStreetVertexIndexFactory());
         return output;
@@ -121,13 +119,25 @@ public class SplitEdgeTurnRestrictionsTest {
 
     @Test
     public void shouldTakeBoeblingenTurnRestrictionsIntoAccount() throws IOException {
+        // this tests that the following turn restriction is transferred correctly to the split edges
+        // https://www.openstreetmap.org/relation/299171
         Graph graph = buildGraph(ConstantsForTests.BOEBLINGEN_OSM, ConstantsForTests.BOEBLINGEN_GTFS);
 
+        // turning left from the main road onto a residential one
         String turnLeft = computeCarPolyline(graph, parkStrasse, paulGerhardtWeg);
         assertThat(turnLeft, is("kochHsl~u@HQL]N_@v@mBDKIK{@~BKXWj@KRKPCFYj@DP^lAJX"));
 
+        // right hand turn out of the the residential road onto the main road, only right turn allowed plus there
+        // is a bus station along the way, splitting the edge
         String noLeftTurnPermitted = computeCarPolyline(graph, paulGerhardtWeg, parkStrasse);
-        assertThat(noLeftTurnPermitted, is("???"));
+        assertThat(noLeftTurnPermitted, is("sochHof~u@KY_@mAVi@Te@DK"));
 
+        // right hand turn out of the the residential road onto the main road, only right turn allowed plus there
+        // is a bus station along the way, splitting the edge
+        String longWay = computeCarPolyline(graph, paulGerhardtWeg, herrenbergerStrasse);
+        assertThat(longWay, is("sochHof~u@KY_@mAVi@Te@N]L]N_@v@mBDKIK{@~BKXWj@KRKPCFa@`@_@XWPSHQDMCEAQMKKSgAa@qCMe@"));
+
+        String longWayBack = computeCarPolyline(graph, herrenbergerStrasse, paulGerhardtWeg);
+        assertThat(longWayBack, is("axchHwq~u@G_@Qc@CGGKGIIRNPFLFLDNDJDZHb@Lx@d@dDBTBRTLNBTARKpAiA^lAJX"));
     }
 }
