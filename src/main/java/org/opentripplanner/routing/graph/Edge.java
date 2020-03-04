@@ -76,15 +76,15 @@ public abstract class Edge implements Serializable {
      * Checks equivalency to another edge. Default implementation is trivial equality, but subclasses may want to do something more tricky.
      */
     public boolean isEquivalentTo(Edge e) {
-        return this.equals(e);
+        return this == e;
     }
     
     /**
      * Returns true if this edge is the reverse of another.
      */
     public boolean isReverseOf(Edge e) {
-        return (this.getFromVertex().equals(e.getToVertex()) &&
-                this.getToVertex().equals(e.getFromVertex()));
+        return (this.getFromVertex() == e.getToVertex() &&
+                this.getToVertex() == e.getFromVertex());
     }
     
     /**
