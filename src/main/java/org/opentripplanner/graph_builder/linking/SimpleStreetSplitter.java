@@ -39,10 +39,7 @@ import org.opentripplanner.util.NonLocalizedString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -417,9 +414,6 @@ public class SimpleStreetSplitter {
      */
     private void copyRestrictionsToSplitEdges(StreetEdge edge, P2<StreetEdge> edges) {
         StreetEdge fromEdge = !edge.isBack() ? edges.first : edges.second;
-        StreetEdge toEdge = !edge.isBack() ? edges.second : edges.first ;
-        Vertex fromVertex =  !edge.isBack() ? edge.getToVertex() : edge.getFromVertex();
-        Vertex toVertex =  !edge.isBack() ? edge.getFromVertex() : edge.getToVertex();
 
         graph.getTurnRestrictions(edge).forEach(restriction -> {
             TurnRestriction splitTurnRestriction = new TurnRestriction(fromEdge, restriction.to,
@@ -431,22 +425,22 @@ public class SimpleStreetSplitter {
             graph.removeTurnRestriction(edge, restriction);
         });
 
-        applyToIncomingEdges(edge, toEdge, fromVertex, graph);
-        applyToIncomingEdges(edge, fromEdge, toVertex, graph);
+        applyToAdjacentEdges(edge, edges.second, edge.getToVertex().getOutgoing(), graph);
+        applyToAdjacentEdges(edge, edges.first, edge.getFromVertex().getIncoming(), graph);
     }
 
-    private static void applyToIncomingEdges(StreetEdge unsplitEdge, StreetEdge destination, Vertex vertex, Graph graph) {
-        vertex.getIncoming().stream()
-                .flatMap(incomingEdge -> graph.getTurnRestrictions(incomingEdge).stream())
-                .filter(restriction -> restriction.to == unsplitEdge)
-                .forEach(restriction -> applyRestrictionsToSplitStreets(destination, restriction, graph));
+    private static void applyToAdjacentEdges(StreetEdge formerEdge, StreetEdge newToEdge, Collection<Edge> adjacentEdges, Graph graph) {
+        adjacentEdges.stream()
+                .flatMap(originatingEdge -> graph.getTurnRestrictions(originatingEdge).stream())
+                .filter(restriction -> restriction.to == formerEdge)
+                .forEach(restriction -> applyRestrictionsToNewEdge(newToEdge, restriction, graph));
     }
 
-    private static void applyRestrictionsToSplitStreets(StreetEdge destination, TurnRestriction restriction, Graph graph) {
+    private static void applyRestrictionsToNewEdge(StreetEdge newEdge, TurnRestriction restriction, Graph graph) {
         TurnRestriction splitTurnRestriction = new TurnRestriction(restriction.from,
-                destination, restriction.type, restriction.modes);
+                newEdge, restriction.type, restriction.modes);
         splitTurnRestriction.time = restriction.time;
-        LOG.debug("Recreate new restriction {} with split edge as to edge {}", splitTurnRestriction, destination);
+        LOG.debug("Recreate new restriction {} with split edge as to edge {}", splitTurnRestriction, newEdge);
         graph.addTurnRestriction(restriction.from, splitTurnRestriction);
         // Former turn restriction needs to be removed. Especially no only_turn
         // restriction to a non existent edge must survive

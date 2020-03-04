@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.opentripplanner.ConstantsForTests;
+import org.opentripplanner.api.model.Leg;
 import org.opentripplanner.api.model.TripPlan;
 import org.opentripplanner.api.resource.GraphPathToTripPlanConverter;
 import org.opentripplanner.common.model.GenericLocation;
@@ -40,9 +41,11 @@ public class SplitEdgeTurnRestrictionsTest {
     static GenericLocation k1022 = new GenericLocation(48.67846, 8.87021);
 
     // Böblingen
-    static GenericLocation paulGerhardtWeg = new GenericLocation(48.68363, 9.00728);
+    static GenericLocation paulGerhardtWegEast = new GenericLocation(48.68363, 9.00728);
+    static GenericLocation paulGerhardtWegWest = new GenericLocation(48.68297, 9.00520);
     static GenericLocation parkStrasse = new GenericLocation(48.68358, 9.00826);
     static GenericLocation herrenbergerStrasse = new GenericLocation(48.68497, 9.00909);
+    static GenericLocation steinbeissWeg = new GenericLocation(48.68172, 9.00599);
 
     static long dateTime = TestUtils.dateInSeconds("Europe/Berlin", 2020, 03, 3, 7, 0, 0);
 
@@ -84,7 +87,11 @@ public class SplitEdgeTurnRestrictionsTest {
         List<GraphPath> paths = gpf.graphPathFinderEntryPoint(request);
 
         TripPlan plan = GraphPathToTripPlanConverter.generatePlan(paths, request);
-        return plan.itinerary.get(0).legs.get(0).legGeometry.getPoints();
+        List<Leg> legs = plan.itinerary.get(0).legs;
+        assertThat(legs.size(), is(1));
+        Leg leg = legs.get(0);
+        assertThat(leg.mode, is("CAR"));
+        return leg.legGeometry.getPoints();
     }
 
     @Test
@@ -124,20 +131,37 @@ public class SplitEdgeTurnRestrictionsTest {
         Graph graph = buildGraph(ConstantsForTests.BOEBLINGEN_OSM, ConstantsForTests.BOEBLINGEN_GTFS);
 
         // turning left from the main road onto a residential one
-        String turnLeft = computeCarPolyline(graph, parkStrasse, paulGerhardtWeg);
+        String turnLeft = computeCarPolyline(graph, parkStrasse, paulGerhardtWegEast);
         assertThat(turnLeft, is("kochHsl~u@HQL]N_@v@mBDKIK{@~BKXWj@KRKPCFYj@DP^lAJX"));
 
         // right hand turn out of the the residential road onto the main road, only right turn allowed plus there
         // is a bus station along the way, splitting the edge
-        String noLeftTurnPermitted = computeCarPolyline(graph, paulGerhardtWeg, parkStrasse);
+        String noLeftTurnPermitted = computeCarPolyline(graph, paulGerhardtWegEast, parkStrasse);
         assertThat(noLeftTurnPermitted, is("sochHof~u@KY_@mAVi@Te@DK"));
 
         // right hand turn out of the the residential road onto the main road, only right turn allowed plus there
         // is a bus station along the way, splitting the edge
-        String longWay = computeCarPolyline(graph, paulGerhardtWeg, herrenbergerStrasse);
+        String longWay = computeCarPolyline(graph, paulGerhardtWegEast, herrenbergerStrasse);
         assertThat(longWay, is("sochHof~u@KY_@mAVi@Te@N]L]N_@v@mBDKIK{@~BKXWj@KRKPCFa@`@_@XWPSHQDMCEAQMKKSgAa@qCMe@"));
 
-        String longWayBack = computeCarPolyline(graph, herrenbergerStrasse, paulGerhardtWeg);
+        String longWayBack = computeCarPolyline(graph, herrenbergerStrasse, paulGerhardtWegEast);
         assertThat(longWayBack, is("axchHwq~u@G_@Qc@CGGKGIIRNPFLFLDNDJDZHb@Lx@d@dDBTBRTLNBTARKpAiA^lAJX"));
+
+        // test that you can correctly turn right here https://www.openstreetmap.org/relation/415123 when approaching
+        // from south
+        String fromSouth = computeCarPolyline(graph, steinbeissWeg, paulGerhardtWegWest);
+        assertThat(fromSouth, is("wcchHk~}u@Fd@Hj@o@\\{@b@KFyBlAWmA"));
+        String toSouth = computeCarPolyline(graph, paulGerhardtWegWest, steinbeissWeg);
+        assertThat(toSouth, is("okchHoy}u@VlAxBmAJGz@c@n@]Ik@Ge@"));
+
+        // test that you cannot turn left here https://www.openstreetmap.org/relation/415123 when approaching
+        // from north
+        String fromNorth = computeCarPolyline(graph, paulGerhardtWegWest, herrenbergerStrasse);
+        assertThat(fromNorth, is("okchHoy}u@VlA{BlAIBOLCBIDc@{AYiAM_@Kc@K_@I_@Ia@Ga@Gc@Gc@Ei@EYAIKaAEe@CQCSIm@SgAa@qCMe@"));
+
+        // this doesn't actually work!
+        // when you approach you cannot turn left so you have to take a long way but it seems that OTP gives up beforehand!
+        //String toNorth = computeCarPolyline(graph, herrenbergerStrasse, paulGerhardtWegWest);
+        //assertThat(toNorth, is("???"));
     }
 }
