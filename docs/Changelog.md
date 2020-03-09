@@ -8,6 +8,12 @@
 - Support OSM baseGraph reuse
 - Add BikeRentalStationNoNetwork annotation
 - Increase maxStopToShapeDistance to support more distant park & ride hov parkings as stops
+- Add Way Property Set for Germany (i.e. to better respect cycling)
+- Fixes serialization issues for turn restrictions (OTP/#2991) and street notes (OTP/#2992)
+- Fixes turn restriction issues for edges split by transit stops (OTP/#2965)
+- Sets PEDEDSTRIAN as only allowed mode for platform edges created via areaVisibility setting
+- Support bicycle route relation's in bike safety calculations
+
 
 ## 1.5.0 (in progress)
 
@@ -16,7 +22,6 @@
 - Fixes surefire test failure during build (#2816)
 - Improve documentation for `mode` routing parameter (#2809)
 - Disable linking from already linked stops (#2372)
-- Fix reference handling (especially concerning turnRestrictions) in (de-)serialization (#2991)
 
 ## 1.4 (2019-07-30)
 
