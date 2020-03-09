@@ -34,7 +34,7 @@ public class TestGermanyWayPropertySetBikeSafety extends TestCase {
         way.addTag("lit", "yes");
         way.addTag("oneway", "no");
         way.addTag("traffic_sign", "DE:239,1022-10");
-        assertEquals(1.18, wps.getDataForWay(way).getSafetyFeatures().first, epsilon);
+        assertEquals(1.2, wps.getDataForWay(way).getSafetyFeatures().first, epsilon);
 
         way = new OSMWithTags();
         way.addTag("cycleway", "opposite");
@@ -51,7 +51,7 @@ public class TestGermanyWayPropertySetBikeSafety extends TestCase {
         way.addTag("surface", "asphalt");
         way.addTag("width", "6.5");
         way.addTag("zone:traffic", "DE:urban");
-        assertEquals(0.891, wps.getDataForWay(way).getSafetyFeatures().first, epsilon);
+        assertEquals(0.95, wps.getDataForWay(way).getSafetyFeatures().first, epsilon);
 
         // way332589799 (Radschnellweg BW1)
         way = new OSMWithTags();
@@ -69,7 +69,7 @@ public class TestGermanyWayPropertySetBikeSafety extends TestCase {
         way.addTag("source:maxspeed", "sign");
         way.addTag("surface", "asphalt");
         way.addTag("tracktype", "grade1");
-        assertEquals(0.931, wps.getDataForWay(way).getSafetyFeatures().first, epsilon);
+        assertEquals(0.693, wps.getDataForWay(way).getSafetyFeatures().first, epsilon);
 
         way = new OSMWithTags();
         way.addTag("highway", "track");
