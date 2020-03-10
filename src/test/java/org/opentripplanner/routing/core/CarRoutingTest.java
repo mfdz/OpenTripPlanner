@@ -1,27 +1,17 @@
 package org.opentripplanner.routing.core;
 
-import com.google.common.collect.Lists;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opentripplanner.ConstantsForTests;
 import org.opentripplanner.api.model.TripPlan;
 import org.opentripplanner.api.resource.GraphPathToTripPlanConverter;
 import org.opentripplanner.common.model.GenericLocation;
-import org.opentripplanner.graph_builder.GraphBuilder;
-import org.opentripplanner.graph_builder.module.StreetLinkerModule;
-import org.opentripplanner.graph_builder.module.osm.GermanyWayPropertySetSource;
-import org.opentripplanner.graph_builder.module.osm.OpenStreetMapModule;
-import org.opentripplanner.graph_builder.services.DefaultStreetEdgeFactory;
-import org.opentripplanner.openstreetmap.impl.AnyFileBasedOpenStreetMapProviderImpl;
-import org.opentripplanner.openstreetmap.services.OpenStreetMapProvider;
 import org.opentripplanner.routing.graph.Graph;
-import org.opentripplanner.routing.impl.DefaultStreetVertexIndexFactory;
 import org.opentripplanner.routing.impl.GraphPathFinder;
 import org.opentripplanner.routing.spt.GraphPath;
 import org.opentripplanner.standalone.Router;
 import org.opentripplanner.util.TestUtils;
 
-import java.io.File;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -37,22 +27,7 @@ public class CarRoutingTest {
 
     @BeforeClass
     public static void setUp() {
-        GraphBuilder graphBuilder = new GraphBuilder();
-
-        List<OpenStreetMapProvider> osmProviders = Lists.newArrayList();
-        OpenStreetMapProvider osmProvider = new AnyFileBasedOpenStreetMapProviderImpl(new File(ConstantsForTests.HERRENBERG_OSM));
-        osmProviders.add(osmProvider);
-        OpenStreetMapModule osmModule = new OpenStreetMapModule(osmProviders);
-        osmModule.edgeFactory = new DefaultStreetEdgeFactory();
-        osmModule.skipVisibility = true;
-        osmModule.setDefaultWayPropertySetSource(new GermanyWayPropertySetSource());
-        graphBuilder.addModule(osmModule);
-        graphBuilder.addModule(new StreetLinkerModule());
-        graphBuilder.serializeGraph = false;
-        graphBuilder.run();
-
-        graph = graphBuilder.getGraph();
-        graph.index(new DefaultStreetVertexIndexFactory());
+        graph = TestGraphBuilder.buildGraph(ConstantsForTests.HERRENBERG_OSM);
     }
 
     private static RoutingRequest buildRoutingRequest(Graph graph) {
