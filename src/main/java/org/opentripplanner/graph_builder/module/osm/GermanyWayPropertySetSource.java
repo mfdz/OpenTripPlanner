@@ -49,34 +49,31 @@ public class GermanyWayPropertySetSource implements WayPropertySetSource {
          * are prohibited.
          * https://www.openstreetmap.org/way/124263424
          */
-        props.setProperties("highway=track", StreetTraversalPermission.PEDESTRIAN_AND_BICYCLE);
+        props.setProperties("highway=track", StreetTraversalPermission.PEDESTRIAN_AND_BICYCLE, 1.0, 1.0);
 
         // Pedestrian zones in Germany are forbidden for bicycles by default
         props.setProperties("highway=pedestrian", StreetTraversalPermission.PEDESTRIAN);
-        props.setProperties("highway=residential;maxspeed=30", StreetTraversalPermission.ALL, 0.9, 0.9);
+        props.setProperties("highway=residential;maxspeed=30", StreetTraversalPermission.ALL, 0.95, 0.95);
         props.setProperties("highway=footway;bicycle=yes",
                 StreetTraversalPermission.PEDESTRIAN_AND_BICYCLE, 0.9, 0.9);
         // Default was 2.5, we want to favor using mixed footways somewhat
         props.setProperties("footway=sidewalk;highway=footway;bicycle=yes",
                 StreetTraversalPermission.PEDESTRIAN_AND_BICYCLE, 1.2, 1.2);
 
-        /** safety overrides */
-        // track should be safer than 1.3
-        props.setProperties("highway=track", StreetTraversalPermission.ALL, 1.0, 1.0);
-
         /** tracktype */
         props.setProperties("tracktype=grade1", StreetTraversalPermission.ALL, 1.0, 1.0, true); // Solid
-        props.setProperties("tracktype=grade2", StreetTraversalPermission.ALL, 1.05, 1.05, true); // Solid but unpaved.
+        props.setProperties("tracktype=grade2", StreetTraversalPermission.ALL, 1.1, 1.1, true); // Solid but unpaved.
         props.setProperties("tracktype=grade3", StreetTraversalPermission.ALL, 1.15, 1.15, true); // Mostly solid.
         props.setProperties("tracktype=grade4", StreetTraversalPermission.ALL, 1.3, 1.3, true); // Mostly soft.
         props.setProperties("tracktype=grade5", StreetTraversalPermission.ALL, 1.5, 1.5, true); // Soft.
 
-        /** We assume highway/cycleway of a cycle network to be safer */
-        props.setProperties("lcn=yes", StreetTraversalPermission.ALL, 0.95, 0.95, true); // local cycle network
-        props.setProperties("rcn=yes", StreetTraversalPermission.ALL, 0.95, 0.95, true); // regional cycle network
-        props.setProperties("ncn=yes", StreetTraversalPermission.ALL, 0.95, 0.95, true); // national cycle network
+        /** We assume highway/cycleway of a cycle network to be safer (for bicycle network relations, their network is copied to way in postLoad */
+        props.setProperties("lcn=yes", StreetTraversalPermission.ALL, 0.7, 0.7, true); // local cycle network
+        props.setProperties("rcn=yes", StreetTraversalPermission.ALL, 0.5, 0.5, true); // regional cycle network
+        props.setProperties("ncn=yes", StreetTraversalPermission.ALL, 0.9, 0.9, true); // national cycle network
 
-        props.setProperties("lit=yes", StreetTraversalPermission.ALL, 0.99, 0.99, true); // lit increases safety
+        // lit=yes currently is tagged very seldom, so we just want to discount where lit=no explicitly
+        // props.setProperties("lit=yes", StreetTraversalPermission.ALL, 0.99, 0.99, true); // lit increases safety
         props.setProperties("lit=no", StreetTraversalPermission.ALL, 1.05, 1.05, true); // not lit decreases safety
 
 

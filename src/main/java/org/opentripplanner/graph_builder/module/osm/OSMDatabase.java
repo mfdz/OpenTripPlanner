@@ -250,7 +250,9 @@ public class OSMDatabase implements OpenStreetMapContentHandler {
             }
             applyLevelsForWay(relation);
         } else if (!(relation.isTag("type", "restriction"))
-                && !(relation.isTag("type", "route") && relation.isTag("route", "road"))
+                && !(relation.isTag("type", "route") && (
+                        relation.isTag("route", "road") ||
+                                relation.isTag("route", "bicycle")))
                 && !(relation.isTag("type", "multipolygon") && OSMFilter
                         .isOsmEntityRoutable(relation))
                 && !(relation.isTag("type", "level_map"))
@@ -800,6 +802,9 @@ public class OSMDatabase implements OpenStreetMapContentHandler {
                 processLevelMap(relation);
             } else if (relation.isTag("type", "route")) {
                 processRoad(relation);
+                if (relation.isTag("route", "bicycle")) {
+                    processBicycleRoute(relation);
+                }
             } else if (relation.isTag("type", "public_transport")) {
                 processPublicTransportStopArea(relation);
             }
@@ -954,6 +959,41 @@ public class OSMDatabase implements OpenStreetMapContentHandler {
                 } else {
                     way.addTag(new OSMTag("otp:route_ref", relation.getTag("ref")));
                 }
+            }
+        }
+    }
+
+    /**
+     * Handle route=bicycle relations. Copies their network type to all way members.
+     *
+     * @param relation
+     * @author hbruch
+     * @see "https://wiki.openstreetmap.org/wiki/Tag:route%3Dbicycle"
+     */
+    private void processBicycleRoute(OSMRelation relation) {
+        String network = relation.getTag("network");
+        if (network == null)
+            network = "lcn";
+        switch (network) {
+            case "lcn": setNetworkForAllMembers(relation, "lcn"); break;
+            case "rcn": setNetworkForAllMembers(relation, "rcn"); break;
+            case "ncn": setNetworkForAllMembers(relation, "ncn"); break;
+            // we treat networks without known network type like local networks
+            default: setNetworkForAllMembers(relation, "lcn"); break;
+        }
+    }
+
+    private void setNetworkForAllMembers(OSMRelation relation, String lcn) {
+        for (OSMRelationMember member : relation.getMembers()) {
+            if (!("way".equals(member.getType()) && waysById.containsKey(member.getRef()))) {
+                continue;
+            }
+            OSMWithTags way = waysById.get(member.getRef());
+            if (way == null) {
+                continue;
+            }
+            if (!way.hasTag(lcn)) {
+                way.addTag(lcn, "yes");
             }
         }
     }

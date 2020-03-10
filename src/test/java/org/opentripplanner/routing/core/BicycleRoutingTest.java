@@ -17,42 +17,46 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class CarRoutingTest {
+public class BicycleRoutingTest {
 
     static Graph graph;
 
-    static GenericLocation seeStrasse = new GenericLocation(48.59724504108028,8.868606090545656);
-    static GenericLocation offTuebingerStr = new GenericLocation(48.58529481682537, 8.888196945190431);
-    static long dateTime = TestUtils.dateInSeconds("Europe/Berlin", 2020, 03, 2, 7, 0, 0);
+    static GenericLocation nebringen = new GenericLocation(48.5624, 8.8480);
+    static GenericLocation herrenbergBahnhof = new GenericLocation(48.59345, 8.86245);
+    static long dateTime = TestUtils.dateInSeconds("Europe/Berlin", 2020, 03, 10, 11, 0, 0);
 
     @BeforeClass
     public static void setUp() {
-        graph = TestGraphBuilder.buildGraph(ConstantsForTests.HERRENBERG_OSM);
+        graph = TestGraphBuilder.buildGraph(ConstantsForTests.NEBRINGEN_HERRENBERG_OSM);
     }
 
     private static RoutingRequest buildRoutingRequest(Graph graph) {
         RoutingRequest request = new RoutingRequest();
         request.dateTime = dateTime;
-        request.from = seeStrasse;
-        request.to = offTuebingerStr;
+        request.from = nebringen;
+        request.to = herrenbergBahnhof;
 
-        request.modes = new TraverseModeSet(TraverseMode.CAR);
+        request.modes = new TraverseModeSet(TraverseMode.BICYCLE);
 
         request.setNumItineraries(1);
         request.setRoutingContext(graph);
+        request.setOptimize(OptimizeType.TRIANGLE);
+        request.setTriangleSafetyFactor(0.5);
+        request.setTriangleSlopeFactor(0.5);
+        request.setTriangleTimeFactor(0);
 
         return request;
     }
 
     @Test
-    public void routeToHighwayTrack() {
+    public void useBikeNetworkRoutesFromNebringenToHerrenberg() {
         RoutingRequest req = buildRoutingRequest(graph);
         GraphPathFinder gpf = new GraphPathFinder(new Router(graph.routerId, graph));
         List<GraphPath> paths = gpf.graphPathFinderEntryPoint(req);
 
         TripPlan plan = GraphPathToTripPlanConverter.generatePlan(paths, req);
         String polyline = plan.itinerary.get(0).legs.get(0).legGeometry.getPoints();
-        assertThat(polyline, is("usrgHyccu@d@bAl@jAT\\JLFHNNLJJHJFLHNJLDPDT?NAN?FANCFAB?JADGDIFKDINULSHONa@FUJ_@Jo@DSBQJw@DkADi@D{@D_ATsDDu@Am@Ee@AUEi@Eu@C{@Bo@@IJYTi@HQT]T]\\e@|A}BZc@FKZg@P]vBgETa@j@cAr@uAv@}ANYVe@Xm@d@}@Ra@Vg@LWTa@`@y@`@w@b@w@Xi@Xg@Zi@RYR]Zg@f@u@X_@V_@r@aAp@y@f@s@h@o@b@k@V[V[X_@Xa@Va@V_@Ta@Ta@R_@Zm@Vk@j@qABGHUN_@Na@Xw@Vu@b@wANk@Pm@z@_DRu@"));
+        assertThat(polyline, is("uykgHoc_u@QSOQOOQ^Qb@Q`@IPIPGNIRKf@AJGXEVCZCTCNGXGXGTCLALG@KBKBIHIHEJENETKn@Kn@W~AIh@Ih@If@EXGPIGMISMWMWMMEOG[Mg@Qg@Qi@SSIICIAM?MAY?k@?s@Ao@?}@CeFMI@iBAyCXmANi@La@NcChBKDq@Xw@JoACQ?yAX[J[LYVWZaA`BW^wAbCoBdBu@`@wAx@gCnAwAx@s@`@e@b@iBjBQVYr@_@hAm@lAKTITGh@Cd@D~@C`@MXIF_@CIGW[wAaE{@mBw@yAi@gAk@aA_AsA[MQIEgAEs@Gk@AQAGAUKcBCg@Em@GCCWMsBQ_DIy@S{A[wAq@kCOs@e@_CQiAImAICOYkAqCm@cAe@u@s@m@q@c@a@Sc@G_@UYKBQM_@Ow@K[OUo@e@]a@_@q@]iA]sA[gAYcA[i@c@_@UIc@CW?MAo@Aq@C_@MOWEQCQEUq@aBONSV]ZWBWO_Aw@o@S_@Eq@I{APo@BYeBEOKq@KuAIqB@mB?m@?G@Q@cAA}AKiCQsBE]Eg@?GC}@?e@?{@AaE?OgAZWF}@b@MA]OW]Uc@c@w@S_@Sg@u@cAgA}@iBqAU]KWYqAMOCFGJ_An@MRDf@?B@D"));
     }
 
 }
