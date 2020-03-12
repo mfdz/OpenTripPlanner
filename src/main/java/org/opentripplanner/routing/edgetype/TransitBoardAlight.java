@@ -297,6 +297,9 @@ public class TransitBoardAlight extends TablePatternEdge implements OnboardEdge 
 
             /* Check if route and/or agency are banned or whitelisted for this pattern */
             if (options.routeIsBanned(this.getPattern().route)) return null;
+
+            /* Check if this is a carpool pattern, and skip it, if we carpooled already before */
+            if (s0.isEverCarpooled() && this.getPattern().mode == TraverseMode.CARPOOL ) return null;
             
             /*
              * Find the next boarding/alighting time relative to the current State. Check lists of
@@ -348,6 +351,9 @@ public class TransitBoardAlight extends TablePatternEdge implements OnboardEdge 
             s1.setTripTimes(bestTripTimes);
             s1.incrementTimeInSeconds(bestWait);
             s1.incrementNumBoardings();
+            if (this.getPattern().mode == TraverseMode.CARPOOL) {
+                s1.setEverCarpooled(true);
+            }
             s1.setTripId(trip.getId());
             s1.setPreviousTrip(trip);
             s1.setZone(getPattern().getZone(stopIndex));

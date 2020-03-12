@@ -13,6 +13,7 @@
 - Fixes turn restriction issues for edges split by transit stops (OTP/#2965)
 - Sets PEDEDSTRIAN as only allowed mode for platform edges created via areaVisibility setting
 - Support bicycle route relation's in bike safety calculations
+- Allow at most one carpool leg per itinerary (MFDZ/#14)
 
 
 ## 1.5.0 (in progress)
@@ -38,7 +39,6 @@
 - Refactor InterleavedBidirectionalHeuristic (#2671)
 - Add "Accept" headers to GTFS-RT HTTP requests (#2796)
 - Fix minor test failure against BANO geocoder (#2798)
-- Fix frequency bounds checking (#2540)
 - Fix JTS coordinate order for Polygons/Polylines (#2784)
 - Add JAXB API to allow compilation under Java 11
 - Remove dependency on Conveyal jackson2-geojson

@@ -37,6 +37,8 @@ public class StateData implements Cloneable {
 
     protected boolean everBoarded;
 
+    protected boolean everCarpooled;
+
     protected boolean usingRentedBike;
 
     protected boolean carParked;
