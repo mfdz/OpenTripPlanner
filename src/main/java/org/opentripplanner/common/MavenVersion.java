@@ -1,10 +1,14 @@
 package org.opentripplanner.common;
 
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 
 public class MavenVersion implements Serializable {
@@ -62,8 +66,11 @@ public class MavenVersion implements Serializable {
     public MavenVersion (String version, String commit, String describe, String commit_time, String build_time) {
         this.version = version;
         String [] fields = version.split("\\-");
-        if (fields.length > 1)
-            qualifier = fields[1];
+        if (fields.length > 1) {
+            List<String> copy = new LinkedList<>(Arrays.asList(fields));
+            copy.remove(0);
+            qualifier = String.join("-", copy);
+        }
         else
             qualifier = "";
         fields = fields[0].split("\\.");
