@@ -54,7 +54,7 @@ run:
 
 rebuild:
 	mvn package -DskipTests -Dmaven.javadoc.skip=true
-	cp target/otp-1.5.0-SNAPSHOT-shaded.jar ./otp.jar
+	cp target/otp-*-shaded.jar ./otp.jar
 
 clean:
 	rm -rf graphs/default/*.zip

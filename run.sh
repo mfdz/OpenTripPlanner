@@ -64,7 +64,7 @@ function download_graph {
 }
 
 function version {
-  java -jar $JAR --version|grep commit|cut -d' ' -f2
+  java -jar $JAR --version|grep version|cut -d' ' -f2
 }
 
 function process {
