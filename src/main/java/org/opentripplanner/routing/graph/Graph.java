@@ -758,7 +758,7 @@ public class Graph implements Serializable {
             LOG.error("This graph was built with a different version of OTP. Please rebuild it.");
             return true; // do not allow graph use
         } else if (!v.commit.equals(gv.commit)) {
-            if (v.qualifier.equals("SNAPSHOT")) {
+            if (v.qualifier.equals("SNAPSHOT") || v.qualifier.startsWith("pre")) {
                 LOG.warn("This graph was built with the same SNAPSHOT version of OTP, but a "
                         + "different commit. Please rebuild the graph if you experience incorrect "
                         + "behavior. ");
