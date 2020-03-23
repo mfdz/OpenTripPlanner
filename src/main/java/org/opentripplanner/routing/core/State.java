@@ -260,6 +260,14 @@ public class State implements Cloneable {
         return stateData.everBoarded;
     }
 
+    /**
+     * Whether this path has ever previously boarded (or alighted from, in a reverse search) a
+     * carpool
+     */
+    public boolean isEverCarpooled() {
+        return stateData.everCarpooled;
+    }
+
     public boolean isBikeRenting() {
         return stateData.usingRentedBike;
     }

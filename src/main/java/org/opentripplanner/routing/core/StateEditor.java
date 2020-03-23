@@ -349,6 +349,11 @@ public class StateEditor {
         child.stateData.everBoarded = true;
     }
 
+    public void setEverCarpooled(boolean everCarpooled) {
+        cloneStateDataAsNeeded();
+        child.stateData.everCarpooled = true;
+    }
+
     public void beginVehicleRenting(TraverseMode vehicleMode) {
         cloneStateDataAsNeeded();
         child.stateData.usingRentedBike = true;
@@ -475,6 +480,10 @@ public class StateEditor {
 
     public boolean isEverBoarded() {
         return child.isEverBoarded();
+    }
+
+    public boolean isEverCarpooled() {
+        return child.isEverCarpooled();
     }
 
     public boolean isRentingBike() {
