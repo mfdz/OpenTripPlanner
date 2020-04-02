@@ -348,7 +348,7 @@ public class TimetableSnapshotSource {
      * @param serviceDate
      * @return true iff successful
      */
-    private boolean validateAndHandleAddedTrip(final Graph graph, final TripUpdate tripUpdate,
+    public boolean validateAndHandleAddedTrip(final Graph graph, final TripUpdate tripUpdate,
             final String feedId, final ServiceDate serviceDate) {
         // Preconditions
         Preconditions.checkNotNull(graph);
@@ -536,7 +536,7 @@ public class TimetableSnapshotSource {
      * @param serviceDate service date for added trip
      * @return true iff successful
      */
-    private boolean handleAddedTrip(final Graph graph, final TripUpdate tripUpdate, final List<Stop> stops,
+    public boolean handleAddedTrip(final Graph graph, final TripUpdate tripUpdate, final List<Stop> stops,
             final String feedId, final ServiceDate serviceDate) {
         // Preconditions
         Preconditions.checkNotNull(stops);
