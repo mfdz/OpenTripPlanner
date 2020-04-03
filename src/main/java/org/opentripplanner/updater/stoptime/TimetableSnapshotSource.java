@@ -392,6 +392,7 @@ public class TimetableSnapshotSource {
         // Check whether all stop times are available and all stops exist
         final List<Stop> stops = checkNewStopTimeUpdatesAndFindStops(feedId, tripUpdate);
         if (stops == null) {
+            LOG.warn("Not all stops have a stop time or stops not found. skipping.");
             return false;
         }
 
@@ -536,7 +537,7 @@ public class TimetableSnapshotSource {
      * @param serviceDate service date for added trip
      * @return true iff successful
      */
-    public boolean handleAddedTrip(final Graph graph, final TripUpdate tripUpdate, final List<Stop> stops,
+    private boolean handleAddedTrip(final Graph graph, final TripUpdate tripUpdate, final List<Stop> stops,
             final String feedId, final ServiceDate serviceDate) {
         // Preconditions
         Preconditions.checkNotNull(stops);

@@ -7,9 +7,8 @@ import org.opentripplanner.model.FeedScopedId;
 import org.opentripplanner.model.Stop;
 import org.opentripplanner.model.calendar.ServiceDate;
 import org.opentripplanner.routing.graph.Graph;
-import org.opentripplanner.routing.vertextype.TransitStop;
-import org.opentripplanner.updater.GraphUpdater;
 import org.opentripplanner.updater.GraphUpdaterManager;
+import org.opentripplanner.updater.PollingGraphUpdater;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +26,7 @@ import java.util.List;
  * rt.feedId = TA
  * </pre>
  */
-public class CarpoolTripUpdater implements GraphUpdater {
+public class CarpoolTripUpdater extends PollingGraphUpdater {
     private static final Logger LOG = LoggerFactory.getLogger(CarpoolTripUpdater.class);
 
     /**
@@ -53,57 +52,66 @@ public class CarpoolTripUpdater implements GraphUpdater {
         });
     }
 
+
     @Override
-    public void run() throws Exception {
+    public void runPolling() throws Exception {
         LOG.info("Starting carpool trip updater");
+
+        String today = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
+
         updaterManager.execute(graph -> {
-            GtfsRealtime.TripDescriptor tripDescriptor = GtfsRealtime.TripDescriptor.newBuilder().setTripId("carpool-update-" + OffsetDateTime.now()).build();
+            GtfsRealtime.TripDescriptor tripDescriptor = GtfsRealtime.TripDescriptor.newBuilder()
+                    .setTripId("carpool-update-123")
+                    .setStartDate(today).build();
 
             Stop start = new Stop();
-            start.setId(FeedScopedId.convertFromString("1:herrenberg"));
+            start.setId(FeedScopedId.convertFromString("1:de:08115:4512:1:2"));
             start.setName("Herrenberg Bahnhof");
             start.setLat(48.5938);
             start.setLon(8.8627);
 
             Stop end = new Stop();
-            end.setId(FeedScopedId.convertFromString("1:ehningen"));
+            end.setId(FeedScopedId.convertFromString("1:de:08115:5773:1:1"));
             end.setName("Ehningen Bahnhof");
             end.setLat(48.66203);
             end.setLon(8.94332);
-            new TransitStop(graph, end);
-            Arrays.asList(start, end).forEach(stop ->{
-                TransitStop transitStop = new TransitStop(graph, stop);
-                graph.index.stopVertexForStop.put(stop, transitStop);
-            });
 
             ZonedDateTime threeOclock = LocalDate.now().atStartOfDay().plusHours(15).atZone(ZoneId.of("Europe/Berlin"));
 
-            List<TripUpdate.StopTimeUpdate> stopTimeUpdates = Arrays.asList(buildStopTime(threeOclock), buildStopTime(threeOclock.plusMinutes(30)));
+            List<TripUpdate.StopTimeUpdate> stopTimeUpdates = Arrays.asList(
+                    buildStopTimeUpdate(start, threeOclock),
+                    buildStopTimeUpdate(end, threeOclock.plusMinutes(30))
+            );
 
             TripUpdate update = TripUpdate.newBuilder().setTrip(tripDescriptor).addAllStopTimeUpdate(stopTimeUpdates).build();
 
             boolean result = graph.timetableSnapshotSource
-                    .validateAndHandleAddedTrip(graph, update, "1", ServiceDate.parseString(LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE)));
-
+                    .validateAndHandleAddedTrip(graph, update, "1", ServiceDate.parseString(today));
 
             if(result) {
-                LOG.info("Trip added to graph");
+                LOG.info("Trip {} added to graph", tripDescriptor.getTripId());
             } else {
-                LOG.info("Trip failed to be added to graph");
+                LOG.error("Trip {} failed to be added to graph", tripDescriptor.getTripId());
             }
         });
     }
 
-    private TripUpdate.StopTimeUpdate buildStopTime(ZonedDateTime time) {
-        return TripUpdate.StopTimeUpdate.newBuilder().setDeparture(TripUpdate.StopTimeEvent.newBuilder().setTime(time.toEpochSecond()).build()).build();
+    @Override
+    protected void configurePolling(Graph graph, JsonNode config) throws Exception {
+
+    }
+
+    private TripUpdate.StopTimeUpdate buildStopTimeUpdate(Stop stop, ZonedDateTime time) {
+        TripUpdate.StopTimeEvent timeEvent = TripUpdate.StopTimeEvent.newBuilder().setTime(time.toEpochSecond()).build();
+        return TripUpdate.StopTimeUpdate.newBuilder()
+                .setDeparture(timeEvent)
+                .setArrival(timeEvent)
+                .setStopId(stop.getId().getId())
+                .build();
     }
 
     @Override
     public void teardown() {
     }
 
-    @Override
-    public void configure(Graph graph, JsonNode jsonNode) throws Exception {
-
-    }
 }
