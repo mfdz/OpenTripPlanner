@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.locks.ReentrantLock;
 
+import de.mfdz.RealtimeExtension;
 import org.opentripplanner.model.Agency;
 import org.opentripplanner.model.FeedScopedId;
 import org.opentripplanner.model.Route;
@@ -401,6 +402,9 @@ public class TimetableSnapshotSource {
         //
 
         final boolean success = handleAddedTrip(graph, tripUpdate, stops, feedId, serviceDate);
+        if(success) {
+            LOG.info("Added trip {} to feed '{}'", tripUpdate.getTrip().getTripId(), feedId);
+        }
         return success;
     }
 
@@ -568,6 +572,14 @@ public class TimetableSnapshotSource {
             } else {
                 route.setId(new FeedScopedId(feedId, tripId));
             }
+
+            TripDescriptor trip = tripUpdate.getTrip();
+            if(trip.hasExtension(RealtimeExtension.tripDescriptor)) {
+                String url = trip.getExtension(RealtimeExtension.tripDescriptor).getTripUrl();
+                LOG.info("Trip '{}' has URL '{}'", trip.getTripId(), url);
+                route.setUrl(url);
+            }
+
             route.setAgency(dummyAgency);
             // Guess the route type as it doesn't exist yet in the specifications
             route.setType(3); // Bus. Used for short- and long-distance bus routes.

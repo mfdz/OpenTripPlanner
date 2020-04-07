@@ -3,6 +3,7 @@ package org.opentripplanner.updater.stoptime;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.transit.realtime.GtfsRealtime;
 import com.google.transit.realtime.GtfsRealtime.TripUpdate;
+import org.onebusaway.gtfs.model.Route;
 import org.opentripplanner.model.FeedScopedId;
 import org.opentripplanner.model.Stop;
 import org.opentripplanner.model.calendar.ServiceDate;
@@ -62,7 +63,9 @@ public class CarpoolTripUpdater extends PollingGraphUpdater {
         updaterManager.execute(graph -> {
             GtfsRealtime.TripDescriptor tripDescriptor = GtfsRealtime.TripDescriptor.newBuilder()
                     .setTripId("carpool-update-123")
-                    .setStartDate(today).build();
+                    .setStartDate(today)
+                    .setScheduleRelationship(GtfsRealtime.TripDescriptor.ScheduleRelationship.SCHEDULED)
+                    .build();
 
             Stop start = new Stop();
             start.setId(FeedScopedId.convertFromString("1:de:08115:4512:1:2"));
