@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
 import org.opentripplanner.ConstantsForTests;
+import org.opentripplanner.common.LuceneIndex;
 import org.opentripplanner.common.geometry.HashGridSpatialIndex;
 import org.opentripplanner.routing.impl.DefaultStreetVertexIndexFactory;
 import org.opentripplanner.routing.trippattern.Deduplicator;
@@ -88,8 +89,14 @@ public class GraphSerializationTest {
         objectDiffer.useEquals(BitSet.class, LineString.class, Polygon.class);
         // ThreadPoolExecutor contains a weak reference to a very deep chain of Finalizer instances.
         // Method instances usually are part of a proxy which are totally un-reflectable in Java 11
-        objectDiffer.ignoreClasses(WeakValueHashMap.class, ThreadPoolExecutor.class, Method.class, JarFile.class, SoftReference.class);
-        objectDiffer.ignoreClasses(WeakValueHashMap.class, ThreadPoolExecutor.class, TreeMap.class, org.opentripplanner.common.LuceneIndex.class);
+        objectDiffer.ignoreClasses(
+                WeakValueHashMap.class,
+                ThreadPoolExecutor.class,
+                Method.class, JarFile.class,
+                SoftReference.class,
+                TreeMap.class,
+                LuceneIndex.class
+        );
         // This setting is critical to perform a deep test of an object against itself.
         objectDiffer.enableComparingIdenticalObjects();
         objectDiffer.compareTwoObjects(originalGraph, originalGraph);
@@ -124,7 +131,7 @@ public class GraphSerializationTest {
         // HashGridSpatialIndex contains unordered lists in its bins. This is rebuilt after deserialization anyway.
         // The deduplicator in the loaded graph will be empty, because it is transient and only fills up when items
         // are deduplicated.
-        objectDiffer.ignoreClasses(HashGridSpatialIndex.class, ThreadPoolExecutor.class, Deduplicator.class, TreeMap.class, org.opentripplanner.common.LuceneIndex.class, graphql.schema.GraphQLSchema.class);
+        objectDiffer.ignoreClasses(HashGridSpatialIndex.class, ThreadPoolExecutor.class, Deduplicator.class, TreeMap.class, LuceneIndex.class, graphql.schema.GraphQLSchema.class);
         objectDiffer.compareTwoObjects(g1, g2);
         // Print differences before assertion so we can see what went wrong.
         assertFalse(objectDiffer.hasDifferences());

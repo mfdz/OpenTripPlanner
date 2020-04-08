@@ -284,13 +284,18 @@
                   Intentionally an old version as the combination of Junit 5, Java 11 and Surefire was causing issues.
                   https://github.com/opentripplanner/OpenTripPlanner/pull/2812/commits/c811224f8467699ee70684e9f6b00d3ad803dbeb
                 -->
-                <version>2.19.1</version>
+                <version>3.0.0-M4</version>
                 <configuration>
+                    <environmentVariables>
+                        <ENCRYPTION_SECRET_KEY>very secret key</ENCRYPTION_SECRET_KEY>
+                        <API_URL>https://secret.org/api/</API_URL>
+                    </environmentVariables>
                     <!-- we have to fork the JVM during tests so that the argLine is passed along -->
                     <forkCount>3</forkCount>
                     <!-- enable the restricted reflection under Java 11 so that the ObjectDiffer works -->
                     <argLine>
-                        -Xmx2G
+                        -Xms5G
+                        -Xmx5G
                         -Dfile.encoding=UTF-8
                         --illegal-access=permit
                         --add-opens java.base/java.lang.module=ALL-UNNAMED
@@ -302,8 +307,6 @@
                         --add-opens java.base/jdk.internal.util.jar=ALL-UNNAMED
                         --add-opens java.base/jdk.internal.module=ALL-UNNAMED
                         --add-opens java.base/java.lang=ALL-UNNAMED
-                        -Xms5G
-                        -Xmx5G
                         -XX:NewRatio=5
                         -XX:+UseStringDeduplication
                         -Dfile.encoding=UTF-8
