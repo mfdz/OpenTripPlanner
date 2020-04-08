@@ -292,6 +292,7 @@
                     </environmentVariables>
                     <!-- we have to fork the JVM during tests so that the argLine is passed along -->
                     <forkCount>3</forkCount>
+                    <reuseForks>true</reuseForks>
                     <!-- enable the restricted reflection under Java 11 so that the ObjectDiffer works -->
                     <argLine>
                         -Xms5G
