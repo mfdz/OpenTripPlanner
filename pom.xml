@@ -295,8 +295,6 @@
                     <reuseForks>true</reuseForks>
                     <!-- enable the restricted reflection under Java 11 so that the ObjectDiffer works -->
                     <argLine>
-                        -Xms5G
-                        -Xmx5G
                         -Dfile.encoding=UTF-8
                         --illegal-access=permit
                         --add-opens java.base/java.lang.module=ALL-UNNAMED
@@ -310,7 +308,6 @@
                         --add-opens java.base/java.lang=ALL-UNNAMED
                         -XX:NewRatio=5
                         -XX:+UseStringDeduplication
-                        -Dfile.encoding=UTF-8
                     </argLine>
                     <!-- Jenkins needs XML test reports to determine whether the build is stable. -->
                     <disableXmlReport>false</disableXmlReport>
