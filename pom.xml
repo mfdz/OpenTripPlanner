@@ -78,7 +78,7 @@
     </scm>
 
     <properties>
-        <geotools.version>20.1</geotools.version>
+        <geotools.version>21.2</geotools.version>
         <geotools.wfs.version>16.5</geotools.wfs.version>
         <!-- Upgrading jackson version might break serialization of null values for GraphQL output fields. -->
         <jackson.version>2.8.11</jackson.version>
@@ -174,11 +174,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>3.8.1</version>
                 <configuration>
                     <!-- Target Java versions -->
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <release>11</release>
                 </configuration>
             </plugin>
             <plugin>
@@ -211,14 +210,34 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.2</version>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <!-- For Java 11 Modules, specify a module name. Do not create module-info.java until all
+                                 our dependencies specify a module name. -->
+                            <Automatic-Module-Name>org.opentripplanner.otp</Automatic-Module-Name>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+
+            </plugin>
+            <plugin>
                 <!-- This plugin must be configured both here (for attach-javadoc during release)
                 and in "reports" (for site generation), preferably with identical version numbers. -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.3</version>
+                <version>3.1.1</version>
                 <configuration>
-                    <!-- Turn off Java 8 strict Javadoc checking -->
-                    <additionalparam>-Xdoclint:none</additionalparam>
+                    <!-- Turn off strict Javadoc checking -->
+                    <doclint>none</doclint>
+                    <!--
+                      Exclude this package as it inherits from a JAI (https://www.oracle.com/technetwork/java/iio-141084.html) type
+                      whose sources are hard to discover by the JavaDoc tool.
+                    -->
+                    <excludePackageNames>org.opentripplanner.graph_builder.module.ned:*</excludePackageNames>
                 </configuration>
                 <executions>
                     <!-- Compress Javadoc into JAR and include that JAR when deploying. -->
@@ -233,7 +252,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.0.1</version>
+                <version>3.1.0</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -261,19 +280,35 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <!-- Fixes issue with tests failing in some environments. Replace this when proper version of 3.0 is released. -->
-                <version>3.0.0-M3</version>
+                <!--
+                  Intentionally an old version as the combination of Junit 5, Java 11 and Surefire was causing issues.
+                  https://github.com/opentripplanner/OpenTripPlanner/pull/2812/commits/c811224f8467699ee70684e9f6b00d3ad803dbeb
+                -->
+                <version>3.0.0-M4</version>
                 <configuration>
-                    <forkCount>2</forkCount>
                     <environmentVariables>
                         <ENCRYPTION_SECRET_KEY>very secret key</ENCRYPTION_SECRET_KEY>
                         <API_URL>https://secret.org/api/</API_URL>
                     </environmentVariables>
-                    <argLine>-Xms5G</argLine>
-                    <argLine>-Xmx5G</argLine>
-                    <argLine>-XX:NewRatio=5</argLine>
-                    <argLine>-XX:+UseStringDeduplication</argLine>
-                    <argLine>-Dfile.encoding=UTF-8</argLine>
+                    <!-- we have to fork the JVM during tests so that the argLine is passed along -->
+                    <forkCount>3</forkCount>
+                    <reuseForks>true</reuseForks>
+                    <!-- enable the restricted reflection under Java 11 so that the ObjectDiffer works -->
+                    <argLine>
+                        -Dfile.encoding=UTF-8
+                        --illegal-access=permit
+                        --add-opens java.base/java.lang.module=ALL-UNNAMED
+                        --add-opens java.base/jdk.internal.reflect=ALL-UNNAMED
+                        --add-opens java.base/jdk.internal.misc=ALL-UNNAMED
+                        --add-opens java.base/jdk.internal.loader=ALL-UNNAMED
+                        --add-opens java.base/jdk.internal.ref=ALL-UNNAMED
+                        --add-opens java.base/jdk.internal.util=ALL-UNNAMED
+                        --add-opens java.base/jdk.internal.util.jar=ALL-UNNAMED
+                        --add-opens java.base/jdk.internal.module=ALL-UNNAMED
+                        --add-opens java.base/java.lang=ALL-UNNAMED
+                        -XX:NewRatio=5
+                        -XX:+UseStringDeduplication
+                    </argLine>
                     <!-- Jenkins needs XML test reports to determine whether the build is stable. -->
                     <disableXmlReport>false</disableXmlReport>
                 </configuration>
@@ -321,7 +356,7 @@
                   properly if some input files are missing a terminating newline) -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>2.2</version>
+                <version>3.2.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -401,10 +436,10 @@
                 (for attach-javadoc during release), preferably with identical version numbers. -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.3</version>
+                <version>3.1.1</version>
                 <configuration>
                     <!-- Turn off Java 8 strict Javadoc checking -->
-                    <additionalparam>-Xdoclint:none</additionalparam>
+                    <doclint>false</doclint>
                 </configuration>
                 <reportSets>
                     <reportSet>
@@ -477,17 +512,17 @@
         <!-- GEOTOOLS includes JTS as a transitive dependency. -->
         <dependency>
             <groupId>org.geotools</groupId>
+            <artifactId>gt-main</artifactId>
+            <version>${geotools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
             <artifactId>gt-geojson</artifactId>
             <version>${geotools.version}</version>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-referencing</artifactId>
-            <version>${geotools.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-referencing3D</artifactId>
             <version>${geotools.version}</version>
         </dependency>
         <dependency>

@@ -1,22 +1,26 @@
 package org.opentripplanner.routing.graph;
 
 import com.conveyal.object_differ.ObjectDiffer;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.Polygon;
 import org.geotools.util.WeakValueHashMap;
 import org.jets3t.service.io.TempFile;
 import org.junit.Test;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Polygon;
 import org.opentripplanner.ConstantsForTests;
+import org.opentripplanner.common.LuceneIndex;
 import org.opentripplanner.common.geometry.HashGridSpatialIndex;
 import org.opentripplanner.routing.impl.DefaultStreetVertexIndexFactory;
 import org.opentripplanner.routing.trippattern.Deduplicator;
 import org.opentripplanner.routing.vertextype.TransitStation;
 
 import java.io.File;
+import java.lang.ref.SoftReference;
+import java.lang.reflect.Method;
 import java.util.BitSet;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertFalse;
@@ -84,7 +88,15 @@ public class GraphSerializationTest {
         objectDiffer.ignoreFields("incoming", "outgoing");
         objectDiffer.useEquals(BitSet.class, LineString.class, Polygon.class);
         // ThreadPoolExecutor contains a weak reference to a very deep chain of Finalizer instances.
-        objectDiffer.ignoreClasses(WeakValueHashMap.class, ThreadPoolExecutor.class, TreeMap.class, org.opentripplanner.common.LuceneIndex.class);
+        // Method instances usually are part of a proxy which are totally un-reflectable in Java 11
+        objectDiffer.ignoreClasses(
+                WeakValueHashMap.class,
+                ThreadPoolExecutor.class,
+                Method.class, JarFile.class,
+                SoftReference.class,
+                TreeMap.class,
+                LuceneIndex.class
+        );
         // This setting is critical to perform a deep test of an object against itself.
         objectDiffer.enableComparingIdenticalObjects();
         objectDiffer.compareTwoObjects(originalGraph, originalGraph);
@@ -119,7 +131,7 @@ public class GraphSerializationTest {
         // HashGridSpatialIndex contains unordered lists in its bins. This is rebuilt after deserialization anyway.
         // The deduplicator in the loaded graph will be empty, because it is transient and only fills up when items
         // are deduplicated.
-        objectDiffer.ignoreClasses(HashGridSpatialIndex.class, ThreadPoolExecutor.class, Deduplicator.class, TreeMap.class, org.opentripplanner.common.LuceneIndex.class, graphql.schema.GraphQLSchema.class);
+        objectDiffer.ignoreClasses(HashGridSpatialIndex.class, ThreadPoolExecutor.class, Deduplicator.class, TreeMap.class, LuceneIndex.class, graphql.schema.GraphQLSchema.class);
         objectDiffer.compareTwoObjects(g1, g2);
         // Print differences before assertion so we can see what went wrong.
         assertFalse(objectDiffer.hasDifferences());

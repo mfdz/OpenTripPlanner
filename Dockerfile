@@ -1,4 +1,4 @@
-FROM openjdk:8u121-jre-alpine
+FROM adoptopenjdk/openjdk11:alpine-slim
 MAINTAINER Reittiopas version: 0.1
 
 RUN apk add --update curl bash ttf-dejavu && \
