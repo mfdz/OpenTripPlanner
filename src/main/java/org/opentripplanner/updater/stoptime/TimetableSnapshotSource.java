@@ -153,6 +153,18 @@ public class TimetableSnapshotSource {
     }
 
     /**
+     * This enum is purely internal to this class. It compensates for the fact the the official GTFS-RT proto file
+     * does not know of TripDescriptor.ScheduleRelationship.MODIFIED.
+     */
+    private enum TripUpdateType {
+        SCHEDULED,
+        ADDED,
+        UNSCHEDULED,
+        CANCELED,
+        MODIFIED
+    }
+
+    /**
      * Method to apply a trip update list to the most recent version of the timetable snapshot. A
      * GTFS-RT feed is always applied against a single static feed (indicated by feedId).
      *
@@ -221,7 +233,7 @@ public class TimetableSnapshotSource {
 
                 // Determine what kind of trip update this is
                 boolean applied = false;
-                final TripDescriptor.ScheduleRelationship tripScheduleRelationship = determineTripScheduleRelationship(
+                final TripUpdateType tripScheduleRelationship = determineTripScheduleRelationship(
                         tripUpdate);
                 switch (tripScheduleRelationship) {
                     case SCHEDULED:
@@ -274,16 +286,16 @@ public class TimetableSnapshotSource {
      * @param tripUpdate trip update
      * @return TripDescriptor.ScheduleRelationship indicating how the trip update should be handled
      */
-    private TripDescriptor.ScheduleRelationship determineTripScheduleRelationship(final TripUpdate tripUpdate) {
+    private TripUpdateType determineTripScheduleRelationship(final TripUpdate tripUpdate) {
         // Assume default value
-        TripDescriptor.ScheduleRelationship tripScheduleRelationship = TripDescriptor.ScheduleRelationship.SCHEDULED;
+        var updateType = TripUpdateType.SCHEDULED;
 
         // If trip update contains schedule relationship, use it
         if (tripUpdate.hasTrip() && tripUpdate.getTrip().hasScheduleRelationship()) {
-            tripScheduleRelationship = tripUpdate.getTrip().getScheduleRelationship();
+            updateType = scheduleRelationShipToUpdateType(tripUpdate.getTrip().getScheduleRelationship());
         }
 
-        if (tripScheduleRelationship.equals(TripDescriptor.ScheduleRelationship.SCHEDULED)) {
+        if (updateType.equals(TripDescriptor.ScheduleRelationship.SCHEDULED)) {
             // Loop over stops to check whether there are ADDED or SKIPPED stops
             boolean hasModifiedStops = false;
             for (final StopTimeUpdate stopTimeUpdate : tripUpdate.getStopTimeUpdateList()) {
@@ -302,11 +314,25 @@ public class TimetableSnapshotSource {
 
             // If stops are modified, handle trip update like a modified trip
             if (hasModifiedStops) {
-                tripScheduleRelationship = TripDescriptor.ScheduleRelationship.MODIFIED;
+                updateType = TripUpdateType.MODIFIED;
             }
         }
 
-        return tripScheduleRelationship;
+        return updateType;
+    }
+
+    private TripUpdateType scheduleRelationShipToUpdateType(TripDescriptor.ScheduleRelationship relationship) {
+        switch (relationship) {
+            case SCHEDULED:
+                return TripUpdateType.SCHEDULED;
+            case ADDED:
+                return TripUpdateType.ADDED;
+            case UNSCHEDULED:
+                return TripUpdateType.UNSCHEDULED;
+            case CANCELED:
+                return TripUpdateType.CANCELED;
+        }
+        return null;
     }
 
     private boolean handleScheduledTrip(final TripUpdate tripUpdate, final String feedId, final ServiceDate serviceDate) {

@@ -1,5 +1,7 @@
 package org.opentripplanner.openstreetmap.impl;
 
+import org.openstreetmap.osmosis.osmbinary.BinaryParser;
+import org.openstreetmap.osmosis.osmbinary.Osmformat;
 import org.opentripplanner.openstreetmap.services.OpenStreetMapContentHandler;
 import org.opentripplanner.openstreetmap.model.*;
 
@@ -7,8 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import crosby.binary.BinaryParser;
-import crosby.binary.Osmformat;
 
 /**
  * Parser for the OpenStreetMap PBF Format.

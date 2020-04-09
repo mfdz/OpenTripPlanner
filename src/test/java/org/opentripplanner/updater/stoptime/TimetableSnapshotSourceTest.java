@@ -330,7 +330,6 @@ public class TimetableSnapshotSourceTest {
             final TripDescriptor.Builder tripDescriptorBuilder = TripDescriptor.newBuilder();
 
             tripDescriptorBuilder.setTripId(modifiedTripId);
-            tripDescriptorBuilder.setScheduleRelationship(TripDescriptor.ScheduleRelationship.MODIFIED);
             tripDescriptorBuilder.setStartDate(serviceDate.getAsString());
 
             final Calendar calendar = serviceDate.getAsCalendar(graph.getTimeZone());
