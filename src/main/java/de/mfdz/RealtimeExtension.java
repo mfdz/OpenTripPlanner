@@ -598,7 +598,7 @@ public final class RealtimeExtension {
 
   }
 
-  public static final int TRIP_DESCRIPTOR_FIELD_NUMBER = 1100;
+  public static final int TRIP_DESCRIPTOR_FIELD_NUMBER = 9000;
   /**
    * <code>extend .transit_realtime.TripDescriptor { ... }</code>
    */
@@ -627,7 +627,7 @@ public final class RealtimeExtension {
       "time\032\023gtfs-realtime.proto\"/\n\033MfdzTripDes" +
       "criptorExtension\022\020\n\010trip_url\030\001 \001(\t:i\n\017tr" +
       "ip_descriptor\022 .transit_realtime.TripDes" +
-      "criptor\030\314\010 \001(\0132-.transit_realtime.MfdzTr" +
+      "criptor\030\250F \001(\0132-.transit_realtime.MfdzTr" +
       "ipDescriptorExtensionB\t\n\007de.mfdz"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =

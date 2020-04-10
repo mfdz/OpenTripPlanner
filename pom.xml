@@ -677,9 +677,9 @@
         </dependency>
         <!-- GTFS Realtime Java bindings -->
         <dependency>
-            <groupId>io.mobilitydata.transit</groupId>
+            <groupId>io.leonard</groupId>
             <artifactId>gtfs-realtime-bindings</artifactId>
-            <version>0.0.5</version>
+            <version>0.0.7</version>
         </dependency>
         <!-- Processing is used for the debug GUI (though we could probably use just Java2D) -->
         <dependency>

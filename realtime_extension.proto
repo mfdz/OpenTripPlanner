@@ -10,5 +10,5 @@ message MfdzTripDescriptorExtension {
 }
 
 extend TripDescriptor {
-  optional MfdzTripDescriptorExtension trip_descriptor = 1100;
+  optional MfdzTripDescriptorExtension trip_descriptor = 9000;
 }
