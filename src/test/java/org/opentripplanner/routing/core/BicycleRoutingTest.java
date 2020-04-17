@@ -21,7 +21,7 @@ public class BicycleRoutingTest {
 
     static Graph graph;
 
-    static GenericLocation nebringen = new GenericLocation(48.5624, 8.8480);
+    static GenericLocation nebringen = new GenericLocation(48.56494, 8.85318);
     static GenericLocation herrenbergBahnhof = new GenericLocation(48.59345, 8.86245);
     static long dateTime = TestUtils.dateInSeconds("Europe/Berlin", 2020, 03, 10, 11, 0, 0);
 
@@ -56,7 +56,7 @@ public class BicycleRoutingTest {
 
         TripPlan plan = GraphPathToTripPlanConverter.generatePlan(paths, req);
         String polyline = plan.itinerary.get(0).legs.get(0).legGeometry.getPoints();
-        assertThat(polyline, is("uykgHoc_u@QSOQOOQ^Qb@Q`@IPIPGNIRKf@AJGXEVCZCTCNGXGXGTCLALG@KBKBIHIHEJENETKn@Kn@W~AIh@Ih@If@EXGPIGMISMWMWMMEOG[Mg@Qg@Qi@SSIICIAM?MAY?k@?s@Ao@?}@CeFMI@iBAyCXmANi@La@NcChBKDq@Xw@JoACQ?yAX[J[LYVWZaA`BW^wAbCoBdBu@`@wAx@gCnAwAx@s@`@e@b@iBjBQVYr@_@hAm@lAKTITGh@Cd@D~@C`@MXIF_@CIGW[wAaE{@mBw@yAi@gAk@aA_AsA[MQIEgAEs@Gk@AQAGAUKcBCg@Em@GCCWMsBQ_DIy@S{A[wAq@kCOs@e@_CQiAImAICOYkAqCm@cAe@u@s@m@q@c@a@Sc@G_@UYKBQM_@Ow@K[OUo@e@]a@_@q@]iA]sA[gAYcA[i@c@_@UIc@CW?MAo@Aq@C_@MOWEQCQEUq@aBONSV]ZWBWO_Aw@o@S_@Eq@I{APo@BYeBEOKq@KuAIqB@mB?m@?G@Q@cAA}AKiCQsBE]Eg@?GC}@?e@?{@AaE?OgAZWF}@b@MA]OW]Uc@c@w@S_@Sg@u@cAgA}@iBqAU]KWYqAMOCFGJ_An@MRDf@?B@D"));
+        assertThat(polyline, is("{ilgHgc`u@IGC[y@?@qAZaCAKEMGKSCe@CWEOe@GGgCoNa@mEWqCo@eHI_Ay@wIYeDo@kHe@yEu@gGm@aFWmBkHgEKCeC\\gFn@M_@NoAWAOGSWRi@zAsFYMIOc@aAEIo@yAGIG\\IZ]p@e@v@u@|@m@f@cCn@?pBGt@Kx@[fB]bBYx@c@`Ag@x@g@b@S@YEa@Ge@OeBw@eAa@a@Cc@JiBv@_@P]FS@o@KsAg@qAe@e@Co@HyBh@MFMHKLEPCLi@Po@PqAT_@N_Ad@c@Nk@LYJ]JU@i@?w@Cg@?G@K?G??[COGOkAwBs@cBK]]oAa@mAKu@]{ByAtAULg@Hq@Aq@EsCQa@CC?qB@]BkAJ_C^eCCqBGP|AkA\\IVw@Ry@L_CZDVcB`@wA`@iBh@?ByBv@oCt@q@PQFY`@Wp@CJKZ]dANLERJ\\Ft@@Z@d@VlABLh@zBRz@VdABR@LNj@Rv@Df@?B@D"));
     }
 
 }
