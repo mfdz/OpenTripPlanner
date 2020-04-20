@@ -16,6 +16,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.opentripplanner.routing.core.PolylineAssert.assertThatPolylinesAreEqual;
 
 public class BicycleRoutingTest {
 
@@ -34,7 +35,7 @@ public class BicycleRoutingTest {
         graph = TestGraphBuilder.buildGraph(ConstantsForTests.NEBRINGEN_HERRENBERG_OSM);
     }
 
-    private static String getPolyline(Graph graph, GenericLocation from, GenericLocation to) {
+    private static String calculatePolyline(Graph graph, GenericLocation from, GenericLocation to) {
         RoutingRequest request = new RoutingRequest();
         request.dateTime = dateTime;
         request.from = from;
@@ -55,16 +56,14 @@ public class BicycleRoutingTest {
 
     @Test
     public void useBikeNetworkRoutesFromNebringenToHerrenberg() {
-        var polyline = getPolyline(graph, nebringen, herrenbergMarketSquare);
-        // map: https://leonard.io/polyline-visualiser/?polyline={ilgHgc`u@IGC[y@?@qAZaCAKEMGKSCe@CWEOe@GGgCoNa@mEWqCo@eHI_Ay@wIYeDo@kHe@yEu@gGm@aFWmBkHgEKCeC\gFn@M_@NoAWAOGSWRi@zAsFYMIOc@aAEIo@yAGIG\IZ]p@e@v@u@|@m@f@cCn@?pBGt@Kx@[fB]bBYx@c@`Ag@x@g@b@S@YEa@Ge@OeBw@eAa@a@Cc@JiBv@_@P]FS@o@KsAg@qAe@e@Co@HyBh@MFMHKLEPCLi@Po@PqAT_@N_Ad@c@Nk@LYJ]JU@i@?w@Cg@?G@K?G??[COGOkAwBs@cBK]]oAa@mAKu@]{ByAtAULg@Hq@Aq@EsCQa@CC?qB@]BkAJ_C^eCCqBGqAE[[o@GM_DQ_EK{Be@wCm@wDAGqB`AwB`AmB|@GDg@~@e@l@y@t@e@Rk@JsCh@@D?J@LWDGBAHKF?HSHG~@G?MC_@EAx@Gl@YZMb@CH?N?r@
-        assertThat(polyline, is("{ilgHgc`u@IGC[y@?@qAZaCAKEMGKSCe@CWEOe@GGgCoNa@mEWqCo@eHI_Ay@wIYeDo@kHe@yEu@gGm@aFWmBkHgEKCeC\\gFn@M_@NoAWAOGSWRi@zAsFYMIOc@aAEIo@yAGIG\\IZ]p@e@v@u@|@m@f@cCn@?pBGt@Kx@[fB]bBYx@c@`Ag@x@g@b@S@YEa@Ge@OeBw@eAa@a@Cc@JiBv@_@P]FS@o@KsAg@qAe@e@Co@HyBh@MFMHKLEPCLi@Po@PqAT_@N_Ad@c@Nk@LYJ]JU@i@?w@Cg@?G@K?G??[COGOkAwBs@cBK]]oAa@mAKu@]{ByAtAULg@Hq@Aq@EsCQa@CC?qB@]BkAJ_C^eCCqBGqAE[[o@GM_DQ_EK{Be@wCm@wDAGqB`AwB`AmB|@GDg@~@e@l@y@t@e@Rk@JsCh@@D?J@LWDGBAHKF?HSHG~@G?MC_@EAx@Gl@YZMb@CH?N?r@"));
+        var polyline = calculatePolyline(graph, nebringen, herrenbergMarketSquare);
+        assertThatPolylinesAreEqual(polyline, "{ilgHgc`u@IGC[y@?@qAZaCAKEMGKSCe@CWEOe@GGgCoNa@mEWqCo@eHI_Ay@wIYeDo@kHe@yEu@gGm@aFWmBkHgEKCeC\\gFn@M_@NoAWAOGSWRi@zAsFYMIOc@aAEIo@yAGIG\\IZ]p@e@v@u@|@m@f@cCn@?pBGt@Kx@[fB]bBYx@c@`Ag@x@g@b@S@YEa@Ge@OeBw@eAa@a@Cc@JiBv@_@P]FS@o@KsAg@qAe@e@Co@HyBh@MFMHKLEPCLi@Po@PqAT_@N_Ad@c@Nk@LYJ]JU@i@?w@Cg@?G@K?G??[COGOkAwBs@cBK]]oAa@mAKu@]{ByAtAULg@Hq@Aq@EsCQa@CC?qB@]BkAJ_C^eCCqBGqAE[[o@GM_DQ_EK{Be@wCm@wDAGqB`AwB`AmB|@GDg@~@e@l@y@t@e@Rk@JsCh@@D?J@LWDGBAHKF?HSHG~@G?MC_@EAx@Gl@YZMb@CH?N?r@");
     }
 
     @Test
     public void dontUseCycleNetworkInsideHerrenberg() {
-        var polyline = getPolyline(graph, herrenbergErhardtstBismarckstr, herrenbergMarkusstrMarienstr);
+        var polyline = calculatePolyline(graph, herrenbergErhardtstBismarckstr, herrenbergMarkusstrMarienstr);
         // map: https://leonard.io/polyline-visualiser/?polyline=}uqgHs`cu@AK?Cm@iEIo@?eD]UFe@c@iD]kB_@sAACCIRQ
-        assertThat(polyline, is("}uqgHs`cu@AK?Cm@iEIo@?eD]UFe@c@iD]kB_@sAACCIRQ"));
+        assertThatPolylinesAreEqual(polyline, "}uqgHs`cu@AK?Cm@iEIo@?eD]UFe@c@iD]kB_@sAACCIRQ");
     }
-
 }
