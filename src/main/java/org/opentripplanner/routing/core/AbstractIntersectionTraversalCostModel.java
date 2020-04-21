@@ -50,19 +50,7 @@ public abstract class AbstractIntersectionTraversalCostModel implements
         return (this.baseTurnCostFactor * turnCost) / toSpeed;
     }
 
-    protected double computeCyclingTraversalCost(StreetEdge from,
-                                                 StreetEdge to, float toSpeed, RoutingRequest options) {
-        var turnAngle = calculateTurnAngle(from, to, options);
-        final var baseCost = computeBaseTraversalCost(from, to, toSpeed);
 
-        if(isLeftTurn(turnAngle)) {
-            return baseCost * 7 ;
-        } else if(isRightTurn(turnAngle)) {
-            return baseCost * 3.5;
-        } else {
-            return baseCost;
-        }
-    }
 
     /**
      * Calculates the turn angle from the incoming/outgoing edges and routing request.

@@ -30,9 +30,14 @@ public class SimpleIntersectionTraversalCostModel extends AbstractIntersectionTr
     /** Expected time it takes to turn left without a stop light. */
     private Double expectedLeftNoLightTimeSec = 8.0;
 
+    private double cyclingRightTurnMultiplier = 3.5;
+
+    /** Since doing a left turn on a bike is quite dangerous we add a cost for it**/
+    private double cyclingLeftTurnMultiplier = cyclingRightTurnMultiplier * 2;
+
     @Override
     public double computeTraversalCost(IntersectionVertex v, StreetEdge from, StreetEdge to, TraverseMode mode,
-                                       RoutingRequest options, float fromSpeed, float toSpeed) {
+                                       RoutingRequest request, float fromSpeed, float toSpeed) {
 
         // If the vertex is free-flowing then (by definition) there is no cost to traverse it.
         if (v.inferredFreeFlowing()) {
@@ -40,43 +45,60 @@ public class SimpleIntersectionTraversalCostModel extends AbstractIntersectionTr
         }
 
         if (mode.isDriving()) {
-            double turnCost = 0;
-
-            int turnAngle = calculateTurnAngle(from, to, options);
-            if (v.trafficLight) {
-                // Use constants that apply when there are stop lights.
-                if (isRightTurn(turnAngle)) {
-                    turnCost = expectedRightAtLightTimeSec;
-                } else if (isLeftTurn(turnAngle)) {
-                    turnCost = expectedLeftAtLightTimeSec;
-                } else {
-                    turnCost = expectedStraightAtLightTimeSec;
-                }
-            } else {
-
-                //assume highway vertex
-                if(from.getCarSpeed()>25 && to.getCarSpeed()>25) {
-                    return 0;
-                }
-
-                // Use constants that apply when no stop lights.
-                if (isRightTurn(turnAngle)) {
-                    turnCost = expectedRightNoLightTimeSec;
-                } else if (isLeftTurn(turnAngle)) {
-                    turnCost = expectedLeftNoLightTimeSec;
-                } else {
-                    turnCost = expectedStraightNoLightTimeSec;
-                }
-            }
-
-            return turnCost;
+            return computeDrivingTraversalCost(v, from, to, request);
         }
         else if(mode.isCycling()) {
-            return computeCyclingTraversalCost(from, to, toSpeed, options);
+            return computeCyclingTraversalCost(from, to, toSpeed, request);
         }
         else {
             return computeBaseTraversalCost(from, to, toSpeed);
         }
     }
 
+    private double computeDrivingTraversalCost(IntersectionVertex v, StreetEdge from, StreetEdge to, RoutingRequest options) {
+        double turnCost = 0;
+
+        int turnAngle = calculateTurnAngle(from, to, options);
+        if (v.trafficLight) {
+            // Use constants that apply when there are stop lights.
+            if (isRightTurn(turnAngle)) {
+                turnCost = expectedRightAtLightTimeSec;
+            } else if (isLeftTurn(turnAngle)) {
+                turnCost = expectedLeftAtLightTimeSec;
+            } else {
+                turnCost = expectedStraightAtLightTimeSec;
+            }
+        } else {
+
+            //assume highway vertex
+            if(from.getCarSpeed()>25 && to.getCarSpeed()>25) {
+                return 0;
+            }
+
+            // Use constants that apply when no stop lights.
+            if (isRightTurn(turnAngle)) {
+                turnCost = expectedRightNoLightTimeSec;
+            } else if (isLeftTurn(turnAngle)) {
+                turnCost = expectedLeftNoLightTimeSec;
+            } else {
+                turnCost = expectedStraightNoLightTimeSec;
+            }
+        }
+
+        return turnCost;
+    }
+
+    private double computeCyclingTraversalCost(StreetEdge from,
+                                                 StreetEdge to, float toSpeed, RoutingRequest options) {
+        var turnAngle = calculateTurnAngle(from, to, options);
+        final var baseCost = computeBaseTraversalCost(from, to, toSpeed);
+
+        if(isLeftTurn(turnAngle)) {
+            return baseCost * cyclingLeftTurnMultiplier;
+        } else if(isRightTurn(turnAngle)) {
+            return baseCost * cyclingRightTurnMultiplier;
+        } else {
+            return baseCost;
+        }
+    }
 }

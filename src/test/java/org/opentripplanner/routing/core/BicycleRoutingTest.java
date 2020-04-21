@@ -23,7 +23,7 @@ public class BicycleRoutingTest {
     static Graph graph;
 
     static GenericLocation nebringen = new GenericLocation(48.56494, 8.85318);
-    static GenericLocation herrenbergMarketSquare = new GenericLocation(48.59634, 8.87015);
+    static GenericLocation herrenbergWilhelmstr = new GenericLocation(48.59586,8.87710);
 
     static GenericLocation herrenbergErhardtstBismarckstr = new GenericLocation(48.59247, 8.86811);
     static GenericLocation herrenbergMarkusstrMarienstr = new GenericLocation(48.59329, 8.87253);
@@ -57,8 +57,8 @@ public class BicycleRoutingTest {
 
     @Test
     public void useBikeNetworkRoutesFromNebringenToHerrenberg() {
-        var polyline = calculatePolyline(graph, nebringen, herrenbergMarketSquare);
-        assertThatPolylinesAreEqual(polyline, "{ilgHgc`u@IGC[y@?@qAZaCAKEMGKSCe@CWEOe@GGgCoNa@mEWqCo@eHI_Ay@wIYeDo@kHe@yEu@gGm@aFWmBkHgEKCeC\\gFn@M_@NoAWAOGSWRi@zAsFYMIOc@aAEIo@yAGIG\\IZ]p@e@v@u@|@m@f@cCn@?pBGt@Kx@[fB]bBYx@c@`Ag@x@g@b@S@YEa@Ge@OeBw@eAa@a@Cc@JiBv@_@P]FS@o@KsAg@qAe@e@Co@HyBh@MFMHKLEPCLi@Po@PqAT_@N_Ad@c@Nk@LYJ]JU@i@?w@Cg@?G@K?G??[COGOkAwBs@cBK]]oAa@mAKu@]{ByAtAULg@Hq@Aq@EsCQa@CC?qB@]BkAJ_C^eCCqBGqAE[[o@GM_DQ_EK{Be@wCm@wDAGqB`AwB`AmB|@GDg@~@e@l@y@t@e@Rk@JsCh@@D?J@LWDGBAHKF?HSHG~@G?MC_@EAx@Gl@YZMb@CH?N?r@DpA");
+        var polyline = calculatePolyline(graph, nebringen, herrenbergWilhelmstr);
+        assertThatPolylinesAreEqual(polyline, "{ilgHgc`u@IGC[y@?@qAZaCAKEMGKSCe@CWEOe@GGgCoNa@mEWqCo@eHI_Ay@wIYeDo@kHe@yEu@gGm@aFWmBkHgEKCeC\\gFn@M_@NoAWAOGSWRi@zAsFYMIOc@aAEIo@yAGIG\\IZ]p@e@v@u@|@m@f@cCn@?pBGt@Kx@[fB]bBYx@c@`Ag@x@g@b@S@YEa@Ge@OeBw@eAa@a@Cc@JiBv@_@P]FS@o@KsAg@qAe@e@Co@HyBh@MFMHKLEPCLi@Po@PqAT_@N_Ad@c@Nk@LYJ]JU@i@?w@Cg@?G@K?G??[COGOkAwBs@cBK]]oAa@mAKu@]{ByAtAULg@Hq@Aq@EsCQa@CC?qB@]BkAJ_C^eCCqBGqAE[[o@GM_DQ_EK{Be@wCm@wDAGqB`AwB`AmB|@GDg@~@e@l@y@t@e@Rk@JsCh@?IQkBQ?YBu@NEOS}@Y}ESsCMcBUyCi@oEAE");
 
     }
 
