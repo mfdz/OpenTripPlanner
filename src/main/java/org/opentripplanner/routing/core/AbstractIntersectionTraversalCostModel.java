@@ -12,7 +12,7 @@ public abstract class AbstractIntersectionTraversalCostModel implements
         IntersectionTraversalCostModel {
 
     /** Factor by which absolute turn angles are divided to get turn costs for non-driving scenarios. */
-    protected Double nonDrivingTurnCostFactor = 1.0 / 20.0;
+    protected Double baseTurnCostFactor = 1.0 / 20.0;
 
     protected Integer minRightTurnAngle = 45;
     
@@ -37,8 +37,8 @@ public abstract class AbstractIntersectionTraversalCostModel implements
      * 
      * TODO(flamholz): this should probably account for whether there is a traffic light?
      */
-    protected double computeNonDrivingTraversalCost(IntersectionVertex v, StreetEdge from,
-            StreetEdge to, float fromSpeed, float toSpeed) {
+    protected double computeBaseTraversalCost(StreetEdge from,
+                                              StreetEdge to, float toSpeed) {
         int outAngle = to.getOutAngle();
         int inAngle = from.getInAngle();
         int turnCost = Math.abs(outAngle - inAngle);
@@ -47,7 +47,21 @@ public abstract class AbstractIntersectionTraversalCostModel implements
         }
 
         // NOTE: This makes the turn cost lower the faster you're going
-        return (this.nonDrivingTurnCostFactor * turnCost) / toSpeed;
+        return (this.baseTurnCostFactor * turnCost) / toSpeed;
+    }
+
+    protected double computeCyclingTraversalCost(StreetEdge from,
+                                                 StreetEdge to, float toSpeed, RoutingRequest options) {
+        var turnAngle = calculateTurnAngle(from, to, options);
+        final var baseCost = computeBaseTraversalCost(from, to, toSpeed);
+
+        if(isLeftTurn(turnAngle)) {
+            return baseCost * 7 ;
+        } else if(isRightTurn(turnAngle)) {
+            return baseCost * 3.5;
+        } else {
+            return baseCost;
+        }
     }
 
     /**

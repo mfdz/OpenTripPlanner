@@ -39,41 +39,44 @@ public class SimpleIntersectionTraversalCostModel extends AbstractIntersectionTr
             return 0;
         }
 
-        // Non-driving cases are much simpler. Handled generically in the base class.
-        if (!mode.isDriving()) {
-            return computeNonDrivingTraversalCost(v, from, to, fromSpeed, toSpeed);
-        }
+        if (mode.isDriving()) {
+            double turnCost = 0;
 
-        double turnCost = 0;
-
-        int turnAngle = calculateTurnAngle(from, to, options);
-        if (v.trafficLight) {
-            // Use constants that apply when there are stop lights.
-            if (isRightTurn(turnAngle)) {
-                turnCost = expectedRightAtLightTimeSec;
-            } else if (isLeftTurn(turnAngle)) {
-                turnCost = expectedLeftAtLightTimeSec;
+            int turnAngle = calculateTurnAngle(from, to, options);
+            if (v.trafficLight) {
+                // Use constants that apply when there are stop lights.
+                if (isRightTurn(turnAngle)) {
+                    turnCost = expectedRightAtLightTimeSec;
+                } else if (isLeftTurn(turnAngle)) {
+                    turnCost = expectedLeftAtLightTimeSec;
+                } else {
+                    turnCost = expectedStraightAtLightTimeSec;
+                }
             } else {
-                turnCost = expectedStraightAtLightTimeSec;
-            }
-        } else {
 
-            //assume highway vertex
-            if(from.getCarSpeed()>25 && to.getCarSpeed()>25) {
-                return 0;
+                //assume highway vertex
+                if(from.getCarSpeed()>25 && to.getCarSpeed()>25) {
+                    return 0;
+                }
+
+                // Use constants that apply when no stop lights.
+                if (isRightTurn(turnAngle)) {
+                    turnCost = expectedRightNoLightTimeSec;
+                } else if (isLeftTurn(turnAngle)) {
+                    turnCost = expectedLeftNoLightTimeSec;
+                } else {
+                    turnCost = expectedStraightNoLightTimeSec;
+                }
             }
 
-            // Use constants that apply when no stop lights.
-            if (isRightTurn(turnAngle)) {
-                turnCost = expectedRightNoLightTimeSec;
-            } else if (isLeftTurn(turnAngle)) {
-                turnCost = expectedLeftNoLightTimeSec;
-            } else {
-                turnCost = expectedStraightNoLightTimeSec;
-            }
+            return turnCost;
         }
-
-        return turnCost;
+        else if(mode.isCycling()) {
+            return computeCyclingTraversalCost(from, to, toSpeed, options);
+        }
+        else {
+            return computeBaseTraversalCost(from, to, toSpeed);
+        }
     }
 
 }
