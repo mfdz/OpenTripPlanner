@@ -53,9 +53,9 @@ public class GermanyWayPropertySetSource implements WayPropertySetSource {
 
         // Pedestrian zones in Germany are forbidden for bicycles by default
         props.setProperties("highway=pedestrian", StreetTraversalPermission.PEDESTRIAN);
-        props.setProperties("highway=residential;maxspeed=30", StreetTraversalPermission.ALL, 0.95, 0.95);
+        props.setProperties("highway=residential;maxspeed=30", StreetTraversalPermission.ALL, 0.9, 0.9);
         props.setProperties("highway=footway;bicycle=yes",
-                StreetTraversalPermission.PEDESTRIAN_AND_BICYCLE, 0.9, 0.9);
+                StreetTraversalPermission.PEDESTRIAN_AND_BICYCLE, 0.8, 0.8);
         // Default was 2.5, we want to favor using mixed footways somewhat
         props.setProperties("footway=sidewalk;highway=footway;bicycle=yes",
                 StreetTraversalPermission.PEDESTRIAN_AND_BICYCLE, 1.2, 1.2);
@@ -69,8 +69,8 @@ public class GermanyWayPropertySetSource implements WayPropertySetSource {
 
         /** We assume highway/cycleway of a cycle network to be safer (for bicycle network relations, their network is copied to way in postLoad */
         props.setProperties("lcn=yes", StreetTraversalPermission.ALL, 0.7, 0.7, true); // local cycle network
-        props.setProperties("rcn=yes", StreetTraversalPermission.ALL, 0.5, 0.5, true); // regional cycle network
-        props.setProperties("ncn=yes", StreetTraversalPermission.ALL, 0.9, 0.9, true); // national cycle network
+        props.setProperties("rcn=yes", StreetTraversalPermission.ALL, 0.7, 0.7, true); // regional cycle network
+        props.setProperties("ncn=yes", StreetTraversalPermission.ALL, 0.7, 0.7, true); // national cycle network
 
         // lit=yes currently is tagged very seldom, so we just want to discount where lit=no explicitly
         // props.setProperties("lit=yes", StreetTraversalPermission.ALL, 0.99, 0.99, true); // lit increases safety

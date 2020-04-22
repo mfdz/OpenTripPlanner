@@ -151,8 +151,8 @@ public class PlainStreetEdgeTest {
         State s4 = e1.traverse(s3);
         State s5 = e0.traverse(s4);
 
-        assertEquals(73, s2.getElapsedTimeSeconds());
-        assertEquals(73, s5.getElapsedTimeSeconds());
+        assertEquals(86, s2.getElapsedTimeSeconds());
+        assertEquals(86, s5.getElapsedTimeSeconds());
     }
 
     /**

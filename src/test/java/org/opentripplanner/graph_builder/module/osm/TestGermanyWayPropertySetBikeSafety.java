@@ -51,7 +51,7 @@ public class TestGermanyWayPropertySetBikeSafety extends TestCase {
         way.addTag("surface", "asphalt");
         way.addTag("width", "6.5");
         way.addTag("zone:traffic", "DE:urban");
-        assertEquals(0.95, wps.getDataForWay(way).getSafetyFeatures().first, epsilon);
+        assertEquals(0.9, wps.getDataForWay(way).getSafetyFeatures().first, epsilon);
 
         // way332589799 (Radschnellweg BW1)
         way = new OSMWithTags();

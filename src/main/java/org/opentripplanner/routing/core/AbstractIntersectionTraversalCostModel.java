@@ -5,7 +5,7 @@ import org.opentripplanner.routing.vertextype.IntersectionVertex;
 
 /**
  * Abstract turn cost model provides various methods most implementations will use.
- * 
+ *
  * @author avi
  */
 public abstract class AbstractIntersectionTraversalCostModel implements
@@ -15,11 +15,11 @@ public abstract class AbstractIntersectionTraversalCostModel implements
     protected Double nonDrivingTurnCostFactor = 1.0 / 20.0;
 
     protected Integer minRightTurnAngle = 45;
-    
+
     protected Integer maxRightTurnAngle = 135;
 
     protected Integer minLeftTurnAngle = 225;
-    
+
     protected Integer maxLeftTurnAngle = 315;
 
     /** Returns true if this angle represents a right turn. */
@@ -34,11 +34,11 @@ public abstract class AbstractIntersectionTraversalCostModel implements
 
     /**
      * Computes the turn cost in seconds for non-driving traversal modes.
-     * 
+     *
      * TODO(flamholz): this should probably account for whether there is a traffic light?
      */
     protected double computeNonDrivingTraversalCost(IntersectionVertex v, StreetEdge from,
-            StreetEdge to, float fromSpeed, float toSpeed) {
+                                                    StreetEdge to, float fromSpeed, float toSpeed) {
         int outAngle = to.getOutAngle();
         int inAngle = from.getInAngle();
         int turnCost = Math.abs(outAngle - inAngle);
@@ -52,14 +52,14 @@ public abstract class AbstractIntersectionTraversalCostModel implements
 
     /**
      * Calculates the turn angle from the incoming/outgoing edges and routing request.
-     * 
+     *
      * Corrects for the side of the street they are driving on.
      */
     protected int calculateTurnAngle(StreetEdge from, StreetEdge to,
-            RoutingRequest options) {
+                                     RoutingRequest options) {
         int angleOutOfIntersection = to.getInAngle();
         int angleIntoIntersection = from.getOutAngle();
-        
+
         // Put out to the right of in; i.e. represent everything as one long right turn
         // Also ensures that turnAngle is always positive.
         if (angleOutOfIntersection < angleIntoIntersection) {
@@ -78,7 +78,7 @@ public abstract class AbstractIntersectionTraversalCostModel implements
     /* Concrete subclasses must implement this */
     @Override
     public abstract double computeTraversalCost(IntersectionVertex v, StreetEdge from,
-            StreetEdge to, TraverseMode mode, RoutingRequest options, float fromSpeed,
-            float toSpeed);
+                                                StreetEdge to, TraverseMode mode, RoutingRequest options, float fromSpeed,
+                                                float toSpeed);
 
 }
