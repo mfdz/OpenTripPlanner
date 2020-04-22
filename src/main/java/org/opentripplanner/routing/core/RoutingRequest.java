@@ -63,7 +63,7 @@ public class RoutingRequest implements Cloneable, Serializable {
      * The model that computes turn/traversal costs.
      * TODO: move this to the Router or the Graph if it doesn't clutter the code too much
      */
-    public IntersectionTraversalCostModel traversalCostModel = new SimpleIntersectionTraversalCostModel();
+    public IntersectionTraversalCostModel traversalCostModel = new MfdzIntersectionTraversalCostModel();
 
     /* FIELDS UNIQUELY IDENTIFYING AN SPT REQUEST */
 
