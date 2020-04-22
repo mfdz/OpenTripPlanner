@@ -24,5 +24,6 @@ MFDZ has developed their own modification to this algorithm, that works in two w
     
   - At the moment the lcn, rcn and ncn tags values are added cumulatively. This means if a street is part of all three
     types of networks, it is very heavily favoured and this leads to strange detours. We ought to use an OR condition
-    when calculating the safety factor.
+    when calculating the safety factor.  
+    See [Ticket](https://github.com/mfdz/OpenTripPlanner/issues/25)
 
