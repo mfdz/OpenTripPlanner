@@ -30,7 +30,7 @@ public class MfdzIntersectionTraversalCostModel extends AbstractIntersectionTrav
     /** Expected time it takes to turn left without a stop light. */
     private Double expectedLeftNoLightTimeSec = 8.0;
 
-    private double cyclingRightTurnMultiplier = 3.5;
+    private double cyclingRightTurnMultiplier = 5;
 
     /** Since doing a left turn on a bike is quite dangerous we add a cost for it**/
     private double cyclingLeftTurnMultiplier = cyclingRightTurnMultiplier * 3;
