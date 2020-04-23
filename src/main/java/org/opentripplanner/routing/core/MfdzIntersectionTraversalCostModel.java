@@ -33,7 +33,7 @@ public class MfdzIntersectionTraversalCostModel extends AbstractIntersectionTrav
     private double cyclingRightTurnMultiplier = 3.5;
 
     /** Since doing a left turn on a bike is quite dangerous we add a cost for it**/
-    private double cyclingLeftTurnMultiplier = cyclingRightTurnMultiplier * 2;
+    private double cyclingLeftTurnMultiplier = cyclingRightTurnMultiplier * 3;
 
     @Override
     public double computeTraversalCost(IntersectionVertex v, StreetEdge from, StreetEdge to, TraverseMode mode,
