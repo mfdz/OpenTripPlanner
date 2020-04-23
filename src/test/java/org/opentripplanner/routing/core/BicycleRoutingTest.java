@@ -27,7 +27,7 @@ public class BicycleRoutingTest {
     static Graph herrenbergGraph;
     static Graph boeblingenGraph;
 
-    static long dateTime = TestUtils.dateInSeconds("Europe/Berlin", 2020, 03, 10, 11, 0, 0);
+    static long dateTime = TestUtils.dateInSeconds("Europe/Berlin", 2020, 04, 23, 11, 0, 0);
 
     @BeforeClass
     public static void setUp() {
@@ -43,9 +43,20 @@ public class BicycleRoutingTest {
 
         request.modes = new TraverseModeSet(TraverseMode.BICYCLE);
 
-        request.setNumItineraries(1);
+        request.setNumItineraries(5);
         request.setRoutingContext(graph);
-        request.setOptimize(OptimizeType.GREENWAYS); // this is the default setting in digitransit
+        request.setOptimize(OptimizeType.TRIANGLE); // this is the default setting in digitransit
+        request.setTriangleTimeFactor(0.1);
+        request.setTriangleSafetyFactor(0.8);
+        request.setTriangleSlopeFactor(0.1);
+        request.walkSpeed = 1.2;
+        request.bikeSpeed = 5;
+        request.maxWalkDistance = 100000;
+        request.itineraryFiltering = 1.5;
+        request.transferPenalty = 0;
+        request.walkBoardCost = 600;
+        request.setWalkReluctance(2);
+        request.wheelchairAccessible = false;
 
         GraphPathFinder gpf = new GraphPathFinder(new Router(graph.routerId, graph));
         List<GraphPath> paths = gpf.graphPathFinderEntryPoint(request);
@@ -68,8 +79,17 @@ public class BicycleRoutingTest {
     public void dontUseCycleNetworkInsideHerrenberg() {
         var herrenbergErhardtstBismarckstr = new GenericLocation(48.59247, 8.86811);
         var herrenbergMarkusstrMarienstr = new GenericLocation(48.59329, 8.87253);
-        var polyline = calculatePolyline(herrenbergGraph, herrenbergErhardtstBismarckstr, herrenbergMarkusstrMarienstr);
-        assertThatPolylinesAreEqual(polyline, "}uqgHs`cu@AK?Am@kEIo@?eD]UFc@c@iD]mB_@sAAACIRQ");
+        var hildrizhauserStr = new GenericLocation(48.5944599, 8.874989748);
+        var brahmsStr  = new GenericLocation(48.59353, 8.87731);
+
+        var polyline1 = calculatePolyline(herrenbergGraph, herrenbergErhardtstBismarckstr, herrenbergMarkusstrMarienstr);
+        assertThatPolylinesAreEqual(polyline1, "}uqgHs`cu@AK?Am@kEIo@?eD]UFc@c@iD]mB_@sAAACIRQ");
+
+        var polyline2 = calculatePolyline(herrenbergGraph, herrenbergErhardtstBismarckstr, hildrizhauserStr);
+        assertThatPolylinesAreEqual(polyline2, "}uqgHs`cu@AK?Am@kEIo@?eD]UFc@c@iD]mB_@sAAACIKScAuCc@_AUi@GMQJODGm@QsCGi@");
+
+        var polyline3 = calculatePolyline(herrenbergGraph, herrenbergErhardtstBismarckstr, brahmsStr);
+        assertThatPolylinesAreEqual(polyline3, "}uqgHs`cu@AK?Am@kEIo@?eD]UFc@c@iD]mB_@sAAACIKScAuCc@_AUi@GMQJODC@I@Ei@GiAIoAEg@Go@?AHA??M_An@i@d@i@PWTi@b@u@j@yAF{@");
     }
 
     @Test
@@ -96,7 +116,7 @@ public class BicycleRoutingTest {
         var boeblingenThermalbad = new GenericLocation(48.69406, 9.02869);
 
         var polyline = calculatePolyline(boeblingenGraph, boeblingenHerrenbergerStr, boeblingenThermalbad);
-        assertThatPolylinesAreEqual(polyline, "ouchHwg~u@CQN?BSD_@U}@i@qBMaAIk@COa@_AG?E?GQEKKBCAa@IUSKFED?JCD@Nm@EWC[AYIYGg@QSQQKKGMAEIGCGIGGWg@QYOQO_@IWSa@I]GSGUEUGUYqAGYHEYqAWiAEQc@}Bi@{Bk@mESkBEi@QiBSqAYuA]{@c@{@g@}@SAEIEMC[AS?QCQYc@k@y@MSc@WaAwA{A}B]k@QWWi@Oa@[cAUw@U{@EQOJIUI]OkAm@iF?UWuB[cC]}BUgAQu@Oq@Gc@Cc@]cAYs@Qa@_@e@MUHMCC");
+        assertThatPolylinesAreEqual(polyline, "ouchHwg~u@CQN?BSD_@U}@i@qBMaAIk@COa@_AG?E?GQEKKBCAa@IUSKFED?JCD@Nm@EWC[AYIYGg@QSQQKKGMAEIGCGIGGWg@QYOQO_@IWSa@I]GSGUEUGUYqAGYHEYqAWiAEQc@}Bi@{Bk@mESkBEi@QiBSqAYuA]{@c@{@g@}@SAEIEMC[AS?QCQYc@k@y@MSc@WaAwA{A}B]k@QWWi@Oa@[cAUw@U{@EQGUQJI]OkAm@iF?UWuB[cC]}BUgAQu@Oq@Gc@Cc@]cAYs@Qa@_@e@MUHMCC");
     }
 
     @Test
