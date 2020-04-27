@@ -15,6 +15,13 @@ import org.opentripplanner.openstreetmap.model.OSMWithTags;
  * has the tags (highway=residential, cycleway=*) and another has (highway=residential, surface=paved) and a way has the
  * tags (highway=residential, cycleway=lane, surface=paved) the second OSMSpecifier will be applied to that way
  * (2 exact matches beats 1 exact match and a wildcard match).
+ *
+ * You can also use a logical OR condition to specify a match. This is most usefully combined with a safety mixin.
+ *
+ * For example if you specify "lcn=yes|rnc=yes|ncn=yes" then this will match if one of these tags matches.
+ *
+ * If you would add a 3 separate matches that would mean that a way that is tagged with all of them would receive
+ * too high a safety value leading to undesired detours.
  */
 public class OSMSpecifier {
 
