@@ -18,30 +18,26 @@ import org.opentripplanner.openstreetmap.model.OSMWithTags;
  */
 public class OSMSpecifier {
 
-    private List<P2<String>> logicalAndPairs = new ArrayList<>();
-    private List<P2<String>> logicalOrPairs = new ArrayList<>();
+    private List<P2<String>> logicalANDPairs = new ArrayList<>();
+    private List<P2<String>> logicalORPairs = new ArrayList<>();
 
     public OSMSpecifier() {}
 
     public OSMSpecifier(String spec) {
-        setPairs(spec);
-    }
-
-    private void setPairs(String spec) {
         if(spec.contains("|") && spec.contains(";")) {
             throw new RuntimeException(String.format("You cannot mix logical AND (';') and logical OR ('|') in same OSM spec: '%s'", spec));
         } else if(spec.contains("|")){
-            logicalOrPairs =  Arrays.stream(spec.split("\\|")).map(pair -> {
-                var kv = pair.split("=");
-                return new P2<>(kv[0], kv[1]);
-            }).collect(Collectors.toList());
+            logicalORPairs = getPairsFromString(spec, "\\|");
         } else {
-            String[] pairs = spec.split(";");
-            for (String pair : pairs) {
-                String[] kv = pair.split("=");
-                logicalAndPairs.add(new P2<>(kv[0], kv[1]));
-            }
+            logicalANDPairs = getPairsFromString(spec, ";");
         }
+    }
+
+    private List<P2<String>> getPairsFromString(String spec, String separator) {
+        return Arrays.stream(spec.split(separator)).map(pair -> {
+            var kv = pair.split("=");
+            return new P2<>(kv[0], kv[1]);
+        }).collect(Collectors.toList());
     }
 
     /**
@@ -55,21 +51,27 @@ public class OSMSpecifier {
      * @param match an OSM tagged object to compare to this specifier
      */
     public P2<Integer> matchScores(OSMWithTags match) {
-        if(!logicalAndPairs.isEmpty()) {
-            return computeLogicalANDScore(match);
+        if(!logicalANDPairs.isEmpty()) {
+            return computeANDScore(match);
         } else {
-            var oneOfORPairMatches = logicalOrPairs.stream().anyMatch(pair -> match.isTag(pair.first, pair.second));
-            if (oneOfORPairMatches) {
-                return new P2<>(1,1);
-            } else return new P2<>(0,0);
+            return computeORScore(match);
         }
     }
 
-    private P2<Integer> computeLogicalANDScore(OSMWithTags match) {
+    private P2<Integer> computeORScore(OSMWithTags match) {
+        // not sure if we should calculate a proper score as it doesn't make a huge amount of sense to do it for
+        // logical OR conditions
+        var oneOfORPairMatches = logicalORPairs.stream().anyMatch(pair -> match.isTag(pair.first, pair.second));
+        if (oneOfORPairMatches) {
+            return new P2<>(1,1);
+        } else return new P2<>(0,0);
+    }
+
+    private P2<Integer> computeANDScore(OSMWithTags match) {
         int leftScore = 0, rightScore = 0;
         int leftMatches = 0, rightMatches = 0;
 
-        for (P2<String> pair : logicalAndPairs) {
+        for (P2<String> pair : logicalANDPairs) {
             // TODO why are we repeatedly converting these to lower case every time they are used?
             // Probably because it used to be possible to set them from Spring XML.
             String tag = pair.first.toLowerCase();
@@ -96,12 +98,11 @@ public class OSMSpecifier {
         }
 
 
-        int allMatchLeftBonus = (leftMatches == logicalAndPairs.size()) ? 10 : 0;
+        int allMatchLeftBonus = (leftMatches == logicalANDPairs.size()) ? 10 : 0;
         leftScore += allMatchLeftBonus;
-        int allMatchRightBonus = (rightMatches == logicalAndPairs.size()) ? 10 : 0;
+        int allMatchRightBonus = (rightMatches == logicalANDPairs.size()) ? 10 : 0;
         rightScore += allMatchRightBonus;
-        P2<Integer> score = new P2<>(leftScore, rightScore);
-        return score;
+        return new P2<>(leftScore, rightScore);
     }
 
     /**
@@ -111,7 +112,7 @@ public class OSMSpecifier {
     public int matchScore(OSMWithTags match) {
         int score = 0;
         int matches = 0;
-        for (P2<String> pair : logicalAndPairs) {
+        for (P2<String> pair : logicalORPairs) {
             String tag = pair.first.toLowerCase();
             String value = pair.second.toLowerCase();
             String matchValue = match.getTag(tag);
@@ -121,7 +122,7 @@ public class OSMSpecifier {
                 matches += 1;
             }
         }
-        score += matches == logicalAndPairs.size() ? 10 : 0;
+        score += matches == logicalANDPairs.size() ? 10 : 0;
         return score;
     }
 
@@ -153,18 +154,23 @@ public class OSMSpecifier {
     }
 
     public void addTag(String key, String value) {
-        logicalAndPairs.add(new P2<String>(key, value));
+        logicalANDPairs.add(new P2<>(key, value));
     }
 
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        for (P2<String> pair : logicalAndPairs) {
+        for (P2<String> pair : logicalANDPairs) {
             builder.append(pair.first);
             builder.append("=");
             builder.append(pair.second);
             builder.append(";");
         }
-        builder.deleteCharAt(builder.length() - 1); // remove trailing semicolon
+        for (P2<String> pair : logicalORPairs) {
+            builder.append(pair.first);
+            builder.append("=");
+            builder.append(pair.second);
+            builder.append("|");
+        }
         return builder.toString();
     }
 }
