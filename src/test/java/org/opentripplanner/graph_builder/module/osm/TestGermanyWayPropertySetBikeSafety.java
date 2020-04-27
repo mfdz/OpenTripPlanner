@@ -1,29 +1,32 @@
 package org.opentripplanner.graph_builder.module.osm;
 
-import junit.framework.TestCase;
 import org.junit.Test;
 import org.opentripplanner.openstreetmap.model.OSMWithTags;
 import org.opentripplanner.routing.edgetype.StreetTraversalPermission;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test the bike safety ratings for GermanyWayPropertySet.
  *
  * @author hbruch
  */
-public class TestGermanyWayPropertySetBikeSafety extends TestCase {
-    
+public class TestGermanyWayPropertySetBikeSafety {
+    static WayPropertySet wps = new WayPropertySet();
+    static float epsilon = 0.01f;
+    static WayPropertySetSource source = new GermanyWayPropertySetSource();
+
+    static {
+        source.populateProperties(wps);
+    }
+
     /**
      * Test that bike safety factors are calculated accurately
      */
     @Test
     public void testBikeSafety () {
-        WayPropertySet wps = new WayPropertySet();
-        WayPropertySetSource source = new GermanyWayPropertySetSource();
-        source.populateProperties(wps);
 
         OSMWithTags way;
-
-        float epsilon = 0.01f;
 
         // way 361961158
         way = new OSMWithTags();
@@ -85,6 +88,44 @@ public class TestGermanyWayPropertySetBikeSafety extends TestCase {
         way.addTag("highway", "track");
         way.addTag("tracktype", "grade1");
         assertEquals(wps.getDataForWay(way).getPermission(), StreetTraversalPermission.PEDESTRIAN_AND_BICYCLE);
-
     }
+
+    @Test
+    public void lcnAndRcnShouldNotBeAddedUp() {
+        // https://www.openstreetmap.org/way/26443041 is part of both an lcn and rnc but that shouldn't mean that
+        // it is to be more heavily favoured than other ways that are part of just one.
+
+        var both = new OSMWithTags();
+        both.addTag("highway", "residential");
+        both.addTag("rcn", "yes");
+        both.addTag("lcn", "yes");
+
+        var justLcn = new OSMWithTags();
+        justLcn.addTag("lcn", "yes");
+        justLcn.addTag("highway", "residential");
+
+        var residential = new OSMWithTags();
+        residential.addTag("highway", "residential");
+
+        assertEquals(
+                wps.getDataForWay(both).getSafetyFeatures().first,
+                wps.getDataForWay(justLcn).getSafetyFeatures().first,
+                epsilon
+        );
+
+        assertEquals(
+                wps.getDataForWay(both).getSafetyFeatures().first,
+                0.6859,
+                epsilon
+        );
+
+        assertEquals(
+                wps.getDataForWay(residential).getSafetyFeatures().first,
+                0.98,
+                epsilon
+        );
+    }
+
+
+
 }

@@ -1,7 +1,9 @@
 package org.opentripplanner.graph_builder.module.osm;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.opentripplanner.common.model.P2;
 import org.opentripplanner.openstreetmap.model.OSMWithTags;
@@ -16,22 +18,29 @@ import org.opentripplanner.openstreetmap.model.OSMWithTags;
  */
 public class OSMSpecifier {
 
-    public List<P2<String>> kvpairs;
+    private List<P2<String>> logicalAndPairs = new ArrayList<>();
+    private List<P2<String>> logicalOrPairs = new ArrayList<>();
 
-    public OSMSpecifier() {
-        kvpairs = new ArrayList<P2<String>>(); // TODO string-pairs with a proper OSM tag class
-    }
+    public OSMSpecifier() {}
 
     public OSMSpecifier(String spec) {
-        this();
-        setKvpairs(spec);
+        setPairs(spec);
     }
 
-    public void setKvpairs(String spec) {
-        String[] pairs = spec.split(";");
-        for (String pair : pairs) {
-            String[] kv = pair.split("=");
-            kvpairs.add(new P2<String>(kv[0], kv[1]));
+    private void setPairs(String spec) {
+        if(spec.contains("|") && spec.contains(";")) {
+            throw new RuntimeException(String.format("You cannot mix logical AND (';') and logical OR ('|') in same OSM spec: '%s'", spec));
+        } else if(spec.contains("|")){
+            logicalOrPairs =  Arrays.stream(spec.split("\\|")).map(pair -> {
+                var kv = pair.split("=");
+                return new P2<>(kv[0], kv[1]);
+            }).collect(Collectors.toList());
+        } else {
+            String[] pairs = spec.split(";");
+            for (String pair : pairs) {
+                String[] kv = pair.split("=");
+                logicalAndPairs.add(new P2<>(kv[0], kv[1]));
+            }
         }
     }
 
@@ -46,9 +55,21 @@ public class OSMSpecifier {
      * @param match an OSM tagged object to compare to this specifier
      */
     public P2<Integer> matchScores(OSMWithTags match) {
+        if(!logicalAndPairs.isEmpty()) {
+            return computeLogicalANDScore(match);
+        } else {
+            var oneOfORPairMatches = logicalOrPairs.stream().anyMatch(pair -> match.isTag(pair.first, pair.second));
+            if (oneOfORPairMatches) {
+                return new P2<>(1,1);
+            } else return new P2<>(0,0);
+        }
+    }
+
+    private P2<Integer> computeLogicalANDScore(OSMWithTags match) {
         int leftScore = 0, rightScore = 0;
         int leftMatches = 0, rightMatches = 0;
-        for (P2<String> pair : kvpairs) {
+
+        for (P2<String> pair : logicalAndPairs) {
             // TODO why are we repeatedly converting these to lower case every time they are used?
             // Probably because it used to be possible to set them from Spring XML.
             String tag = pair.first.toLowerCase();
@@ -73,11 +94,13 @@ public class OSMSpecifier {
                 rightMatches ++;
             }
         }
-        int allMatchLeftBonus = (leftMatches == kvpairs.size()) ? 10 : 0;
+
+
+        int allMatchLeftBonus = (leftMatches == logicalAndPairs.size()) ? 10 : 0;
         leftScore += allMatchLeftBonus;
-        int allMatchRightBonus = (rightMatches == kvpairs.size()) ? 10 : 0;
+        int allMatchRightBonus = (rightMatches == logicalAndPairs.size()) ? 10 : 0;
         rightScore += allMatchRightBonus;
-        P2<Integer> score = new P2<Integer>(leftScore, rightScore);
+        P2<Integer> score = new P2<>(leftScore, rightScore);
         return score;
     }
 
@@ -88,7 +111,7 @@ public class OSMSpecifier {
     public int matchScore(OSMWithTags match) {
         int score = 0;
         int matches = 0;
-        for (P2<String> pair : kvpairs) {
+        for (P2<String> pair : logicalAndPairs) {
             String tag = pair.first.toLowerCase();
             String value = pair.second.toLowerCase();
             String matchValue = match.getTag(tag);
@@ -98,7 +121,7 @@ public class OSMSpecifier {
                 matches += 1;
             }
         }
-        score += matches == kvpairs.size() ? 10 : 0;
+        score += matches == logicalAndPairs.size() ? 10 : 0;
         return score;
     }
 
@@ -130,12 +153,12 @@ public class OSMSpecifier {
     }
 
     public void addTag(String key, String value) {
-        kvpairs.add(new P2<String>(key, value));
+        logicalAndPairs.add(new P2<String>(key, value));
     }
 
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        for (P2<String> pair : kvpairs) {
+        for (P2<String> pair : logicalAndPairs) {
             builder.append(pair.first);
             builder.append("=");
             builder.append(pair.second);
