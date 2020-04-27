@@ -45,12 +45,14 @@ public class BicycleRoutingTest {
 
         request.setNumItineraries(5);
         request.setRoutingContext(graph);
-        request.setOptimize(OptimizeType.TRIANGLE); // this is the default setting in digitransit
-        request.setTriangleTimeFactor(0.1);
-        request.setTriangleSafetyFactor(0.8);
-        request.setTriangleSlopeFactor(0.1);
+        request.setOptimize(OptimizeType.TRIANGLE); // this is the default setting in our digitransit
+        request.setTriangleTimeFactor(0.3);
+        request.setTriangleSafetyFactor(0.4);
+        request.setTriangleSlopeFactor(0.3);
         request.walkSpeed = 1.2;
         request.bikeSpeed = 5;
+        request.bikeSwitchCost = 200;
+        request.walkReluctance = 20;
         request.maxWalkDistance = 100000;
         request.itineraryFiltering = 1.5;
         request.transferPenalty = 0;
@@ -59,9 +61,10 @@ public class BicycleRoutingTest {
         request.wheelchairAccessible = false;
 
         GraphPathFinder gpf = new GraphPathFinder(new Router(graph.routerId, graph));
-        List<GraphPath> paths = gpf.graphPathFinderEntryPoint(request);
+        List<GraphPath> paths = gpf.getPaths(request);
 
         TripPlan plan = GraphPathToTripPlanConverter.generatePlan(paths, request);
+        plan.itinerary.get(0).legs.forEach(l -> System.out.println(l.mode +": "+l.legGeometry.getPoints()));
         Stream<List<Coordinate>> points = plan.itinerary.get(0).legs.stream().map(l -> PolylineEncoder.decode(l.legGeometry));
         return PolylineEncoder.createEncodings(points.flatMap(List::stream).collect(Collectors.toList())).getPoints();
     }
@@ -89,7 +92,7 @@ public class BicycleRoutingTest {
         assertThatPolylinesAreEqual(polyline2, "}uqgHs`cu@AK?Am@kEIo@?eD]UFc@c@iD]mB_@sAAACIKScAuCc@_AUi@GMQJODGm@QsCGi@");
 
         var polyline3 = calculatePolyline(herrenbergGraph, herrenbergErhardtstBismarckstr, brahmsStr);
-        assertThatPolylinesAreEqual(polyline3, "}uqgHs`cu@AK?Am@kEIo@?eD]UFc@c@iD]mB_@sAAACIKScAuCc@_AUi@GMQJODC@I@Ei@GiAIoAEg@Go@?AHA??M_An@i@d@i@PWTi@b@u@j@yAF{@");
+        assertThatPolylinesAreEqual(polyline3, "}uqgHs`cu@AK?Am@kEIo@?eD]UFc@c@iD]mB_@sAAACIKScAuCc@_AUi@|A}BZc@GMUe@AUa@uAOs@EAAAYgATi@b@u@j@yAF{@");
     }
 
     @Test
@@ -116,7 +119,7 @@ public class BicycleRoutingTest {
         var boeblingenThermalbad = new GenericLocation(48.69406, 9.02869);
 
         var polyline = calculatePolyline(boeblingenGraph, boeblingenHerrenbergerStr, boeblingenThermalbad);
-        assertThatPolylinesAreEqual(polyline, "ouchHwg~u@CQN?BSD_@U}@i@qBMaAIk@COa@_AG?E?GQEKKBCAa@IUSKFED?JCD@Nm@EWC[AYIYGg@QSQQKKGMAEIGCGIGGWg@QYOQO_@IWSa@I]GSGUEUGUYqAGYHEYqAWiAEQc@}Bi@{Bk@mESkBEi@QiBSqAYuA]{@c@{@g@}@SAEIEMC[AS?QCQYc@k@y@MSc@WaAwA{A}B]k@QWWi@Oa@[cAUw@U{@EQGUQJI]OkAm@iF?UWuB[cC]}BUgAQu@Oq@Gc@Cc@]cAYs@Qa@_@e@MUHMCC");
+        assertThatPolylinesAreEqual(polyline, "ouchHwg~u@CQN?BSD_@U}@i@qBMaAIk@COa@_AG?E?GQEKKBCAa@IUSKFED?JCD@Nm@EWC[AYIYGg@QSQQKKGMAEIGCGIGGWg@QYOQO_@IWSa@I]GSGUEUGUYqAGYm@{CEQDEc@}Bi@{Bk@mESkBEi@QiBSqAYuA]{@c@{@g@}@SAEIEMC[AS?QCQYc@k@y@MSc@WaAwA{A}B]k@QWWi@Oa@[cAUw@U{@EQGUQJI]OkAm@iF?UWuB[cC]}BUgAQu@Oq@Gc@Cc@]cAYs@Qa@_@e@MUHMCC");
     }
 
     @Test
@@ -125,6 +128,6 @@ public class BicycleRoutingTest {
         var nagold = new GenericLocation(48.55131, 8.72866);
 
         var polyline = calculatePolyline(herrenbergGraph, nufringenBahnhof, nagold);
-        assertThatPolylinesAreEqual(polyline, "mdwgH_hgu@Td@???y@DGLOFMLQ??Rd@JRfA~BLVdCrF~BnERZz@bBDHnAdCJFb@Tz@^hBt@f@Rz@\\TXTLd@Vh@PpAb@|@f@PJFBJFJJDCVJNHF?H@J@TFTJLHNNVZHRjAlAp@t@hBbBpAdAbAv@VZPRd@l@Nb@LVNJ\\NNN^b@^b@p@p@r@n@lAlAHMLSNGT?\\v@p@dArAxAhB`BtArAlBzB|BrCtA`Br@r@d@p@b@^VNT@JCEd@ENGRGHB\\C`AAl@?~@PvA\\fB`@pAFTBJFLHH\\d@j@n@FDp@l@~@v@jBzATP~DfDvAdBAPHVFTBAJAF@FBDB\\ZZ`@^r@Xt@\\rAZzAPnAPtAHvAHhBB`D?~I?lDAb@A~@?hBANKH?RA`@JPP@P?@EDGBCBA^?b@Cj@IZKn@YxA_AXM\\OLOXQXId@IV?~@D~@Jf@@dABJTH?P?J?Fe@`@Wd@Sh@_@HGN?JIFG@I`@yABGJEJGDEl@UHJ?Dl@e@LIXSVS@AJDL@Mg@@EXXBAS}@AE?CEg@LS~@o@FKBGLNXpAJXT\\hBpAfA|@t@bARf@R\\b@v@Td@VZ\\PL?|@c@VGfA[?N@bE?x@?d@B~@?FDf@DZPrBJhC@|AAbAAP?F?l@AnBHpBJrAJp@DNXdBG~@UjBKfAk@`@QTYb@SVSXGR?THXf@h@eBxGs@tBw@bCQn@e@nBBFAXETQl@W~@a@|AYzAUzA?r@JzHFdABHHDbAI~BHHFg@|PLd@Fn@DxAFnHBhD@lECtBpDxBf@XdBt@fCfAZH^Ll@FZCt@?t@DdAPZPVZ^~@v@pBXl@VXTPLHTCNKF]XgCNUNGJ?NFXNTT|Az@?DCNJHKx@Kv@Kx@El@Cr@ApCGp@Np@F\\?NDp@ZbER~DJnAF~@@`AC`@G`AWbC@f@JvADhBDv@H`@Tj@Nf@PpB?fCA~AEn@iAnKg@jEMnAQ~@[dAYr@{ApCYp@KVkAxCw@vA?b@Br@`@pBL~ADRXdBXrBZ`AR`@fAdBJt@`@~BL|ANtCRhEJvDJhFD`EMrDK|BQzBeB`SYxCDEjByApBaBf@Wh@SXGZCP@RB^L^LfAH|@CbBY|@I~@AzC^fAPt@hHRfBTlBb@nD|AhHDN^bBVv@Th@fApBtAdClCrEh@b@f@Z\\LTDRBhADL?lDDPFrDbDzE~DhBz@fFlCfAp@~BpAfBz@fDdBnAp@J?f@hAj@rAb@dAHd@BHDXDb@XzA?P`@bDXhC\\jCD`@Dh@@FArAKl@Mp@M\\GTGfAA~@X`Dj@fGh@vEHb@Hv@NdB@VBVVlER~FjFMXGj@zG`@|CXjD@DnAdSv@jJdCzNxAjLnC?RBcAjO?A?nADFDJ@JPL??@Ib@Pd@FhA`@fAr@p@p@GLIPn@x@pAjCnAvEZv@`@bAd@f@\\tB~@JrBHv@Pl@l@PpAZpCApBDjBr@vCVdAtAbIn@nDnBrD`DvEdAh@zAN`DHtA_@h@Gt@PlBbB~A~BzBfDd@f@DNVCRLPfB@j@?RI~BArACdBIlAa@tC_@zAEXa@BMLIVOfBKr@@v@BtCDfG?tCAf@Ax@IzAWdCWrBW~AMj@Uv@K^Ed@_@`DQ|ACd@@VDTFPh@_@VOR[LSFIDGBJBJ@HDFFBD@FLBRHNAK");
+        assertThatPolylinesAreEqual(polyline, "mdwgH_hgu@Td@@BBF\\t@X_@pGjMp@pARh@XbALTPQVW_AsB?CRZz@bBDHnAdCJHb@Tz@^hBt@f@Rz@\\RXTLd@Vh@PpAb@|@f@PJFBJFJJDCVJNHF?J@J@TFTJLHNNVZHRjAlAp@t@fBbBpAdAbAv@VZPRd@l@Nb@LVNJ\\NNN^b@^b@r@p@p@n@lAlAHMLSNGT?\\v@r@dArAxAhB`BtArAlBzB|BrCtA`Br@r@d@p@b@^VNT@JCEd@ENGRGHB\\C`AAl@?~@PvA\\fB`@pADTBJFLHH\\d@j@n@FDp@l@~@v@jBzATP~DfDvAdBAPHVFTBAJAF@FBDB\\ZZ`@^r@Xt@\\rAZzAPnAPtAHvAHhBB`D?~I?lDAb@A~@?hBANKH?RA`@JPP@P?@EDGBCBA^?b@Cj@KZKn@YxA_AXM\\OLOXOXKd@GVA~@D~@Lf@@dABJTH?P?J?Fe@`@Wd@Sh@_@HGN?JIFGVbAj@xBDXVbB`@hCBNRbADZTf@~C~Ab@f@LPJXHZEB@FHd@Ft@DB@@LC\\IHAHPRt@^rANd@FHXn@^lA`@jAT`ALp@TbB@@XtAVz@Ld@t@|Ad@`@HLEj@BRHJJ?f@h@eBxGs@tBu@bCQn@g@nBBFAXETQl@W~@a@|AYzAUzA?r@JzHFdABHHDbAI~BHHFg@|PLd@Fn@DxAFnHBhD@lECtBpDxBf@XdBt@fCfAZH^Ll@F\\Ct@?t@DbAP\\PVZ^~@v@pBXl@VXTPLHTALKF]XgCNUNGJ?NFXNTT|Az@?DCNJHKx@Kv@Kx@El@Cr@ApCGp@Np@F\\?NDp@ZbER~DJnAF~@@`AC`@G`AWbC@f@JvADhBDv@H`@Tj@Nf@PpB?fCA~AEn@iAnKg@jEMnAQ~@[dAYr@{ApCYp@KVkAxCw@vA?b@Br@`@pBL~ADRXdBXrBZ`AT`@fAdBHt@`@~BL|ANtCRhEJvDJhFD`EMrDK|BQzBeB`SYxCFEjByApBaBf@Wh@SXGZCP@RB^L^LfAH|@CbBY|@I~@AzC^fAPt@hHRfBTlBb@nD|AhHDN^bBVv@Th@fApBtAdCjCrEh@b@f@Z\\LTDRBhADN?jDDPFrDbD|E~DhBz@fFlCfAp@~BpAfBz@fDdBnAn@J?f@hAj@rAb@dAHd@BHDXDb@X|A?P`@`DXhC\\jCDb@Df@@HArAKl@Mn@M\\GTGfAA~@X`Dj@fGh@vEHb@Hv@NdBJFJRRb@Vn@xAxDxA|Cd@f@XGj@zG`@|CXjD@DnAdSv@lJdCxNxAlLnC?UvC?J]tDCd@OpCC\\EJEFEFIFCHAB?DCRARFJBJJXHBLDFBXYLIv@NxAp@z@f@r@j@n@z@pAhClAvEZx@`@bAf@f@ZtB`AJrBHv@Pl@l@PnAZpCCpBFjBr@vCVdAtAbIl@nDnBrDbDvEdAh@zAN`DHtA_@h@Gt@PjBbB`B~BxBfDd@f@DNVARJPfB@j@?RI`CArACdBIjAa@vC_@zAEXa@BMJIVOfBKt@@v@BtCDfG?tCAf@Av@I|AWbCWrBW~AMj@Uv@K^Ed@_@`DQ|ACd@@VDTFPh@_@VOR[LSFIDGBJBJ@HDFFBDBFLBRHNAK");
     }
 }

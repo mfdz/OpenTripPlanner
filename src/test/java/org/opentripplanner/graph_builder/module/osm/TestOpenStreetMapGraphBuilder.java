@@ -28,6 +28,7 @@ import org.opentripplanner.routing.impl.StreetVertexIndexServiceImpl;
 import org.opentripplanner.routing.services.GraphService;
 import org.opentripplanner.routing.spt.GraphPath;
 import org.opentripplanner.routing.vertextype.IntersectionVertex;
+import org.opentripplanner.routing.vertextype.StreetVertex;
 import org.opentripplanner.standalone.CommandLineParameters;
 import org.opentripplanner.standalone.OTPServer;
 import org.opentripplanner.standalone.Router;

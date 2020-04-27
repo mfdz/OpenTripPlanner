@@ -5,7 +5,6 @@ import org.opentripplanner.graph_builder.GraphBuilder;
 import org.opentripplanner.graph_builder.module.StreetLinkerModule;
 import org.opentripplanner.graph_builder.module.osm.GermanyWayPropertySetSource;
 import org.opentripplanner.graph_builder.module.osm.OpenStreetMapModule;
-import org.opentripplanner.graph_builder.services.DefaultStreetEdgeFactory;
 import org.opentripplanner.openstreetmap.impl.AnyFileBasedOpenStreetMapProviderImpl;
 import org.opentripplanner.openstreetmap.services.OpenStreetMapProvider;
 import org.opentripplanner.routing.graph.Graph;
@@ -22,7 +21,6 @@ public class TestGraphBuilder {
         OpenStreetMapProvider osmProvider = new AnyFileBasedOpenStreetMapProviderImpl(new File(osmFile));
         osmProviders.add(osmProvider);
         OpenStreetMapModule osmModule = new OpenStreetMapModule(osmProviders);
-        osmModule.edgeFactory = new DefaultStreetEdgeFactory();
         osmModule.skipVisibility = true;
         osmModule.setDefaultWayPropertySetSource(new GermanyWayPropertySetSource());
         graphBuilder.addModule(osmModule);
