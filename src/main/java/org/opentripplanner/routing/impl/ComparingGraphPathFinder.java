@@ -1,6 +1,5 @@
 package org.opentripplanner.routing.impl;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.TraverseMode;
@@ -43,16 +42,13 @@ public class ComparingGraphPathFinder extends GraphPathFinder {
             // the normal P&R
             CompletableFuture<List<GraphPath>> parkAndRideF = CompletableFuture.supplyAsync(() -> runParkAndRideRequest(originalRequest));
             // the CompletableFutures are there to make sure that the computations run in parallel
-            List<List<GraphPath>> allResults = Stream.of(parkAndRideF, carOnlyF)
+            List<GraphPath> results = Stream.of(parkAndRideF, carOnlyF)
                     .map(CompletableFuture::join)
+                    .flatMap(List::stream)
                     .collect(Collectors.toList());
 
-            List<GraphPath> parkAndRide = allResults.get(0);
-            List<GraphPath> carOnly = allResults.get(1);
 
-            List<GraphPath> results = filterOut(parkAndRide, carOnly);
-
-            if(results == null || results.isEmpty()) {
+            if(results.isEmpty()) {
                 throw new PathNotFoundException();
             }
             return results;
@@ -90,29 +86,5 @@ public class ComparingGraphPathFinder extends GraphPathFinder {
         }
 
         return results;
-    }
-
-    /**
-     * We filter out unsuitable P+R routes.
-     *
-     * Right now "unsuitable" means that driving to the P+R is more than 50% of the distance of
-     * driving all the way to the destination.
-     */
-    private List<GraphPath> filterOut(List<GraphPath> parkAndRide, List<GraphPath> carOnly) {
-        if (carOnly.isEmpty()) {
-            return parkAndRide;
-        } else {
-            double halfDistanceOfCarOnly = carOnly.get(0).streetMeters() / 2;
-            List<GraphPath> onlyFastOnes = parkAndRide.stream().filter(graphPath -> graphPath.streetMeters() < halfDistanceOfCarOnly).collect(Collectors.toList());
-            LOG.debug("Found only {} routes that had less than half the amount of driving than the car only one. Their driving distances are {}", onlyFastOnes.size(), onlyFastOnes.stream().map(g -> g.streetMeters()));
-            LOG.debug("Car-only driving distance {}", carOnly.get(0).streetMeters());
-            if (haveGraphsBeenFilteredOut(parkAndRide, onlyFastOnes)) {
-                return Lists.newArrayList(Iterables.concat(onlyFastOnes, carOnly));
-            } else return parkAndRide;
-        }
-    }
-
-    private boolean haveGraphsBeenFilteredOut(List<GraphPath> parkAndRide, List<GraphPath> onlyFastOnes) {
-        return onlyFastOnes.size() < parkAndRide.size();
     }
 }
