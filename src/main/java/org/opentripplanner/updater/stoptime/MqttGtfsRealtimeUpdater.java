@@ -59,11 +59,21 @@ public class MqttGtfsRealtimeUpdater implements GraphUpdater {
 
     private MqttClient client;
 
+    /**
+     * What type should a newly added route have.
+     *
+     * Possible values are listed at: https://developers.google.com/transit/gtfs/reference/extended-route-types
+     *
+     * This setting is necessary because as of April 2020 the GTFS-RT spec doesn't allow to specify this.
+     */
+    private int newRouteType = defaultNewRouteType;
+
     @Override public void configure(Graph graph, JsonNode config) throws Exception {
         url = config.path("url").asText();
         topic = config.path("topic").asText();
         feedId = config.path("feedId").asText("");
         qos = config.path("qos").asInt(0);
+        newRouteType = config.path("newRouteType").asInt(defaultNewRouteType);
         fuzzyTripMatching = config.path("fuzzyTripMatching").asBoolean(false);
     }
 
@@ -144,7 +154,7 @@ public class MqttGtfsRealtimeUpdater implements GraphUpdater {
                 if (updates != null) {
                     // Handle trip updates via graph writer runnable
                     TripUpdateGraphWriterRunnable runnable = new TripUpdateGraphWriterRunnable(
-                        fullDataset, updates, feedId);
+                        fullDataset, updates, feedId, newRouteType);
                     updaterManager.execute(runnable);
                 }
             }

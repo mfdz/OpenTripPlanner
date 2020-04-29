@@ -67,6 +67,14 @@ public class WebsocketGtfsRealtimeUpdater implements GraphUpdater {
      * The number of seconds to wait before reconnecting after a failed connection.
      */
     private int reconnectPeriodSec;
+    /**
+     * What type should a newly added route have.
+     *
+     * Possible values are listed at: https://developers.google.com/transit/gtfs/reference/extended-route-types
+     *
+     * This setting is necessary because as of April 2020 the GTFS-RT spec doesn't allow to specify this.
+     */
+    private int newRouteType = defaultNewRouteType;
 
     @Override
     public void setGraphUpdaterManager(GraphUpdaterManager updaterManager) {
@@ -78,6 +86,7 @@ public class WebsocketGtfsRealtimeUpdater implements GraphUpdater {
         url = config.path("url").asText();
         feedId = config.path("feedId").asText("");
         reconnectPeriodSec = config.path("reconnectPeriodSec").asInt(DEFAULT_RECONNECT_PERIOD_SEC);
+        newRouteType = config.path("newRouteType").asInt(defaultNewRouteType);
     }
 
     @Override
@@ -182,7 +191,7 @@ public class WebsocketGtfsRealtimeUpdater implements GraphUpdater {
             if (updates != null) {
                 // Handle trip updates via graph writer runnable
                 TripUpdateGraphWriterRunnable runnable = new TripUpdateGraphWriterRunnable(
-                        fullDataset, updates, feedId);
+                        fullDataset, updates, feedId, newRouteType);
                 updaterManager.execute(runnable);
             }
         }

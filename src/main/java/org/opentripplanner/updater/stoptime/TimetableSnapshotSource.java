@@ -164,6 +164,9 @@ public class TimetableSnapshotSource {
         MODIFIED
     }
 
+    public void applyTripUpdates(final Graph graph, final boolean fullDataset, final List<TripUpdate> updates, final String feedId) {
+        applyTripUpdates(graph, fullDataset, updates, feedId, 3);// by default the new route type is bus
+    }
     /**
      * Method to apply a trip update list to the most recent version of the timetable snapshot. A
      * GTFS-RT feed is always applied against a single static feed (indicated by feedId).
@@ -177,7 +180,7 @@ public class TimetableSnapshotSource {
      * @param updates GTFS-RT TripUpdate's that should be applied atomically
      * @param feedId
      */
-    public void applyTripUpdates(final Graph graph, final boolean fullDataset, final List<TripUpdate> updates, final String feedId) {
+    public void applyTripUpdates(final Graph graph, final boolean fullDataset, final List<TripUpdate> updates, final String feedId, int newRouteType) {
         SentryUtilities.setupSentryTimetableSnapshot(graph, fullDataset, feedId, updates,fuzzyTripMatcher != null);
         if (updates == null) {
             LOG.warn("updates is null");
@@ -240,7 +243,7 @@ public class TimetableSnapshotSource {
                         applied = handleScheduledTrip(tripUpdate, feedId, serviceDate);
                         break;
                     case ADDED:
-                        applied = validateAndHandleAddedTrip(graph, tripUpdate, feedId, serviceDate);
+                        applied = validateAndHandleAddedTrip(graph, tripUpdate, feedId, serviceDate, newRouteType);
                         break;
                     case UNSCHEDULED:
                         applied = handleUnscheduledTrip(tripUpdate, feedId, serviceDate);
@@ -376,7 +379,7 @@ public class TimetableSnapshotSource {
      * @return true iff successful
      */
     public boolean validateAndHandleAddedTrip(final Graph graph, final TripUpdate tripUpdate,
-            final String feedId, final ServiceDate serviceDate) {
+            final String feedId, final ServiceDate serviceDate, int newRouteType) {
         // Preconditions
         Preconditions.checkNotNull(graph);
         Preconditions.checkNotNull(tripUpdate);
@@ -427,7 +430,7 @@ public class TimetableSnapshotSource {
         // Handle added trip
         //
 
-        final boolean success = handleAddedTrip(graph, tripUpdate, stops, feedId, serviceDate);
+        final boolean success = handleAddedTrip(graph, tripUpdate, stops, feedId, serviceDate, newRouteType);
         if(success) {
             LOG.info("Added trip {} to feed '{}'", tripUpdate.getTrip().getTripId(), feedId);
         }
@@ -568,7 +571,7 @@ public class TimetableSnapshotSource {
      * @return true iff successful
      */
     private boolean handleAddedTrip(final Graph graph, final TripUpdate tripUpdate, final List<Stop> stops,
-            final String feedId, final ServiceDate serviceDate) {
+            final String feedId, final ServiceDate serviceDate, int newRouteType) {
         // Preconditions
         Preconditions.checkNotNull(stops);
         Preconditions.checkArgument(tripUpdate.getStopTimeUpdateCount() == stops.size(),
@@ -608,7 +611,7 @@ public class TimetableSnapshotSource {
 
             route.setAgency(dummyAgency);
             // Guess the route type as it doesn't exist yet in the specifications
-            route.setType(3); // Bus. Used for short- and long-distance bus routes.
+            route.setType(newRouteType); // Bus. Used for short- and long-distance bus routes.
             // Create route name
             route.setLongName(tripId);
         }

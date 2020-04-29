@@ -15,6 +15,13 @@ import org.opentripplanner.routing.graph.Graph;
 public interface GraphUpdater extends JsonConfigurable {
 
     /**
+     * GTFS-RT allows you to add a route but not specify which type (mode of transport it is).
+     *
+     * OTP uses bus by default but you can configure your updater to use a different value.
+     */
+    int defaultNewRouteType = 3;
+
+    /**
      * Graph updaters must be aware of their manager to be able to execute GraphWriterRunnables.
      * GraphUpdaterConfigurator should take care of calling this function.
      */
