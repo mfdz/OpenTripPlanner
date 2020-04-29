@@ -41,10 +41,13 @@ public class OSMSpecifier {
     }
 
     private List<P2<String>> getPairsFromString(String spec, String separator) {
-        return Arrays.stream(spec.split(separator)).map(pair -> {
-            var kv = pair.split("=");
-            return new P2<>(kv[0], kv[1]);
-        }).collect(Collectors.toList());
+        return Arrays.stream(spec.split(separator))
+                .filter(p -> !p.isEmpty())
+                .map(pair -> {
+                    var kv = pair.split("=");
+                    return new P2<>(kv[0], kv[1]);
+                })
+                .collect(Collectors.toList());
     }
 
     /**
@@ -119,7 +122,7 @@ public class OSMSpecifier {
     public int matchScore(OSMWithTags match) {
         int score = 0;
         int matches = 0;
-        for (P2<String> pair : logicalORPairs) {
+        for (P2<String> pair : logicalANDPairs) {
             String tag = pair.first.toLowerCase();
             String value = pair.second.toLowerCase();
             String matchValue = match.getTag(tag);
