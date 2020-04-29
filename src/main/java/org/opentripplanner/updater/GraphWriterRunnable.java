@@ -2,8 +2,6 @@ package org.opentripplanner.updater;
 
 import org.opentripplanner.routing.graph.Graph;
 
-import java.text.ParseException;
-
 /**
  * The graph should only be modified by a runnable implementing this interface, executed by the
  * GraphUpdaterManager.
@@ -20,5 +18,5 @@ public interface GraphWriterRunnable {
     /**
      * This function is executed to modify the graph.
      */
-    public void run(Graph graph) throws ParseException;
+    public void run(Graph graph);
 }

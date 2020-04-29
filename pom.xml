@@ -675,7 +675,10 @@
             <artifactId>onebusaway-gtfs</artifactId>
             <version>1.3.41</version>
         </dependency>
-        <!-- GTFS Realtime Java bindings -->
+        <!-- GTFS Realtime Java bindings
+            Once https://github.com/MobilityData/gtfs-realtime-bindings/pull/61 is closed
+            we can switch to the official version.
+        -->
         <dependency>
             <groupId>io.leonard</groupId>
             <artifactId>gtfs-realtime-bindings</artifactId>
