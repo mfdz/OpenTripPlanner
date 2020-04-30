@@ -2,11 +2,15 @@ package org.opentripplanner.routing.core;
 
 import org.opentripplanner.routing.edgetype.StreetEdge;
 import org.opentripplanner.routing.vertextype.IntersectionVertex;
+import org.opentripplanner.util.Properties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 
 public class MfdzIntersectionTraversalCostModel extends AbstractIntersectionTraversalCostModel implements Serializable {
 
+    public static final Logger LOG = LoggerFactory.getLogger(MfdzIntersectionTraversalCostModel.class);
     // Model parameters are here. //
     // Constants for when there is a traffic light.
 
@@ -48,7 +52,11 @@ public class MfdzIntersectionTraversalCostModel extends AbstractIntersectionTrav
             return computeDrivingTraversalCost(v, from, to, request);
         }
         else if(mode.isCycling()) {
-            return computeCyclingTraversalCost(v, from, to, fromSpeed, toSpeed, request);
+            var c = computeCyclingTraversalCost(v, from, to, fromSpeed, toSpeed, request);
+            if(LOG.isTraceEnabled()){
+                LOG.trace("Turning from {} to {} has a cost of {}", from, to, c);
+            }
+            return c;
         }
         else {
             return computeNonDrivingTraversalCost(v, from, to, fromSpeed, toSpeed);

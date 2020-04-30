@@ -67,10 +67,11 @@ public class GermanyWayPropertySetSource implements WayPropertySetSource {
         props.setProperties("tracktype=grade4", StreetTraversalPermission.ALL, 1.3, 1.3, true); // Mostly soft.
         props.setProperties("tracktype=grade5", StreetTraversalPermission.ALL, 1.5, 1.5, true); // Soft.
 
-        /** We assume highway/cycleway of a cycle network to be safer (for bicycle network relations, their network is copied to way in postLoad */
-        props.setProperties("lcn=yes", StreetTraversalPermission.ALL, 0.7, 0.7, true); // local cycle network
-        props.setProperties("rcn=yes", StreetTraversalPermission.ALL, 0.7, 0.7, true); // regional cycle network
-        props.setProperties("ncn=yes", StreetTraversalPermission.ALL, 0.7, 0.7, true); // national cycle network
+        /** We assume highway/cycleway of a cycle network to be safer (for bicycle network relations, their network is copied to way in postLoad \
+         *
+         * This uses a newly added logical OR since you don't want to apply the safety multiplier more than once.
+         * */
+        props.setProperties("lcn=yes|rcn=yes|ncn=yes", StreetTraversalPermission.ALL, 0.7, 0.7, true);
 
         // lit=yes currently is tagged very seldom, so we just want to discount where lit=no explicitly
         // props.setProperties("lit=yes", StreetTraversalPermission.ALL, 0.99, 0.99, true); // lit increases safety

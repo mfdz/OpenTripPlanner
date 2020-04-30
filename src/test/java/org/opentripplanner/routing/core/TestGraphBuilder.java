@@ -1,6 +1,5 @@
 package org.opentripplanner.routing.core;
 
-import com.google.common.collect.Lists;
 import org.opentripplanner.graph_builder.GraphBuilder;
 import org.opentripplanner.graph_builder.module.StreetLinkerModule;
 import org.opentripplanner.graph_builder.module.osm.GermanyWayPropertySetSource;
@@ -11,15 +10,18 @@ import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.impl.DefaultStreetVertexIndexFactory;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TestGraphBuilder {
-    public static Graph buildGraph(String osmFile) {
+    public static Graph buildGraph(String... osmFile) {
         GraphBuilder graphBuilder = new GraphBuilder();
 
-        List<OpenStreetMapProvider> osmProviders = Lists.newArrayList();
-        OpenStreetMapProvider osmProvider = new AnyFileBasedOpenStreetMapProviderImpl(new File(osmFile));
-        osmProviders.add(osmProvider);
+        List<OpenStreetMapProvider> osmProviders = Arrays.stream(osmFile)
+                .map(f -> new AnyFileBasedOpenStreetMapProviderImpl(new File(f)))
+                .collect(Collectors.toList());
+
         OpenStreetMapModule osmModule = new OpenStreetMapModule(osmProviders);
         osmModule.skipVisibility = true;
         osmModule.setDefaultWayPropertySetSource(new GermanyWayPropertySetSource());

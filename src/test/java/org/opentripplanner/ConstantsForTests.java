@@ -51,6 +51,8 @@ public class ConstantsForTests {
     public static final String BOEBLINGEN_OSM = "src/test/resources/boeblingen/boeblingen.osm.pbf" ;
     public static final String BOEBLINGEN_GTFS = "src/test/resources/boeblingen/bus-751-only.gtfs.zip" ;
 
+    public static final String VAIHINGEN_NORD_OSM = "src/test/resources/stuttgart/vaihingen-nord.osm.pbf" ;
+
     private static ConstantsForTests instance = null;
 
     private Graph portlandGraph = null;
