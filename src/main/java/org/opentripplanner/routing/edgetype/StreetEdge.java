@@ -317,7 +317,7 @@ public class StreetEdge extends Edge implements Cloneable {
         }
 
         // Automobiles have variable speeds depending on the edge type
-        double speed = calculateSpeed(options, traverseMode, s0.getTimeInMillis());
+        double speed = calculateSpeed(options, traverseMode);
 
         double time = getDistance() / speed;
         double weight;
@@ -428,7 +428,7 @@ public class StreetEdge extends Edge implements Cloneable {
             backPSE = (StreetEdge) backEdge;
             RoutingRequest backOptions = backWalkingBike ?
                     s0.getOptions().bikeWalkingOptions : s0.getOptions();
-            double backSpeed = backPSE.calculateSpeed(backOptions, backMode, s0.getTimeInMillis());
+            double backSpeed = backPSE.calculateSpeed(backOptions, backMode);
             final double realTurnCost;  // Units are seconds.
 
             // Apply turn restrictions
@@ -558,7 +558,7 @@ public class StreetEdge extends Edge implements Cloneable {
      * time we enter this edge, whereas in a reverse search we get the speed based on the time we exit
      * the edge.
      */
-    public double calculateSpeed(RoutingRequest options, TraverseMode traverseMode, long timeMillis) {
+    public double calculateSpeed(RoutingRequest options, TraverseMode traverseMode) {
         if (traverseMode == null) {
             return Double.NaN;
         } else if (traverseMode.isDriving()) {
