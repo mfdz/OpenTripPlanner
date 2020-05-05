@@ -81,7 +81,7 @@ public class TestGermanyWayPropertySetBikeSafety {
         way.addTag("tracktype", "grade1");
         way.addTag("traffic_sign", "DE:260,1026-36");
         way.addTag("width", "2.5");
-        assertEquals(1.3, wps.getDataForWay(way).getSafetyFeatures().first, epsilon);
+        assertEquals(1.0, wps.getDataForWay(way).getSafetyFeatures().first, epsilon);
 
         // https://www.openstreetmap.org/way/124263424
         way = new OSMWithTags();
