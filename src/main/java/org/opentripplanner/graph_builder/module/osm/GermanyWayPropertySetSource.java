@@ -50,6 +50,7 @@ public class GermanyWayPropertySetSource implements WayPropertySetSource {
          * https://www.openstreetmap.org/way/124263424
          */
         props.setProperties("highway=track", StreetTraversalPermission.PEDESTRIAN_AND_BICYCLE, 1.0, 1.0);
+        props.setProperties("highway=track;surface=*", StreetTraversalPermission.PEDESTRIAN_AND_BICYCLE, 1.0, 1.0);
 
         // Pedestrian zones in Germany are forbidden for bicycles by default
         props.setProperties("highway=pedestrian", StreetTraversalPermission.PEDESTRIAN);

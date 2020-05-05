@@ -14,6 +14,7 @@ import org.opentripplanner.standalone.Router;
 import org.opentripplanner.util.PolylineEncoder;
 import org.opentripplanner.util.TestUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,11 +36,12 @@ public class BicycleRoutingTest {
         );
     }
 
-    private static String calculatePolyline(Graph graph, GenericLocation from, GenericLocation to) {
+    private static String calculatePolyline(Graph graph, GenericLocation from, GenericLocation to, GenericLocation... intermediatePlaces) {
         RoutingRequest request = new RoutingRequest();
         request.dateTime = dateTime;
         request.from = from;
         request.to = to;
+        request.intermediatePlaces = Arrays.asList(intermediatePlaces);
 
         request.modes = new TraverseModeSet(TraverseMode.BICYCLE);
 
@@ -61,9 +63,9 @@ public class BicycleRoutingTest {
         request.wheelchairAccessible = false;
 
         GraphPathFinder gpf = new GraphPathFinder(new Router(graph.routerId, graph));
-        List<GraphPath> paths = gpf.getPaths(request);
+        List<GraphPath> paths = gpf.graphPathFinderEntryPoint(request);
 
-        paths.forEach( p -> System.out.println(GraphPathToGeoJson.toGeoJson(p)));
+        //paths.forEach( p -> System.out.println(GraphPathToGeoJson.toGeoJson(p)));
 
         TripPlan plan = GraphPathToTripPlanConverter.generatePlan(paths, request);
         plan.itinerary.get(0).legs.forEach(l -> System.out.println(l.mode +": "+l.legGeometry.getPoints()));
@@ -76,7 +78,7 @@ public class BicycleRoutingTest {
         var nebringen = new GenericLocation(48.56494, 8.85318);
         var herrenbergWilhelmstr = new GenericLocation(48.59586,8.87710);
         var polyline = calculatePolyline(graph, nebringen, herrenbergWilhelmstr);
-        assertThatPolylinesAreEqual(polyline, "{ilgHgc`u@IGC[y@?@qAZaCAKEMGKSAe@CWEOe@GGgCqNa@mEWqCo@eHI_Ay@wIYeDo@kHe@yEu@gGm@aFWmBkHgEKCeC\\gFn@M_@NoAWAOGSWRi@zAsFYKIQc@aAEIo@yAGIG\\IZ]p@e@v@u@|@m@f@cCn@kAHcE`@c@?QEQIUQO_@a@_A_@u@s@i@u@c@q@YkBm@{AOeCeBuBsAiAw@YUYF{@ZcCrB]ZwC`CkAt@_HdDsA`BcAtAMNCByAtAULg@Hq@Aq@EsCQa@CC?qB@]BkAJ_C^eCCqBGqAE[[o@Go@ToCUkAEmAIKAiCK]UFe@c@iD]kB_@sAACe@Rk@JsCh@?IQkBQ?YBu@NEOS}@Y}ESsCMcBUyCi@oEAE");
+        assertThatPolylinesAreEqual(polyline, "{ilgHgc`u@IGC[y@?@qAZaCAKEMGKSAe@CWEOe@GGgCqNa@mEWqCo@eHI_Ay@wIYeDo@kHe@yEu@gGm@aFWmBkHgEKCeC\\gFn@M_@NoAWAOGSWRi@zAsFYKIQc@aAEIo@yAGIG\\IZ]p@e@v@u@|@m@f@cCn@?pBGt@Kx@[fB]bBYx@c@`Ag@x@g@b@S@YEa@Ge@OeBw@eAa@a@Cc@JiBv@_@P]FS@o@KsAg@qAe@e@Co@HyBh@MFMHKLEPCLi@Po@PqAT_@N_Ad@c@Nk@LYJ]JU@i@?w@Cg@?G@K?G??[COGOkAwBs@cBK]]oAa@mAKu@]{ByAtAULg@Hq@Aq@EsCQa@CC?qB@]BkAJ}B^eCCsBGqAE[[o@Go@ToCUkAEmAIKAiCK]UFe@c@iD]kB_@sAACe@Rk@JsCh@?IQkBQ?YBu@NEOS}@Y}ESsCMcBUyCi@oEAE");
     }
 
     @Test
@@ -134,7 +136,7 @@ public class BicycleRoutingTest {
         var nagold = new GenericLocation(48.55131, 8.72866);
 
         var polyline = calculatePolyline(graph, nufringenBahnhof, nagold);
-        assertThatPolylinesAreEqual(polyline, "mdwgH_hgu@Td@@BBF\\t@X_@pGjMp@pARh@XbALTPQVW_AsB?CRZz@bBDHnAdCJHb@Tz@^hBt@f@Rz@\\RXTLd@Vh@PpAb@|@f@PJFBJFJJDCVJNHF?J@J@TFTJLHNNVZHRjAlAp@t@fBbBpAdAbAv@VZPRd@l@Nb@LVNJ\\NNN^b@^b@r@p@p@n@lAlAHMLSNGT?\\v@r@dArAxAhB`BtArAlBzB|BrCtA`Br@r@d@p@b@^VNT@JCEd@ENGRGHB\\C`AAl@?~@PvA\\fB`@pADTBJFLHH\\d@j@n@FDp@l@~@v@jBzATP~DfDvAdBAPHVFTBAJAF@FBDB\\ZZ`@^r@Xt@\\rAZzAPnAPtAHvAHhBB`D?~I?lDAb@A~@?hBANKH?RA`@JPP@P?@EDGBCBA^?b@Cj@KZKn@YxA_AXM\\OLOXOXKd@GVA~@D~@Lf@@dABJTH?P?J?Fe@`@Wd@Sh@_@HGN?JIFGVbAj@xBDXVbB`@hCBNRbADZTf@~C~Ab@f@LPJXHZDA^MHBHBLGxBuAHE^d@AB?d@AHN`A`Ac@bAyANt@Pv@NRR_@b@Yz@e@x@?d@Cd@Hf@J`@NlABXATCVEFAf@tBb@xAXxAVdC\\zC\\`CNOp@`BDTBPDPNV^Lp@Bn@@L@V?b@BTHb@^Zh@XbAZfA\\rA\\hA^p@\\`@n@d@NTJZNv@L^CPXJ^Tb@F`@Rp@b@r@l@d@t@l@bAjApCNXHBHlAPhAd@~BNr@p@jCZvARzAHx@P~CLrBBVFBDl@Bf@JbB@T@F@PFj@Dr@FfAC|@A`@A`@?FErCARAf@ElB@vABxAHtAVzCT|DDjBDzAFxAHvAPpAZzATl@Pb@f@v@|@jA|@~ATn@h@rB|@pEp@tCLf@x@rCzA`Fj@dCh@lBl@vAfAbCdBtEj@vAf@rA~AxFd@vAj@nBR|@TnA^lB\\rAZdAVn@Vd@`@r@V\\l@l@bCfBd@`@d@l@Zf@b@z@b@lAVjABVDb@JfADt@?VFnC?^BtAD`B@b@Jz@DVTp@Rh@Vl@J\\Rr@Dd@Hv@PnBJz@^vBPbATlAj@`D^lB~@pE^pB^pB\\jCTfBPxBRnCPpCLzBHzBd@pJv@bFjBlFfDpHb@~A|@lDEDMNJh@j@xBf@vAv@jADT@^EtFC`HL`IHpHCpAAp@@^@^@JHd@BTh@vCRdATnBPtB@nG@t@@DB|@HfCTlGLjD?HH|BDpBPrDuDHSBj@zG`@|CXjD@DnAdSv@jJdCzNxAjLnC?UvC?L]tDCd@OpCC\\EJEFEFIFCHAB?DCRARFJBJJXHBLDFBXYLIv@NxAp@z@f@r@j@n@z@pAhClAvEZx@`@bAf@f@ZtB`AJrBHv@Pl@l@PnAZpCCpBFjBr@vCVdAtAbIl@nDnBrDbDvEdAh@zAN`DHtA_@h@Gt@PjBbB`B~BxBfDd@f@DNVCRLPfB@j@?RI~BArACdBIlAa@tC_@zAEXa@BMLIVOfBKr@@v@BtCDfG?tCAf@Ax@IzAWdCWrBW~AMj@Uv@K^Ed@_@`DQ|ACd@@VDTFPh@_@VOR[LSFIDGBJBJ@HDFFBDBFLBRHNAK");
+        assertThatPolylinesAreEqual(polyline, "mdwgH_hgu@Td@@BBF\\t@X_@pGjMp@pARh@XbALTPQVW_AsB?CRZz@bBDHnAdCJHb@Tz@^hBt@f@Rz@\\RXTLd@Vh@PpAb@|@f@PJFBJFJJDCVJNHF?J@J@TFTJLHNNVZHRjAlAp@t@fBbBpAdAbAv@VZPRd@l@Nb@LVNJ\\NNN^b@^b@r@p@p@n@lAlAHMLSNGT?\\v@r@dArAxAhB`BtArAlBzB|BrCtA`Br@r@d@p@b@^VNT@JCEd@ENGRGHB\\C`AAl@?~@PvA\\fB`@pADTBJFLHH\\d@j@n@FDp@l@~@v@jBzATP~DfDvAdBAPHVFTBAJAF@FBDB\\ZZ`@^r@Xt@\\rAZzAPnAPtAHvAHhBB`D?~I?lDAb@A~@?hBANKH?RA`@JPP@P?@EDGBCBA^?b@Cj@KZKn@YxA_AXM\\OLOXOXKd@GVA~@D~@Lf@@dABJTH?P?J?Fe@`@Wd@Sh@_@HGN?JIFGVbAj@xBDXVbB`@hCBNRbADZTf@~C~Ab@f@LPJXHZDA^MHBHBLGxBuAHE^d@AB?d@AHN`A`Ac@bAyANt@Pv@NRR_@b@Yz@e@x@?d@Cd@Hf@J`@NlABXATCVEFAf@tBb@xAXxAVdC\\zC\\`CNOp@`BDTBPDPNV^Lp@Bn@@L@V?b@BTHb@^Zh@XbAZfA\\rA\\hA^p@\\`@n@d@NTJZNv@L^CPXJ^Tb@F`@Rp@b@r@l@d@t@l@bAjApCNXHBHlAPhAd@~BNr@p@jCZvARzAHx@P~CLrBBVFBDl@Bf@JbB@T@F@PFj@Dr@FfAC|@A`@A`@?FErCARAf@ElB@vABxAHtAVzCT|DDjBDzAFxAHvAPpAZzATl@Pb@f@v@|@jA|@~ATn@h@rB|@pEp@tCLf@x@rCzA`Fj@dCh@lBl@vAfAbCdBtEj@vAf@rA~AxFd@vAj@nBR|@TnA^lB\\rAZdAVn@Vd@`@r@V\\l@l@bCfBd@`@d@l@Zf@b@z@b@lAVjABVDb@JfADt@?VFnC?^BtAD`B@b@Jz@DVTp@Rh@Vl@J\\Rr@Dd@Hv@PnBMDb@rCn@tDn@bD\\hB`@rBl@tCNv@Jh@Lv@TxAHl@P`BVlCLxAN`CJ`BRzEAHFpBFzALhBRlBVnB\\hBRp@`@bAn@~AnB`En@|Ah@`B\\lAPnAFXJh@j@xBf@vAv@jADT@^EtFC`HL`IHpHCpAAp@@^@^@JHd@BTh@vCRdATnBPtB@nG@t@@DB|@HfCTlGLjD?HH|BDpBPrDuDHSBj@zG`@|CXjD@DnAdSv@jJdCzNxAjLnC?UvC?L]tDCd@OpCC\\EJEFEFIFCHAB?DCRARFJBJJXHBLDFBXYLIv@NxAp@z@f@r@j@n@z@pAhClAvEZx@`@bAf@f@ZtB`AJrBHv@Pl@l@PnAZpCCpBFjBr@vCVdAtAbIl@nDnBrDbDvEdAh@zAN`DHtA_@h@Gt@PjBbB`B~BxBfDd@f@DNVCRLPfB@j@?RI~BArACdBIlAa@tC_@zAEXa@BMLIVOfBKr@@v@BtCDfG?tCAf@Ax@IzAWdCWrBW~AMj@Uv@K^Ed@_@`DQ|ACd@@VDTFPh@_@VOR[LSFIDGBJBJ@HDFFBDBFLBRHNAK");
     }
 
     @Test
@@ -144,5 +146,14 @@ public class BicycleRoutingTest {
 
         var polyline = calculatePolyline(graph, holderbuschweg, allmandRing);
         assertThatPolylinesAreEqual(polyline, "ywmhHs}ov@QT]^[^[Z_AhAIHi@z@e@`AUj@EJMMICs@C{AAyA?uD?OFIBGBHn@?N?H@\\E@k@PWFWD");
+    }
+
+    @Test
+    public void takeTrackhOutsideUnterjettingen() {
+        var southOfUnterjettingen = new GenericLocation(48.558041429, 8.784744);
+        var wielandStr = new GenericLocation(48.56160, 8.78256);
+
+        var polyline = calculatePolyline(graph, southOfUnterjettingen, wielandStr);
+        assertThatPolylinesAreEqual(polyline, "w{jgHswrt@?fA@dHKCI?K@IBK@IAKCMEMCMEMCa@K[KUGUGQEQA[CYESAC?CAI@I?S?g@ASAQASAQAa@A[@W??R?XJPC?w@\\]N?r@iA?s@BC?");
     }
 }
