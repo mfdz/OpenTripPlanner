@@ -10,7 +10,6 @@ import org.opentripplanner.routing.vertextype.IntersectionVertex;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -56,17 +55,21 @@ public class GraphPathToGeoJson {
 
     private static List<Feature> backEdgeToLineString(State state, Optional<Edge> maybeBackEdge) {
         return maybeBackEdge
-                .flatMap(edge -> {
-                    return toLineString(edge)
+                .flatMap(backEdge -> {
+                    return toLineString(backEdge)
                             .map(ls -> {
                                 var f = new Feature();
                                 f.setGeometry(ls);
 
-                                f.setProperty("name", edge.getName());
+                                var turnCost = calculateTurnCost(state, (StreetEdge) backEdge);
+
+                                f.setProperty("name", backEdge.getName());
                                 f.setProperty("weight", String.valueOf(state.getWeightDelta()));
-                                f.setProperty("class", edge.getClass().getSimpleName());
-                                if(edge instanceof StreetEdge) {
-                                    var streetEdge = (StreetEdge) edge;
+                                f.setProperty("class", backEdge.getClass().getSimpleName());
+                                f.setProperty("turnCost", turnCost);
+                                f.setProperty("stroke-width", 5);
+                                if(backEdge instanceof StreetEdge) {
+                                    var streetEdge = (StreetEdge) backEdge;
                                     f.setProperty("bicycleSafetyFactor", streetEdge.getBicycleSafetyFactor());
                                 }
                                 return f;
@@ -74,6 +77,33 @@ public class GraphPathToGeoJson {
                 })
                 .stream()
                 .collect(Collectors.toList());
+    }
+
+    private static double calculateTurnCost(State state, StreetEdge toEdge) {
+        var maybeFromEdge = Optional
+                .ofNullable(state.backState.getBackEdge())
+                .filter(e -> e instanceof StreetEdge)
+                .map(e -> (StreetEdge) e);
+
+        var maybeIntersection = Optional
+                .ofNullable(state.backState.getVertex())
+                .filter(v -> v instanceof IntersectionVertex)
+                .map(v -> (IntersectionVertex) v);
+
+        if(maybeFromEdge.isPresent() && maybeIntersection.isPresent()) {
+            var fromSpeed = maybeFromEdge.get().calculateSpeed(state.getOptions(), state.getBackMode());
+            var toSpeed = toEdge.calculateSpeed(state.getOptions(), state.getBackState().getBackMode());
+
+            return state.getOptions().getIntersectionTraversalCostModel()
+                    .computeTraversalCost(
+                            maybeIntersection.get(),
+                            maybeFromEdge.get(),
+                            toEdge,
+                            state.getBackMode(),
+                            state.getOptions(),
+                            (float) fromSpeed,
+                            (float) toSpeed);
+        } else return 0;
     }
 
     private static Optional<LineString> toLineString(Edge edge) {
