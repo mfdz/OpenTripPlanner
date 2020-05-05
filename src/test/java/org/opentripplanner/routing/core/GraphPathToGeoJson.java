@@ -3,8 +3,10 @@ package org.opentripplanner.routing.core;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.geojson.*;
+import org.opentripplanner.routing.edgetype.StreetEdge;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.spt.GraphPath;
+import org.opentripplanner.routing.vertextype.IntersectionVertex;
 
 import java.util.Arrays;
 import java.util.List;
@@ -41,8 +43,14 @@ public class GraphPathToGeoJson {
         var point = new Point(vertex.getLon(), vertex.getLat());
         var feature = new Feature();
         feature.setGeometry(point);
-        feature.setProperty("weight", state.weight);
-        feature.setProperty("name", vertex.getLabel());
+        feature.setProperty("accumulatedWeight", state.weight);
+        feature.setProperty("label", vertex.getLabel());
+        feature.setProperty("class", vertex.getClass().getSimpleName());
+        if(vertex instanceof IntersectionVertex) {
+            var intersection = (IntersectionVertex) vertex;
+            feature.setProperty("trafficLight", String.valueOf(intersection.trafficLight));
+            feature.setProperty("freeFlowing", String.valueOf(intersection.inferredFreeFlowing()));
+        }
         return feature;
     }
 
@@ -53,11 +61,14 @@ public class GraphPathToGeoJson {
                             .map(ls -> {
                                 var f = new Feature();
                                 f.setGeometry(ls);
-                                Map<String, Object> props = Map.of(
-                                        "id", edge.getName(),
-                                        "weight", String.valueOf(state.getWeightDelta())
-                                );
-                                f.setProperties(props);
+
+                                f.setProperty("name", edge.getName());
+                                f.setProperty("weight", String.valueOf(state.getWeightDelta()));
+                                f.setProperty("class", edge.getClass().getSimpleName());
+                                if(edge instanceof StreetEdge) {
+                                    var streetEdge = (StreetEdge) edge;
+                                    f.setProperty("bicycleSafetyFactor", streetEdge.getBicycleSafetyFactor());
+                                }
                                 return f;
                             });
                 })
