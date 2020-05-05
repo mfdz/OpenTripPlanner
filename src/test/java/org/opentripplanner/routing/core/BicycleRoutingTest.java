@@ -63,6 +63,8 @@ public class BicycleRoutingTest {
         GraphPathFinder gpf = new GraphPathFinder(new Router(graph.routerId, graph));
         List<GraphPath> paths = gpf.getPaths(request);
 
+        paths.forEach( p -> System.out.println(GraphPathToGeoJson.toGeoJson(p)));
+
         TripPlan plan = GraphPathToTripPlanConverter.generatePlan(paths, request);
         plan.itinerary.get(0).legs.forEach(l -> System.out.println(l.mode +": "+l.legGeometry.getPoints()));
         Stream<List<Coordinate>> points = plan.itinerary.get(0).legs.stream().map(l -> PolylineEncoder.decode(l.legGeometry));
