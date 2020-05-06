@@ -6,6 +6,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import com.google.protobuf.ExtensionRegistry;
+import de.mfdz.RealtimeExtension;
 import org.opentripplanner.updater.JsonConfigurable;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.util.HttpUtils;
@@ -49,6 +51,10 @@ public class GtfsRealtimeHttpTripUpdateSource implements TripUpdateSource, JsonC
         FeedMessage feedMessage = null;
         List<FeedEntity> feedEntityList = null;
         List<TripUpdate> updates = null;
+
+        ExtensionRegistry registry = ExtensionRegistry.newInstance();
+        registry.add(RealtimeExtension.tripDescriptor);
+
         fullDataset = true;
         try {
             InputStream is = HttpUtils.getData(
@@ -57,7 +63,7 @@ public class GtfsRealtimeHttpTripUpdateSource implements TripUpdateSource, JsonC
                     "application/x-google-protobuf, application/x-protobuf, application/protobuf, application/octet-stream, */*");
             if (is != null) {
                 // Decode message
-                feedMessage = FeedMessage.PARSER.parseFrom(is);
+                feedMessage = FeedMessage.PARSER.parseFrom(is, registry);
                 feedEntityList = feedMessage.getEntityList();
                 
                 // Change fullDataset value if this is an incremental update

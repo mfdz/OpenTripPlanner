@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.locks.ReentrantLock;
 
+import de.mfdz.RealtimeExtension;
 import org.opentripplanner.model.Agency;
 import org.opentripplanner.model.FeedScopedId;
 import org.opentripplanner.model.Route;
@@ -152,6 +153,21 @@ public class TimetableSnapshotSource {
     }
 
     /**
+     * This enum is purely internal to this class. It compensates for the fact the the official GTFS-RT proto file
+     * does not know of TripDescriptor.ScheduleRelationship.MODIFIED.
+     */
+    private enum TripUpdateType {
+        SCHEDULED,
+        ADDED,
+        UNSCHEDULED,
+        CANCELED,
+        MODIFIED
+    }
+
+    public void applyTripUpdates(final Graph graph, final boolean fullDataset, final List<TripUpdate> updates, final String feedId) {
+        applyTripUpdates(graph, fullDataset, updates, feedId, 3);// by default the new route type is bus
+    }
+    /**
      * Method to apply a trip update list to the most recent version of the timetable snapshot. A
      * GTFS-RT feed is always applied against a single static feed (indicated by feedId).
      *
@@ -164,7 +180,7 @@ public class TimetableSnapshotSource {
      * @param updates GTFS-RT TripUpdate's that should be applied atomically
      * @param feedId
      */
-    public void applyTripUpdates(final Graph graph, final boolean fullDataset, final List<TripUpdate> updates, final String feedId) {
+    public void applyTripUpdates(final Graph graph, final boolean fullDataset, final List<TripUpdate> updates, final String feedId, int newRouteType) {
         SentryUtilities.setupSentryTimetableSnapshot(graph, fullDataset, feedId, updates,fuzzyTripMatcher != null);
         if (updates == null) {
             LOG.warn("updates is null");
@@ -220,14 +236,14 @@ public class TimetableSnapshotSource {
 
                 // Determine what kind of trip update this is
                 boolean applied = false;
-                final TripDescriptor.ScheduleRelationship tripScheduleRelationship = determineTripScheduleRelationship(
+                final TripUpdateType tripScheduleRelationship = determineTripScheduleRelationship(
                         tripUpdate);
                 switch (tripScheduleRelationship) {
                     case SCHEDULED:
                         applied = handleScheduledTrip(tripUpdate, feedId, serviceDate);
                         break;
                     case ADDED:
-                        applied = validateAndHandleAddedTrip(graph, tripUpdate, feedId, serviceDate);
+                        applied = validateAndHandleAddedTrip(graph, tripUpdate, feedId, serviceDate, newRouteType);
                         break;
                     case UNSCHEDULED:
                         applied = handleUnscheduledTrip(tripUpdate, feedId, serviceDate);
@@ -273,16 +289,16 @@ public class TimetableSnapshotSource {
      * @param tripUpdate trip update
      * @return TripDescriptor.ScheduleRelationship indicating how the trip update should be handled
      */
-    private TripDescriptor.ScheduleRelationship determineTripScheduleRelationship(final TripUpdate tripUpdate) {
+    private TripUpdateType determineTripScheduleRelationship(final TripUpdate tripUpdate) {
         // Assume default value
-        TripDescriptor.ScheduleRelationship tripScheduleRelationship = TripDescriptor.ScheduleRelationship.SCHEDULED;
+        var updateType = TripUpdateType.SCHEDULED;
 
         // If trip update contains schedule relationship, use it
         if (tripUpdate.hasTrip() && tripUpdate.getTrip().hasScheduleRelationship()) {
-            tripScheduleRelationship = tripUpdate.getTrip().getScheduleRelationship();
+            updateType = scheduleRelationShipToUpdateType(tripUpdate.getTrip().getScheduleRelationship());
         }
 
-        if (tripScheduleRelationship.equals(TripDescriptor.ScheduleRelationship.SCHEDULED)) {
+        if (updateType.equals(TripDescriptor.ScheduleRelationship.SCHEDULED)) {
             // Loop over stops to check whether there are ADDED or SKIPPED stops
             boolean hasModifiedStops = false;
             for (final StopTimeUpdate stopTimeUpdate : tripUpdate.getStopTimeUpdateList()) {
@@ -301,11 +317,25 @@ public class TimetableSnapshotSource {
 
             // If stops are modified, handle trip update like a modified trip
             if (hasModifiedStops) {
-                tripScheduleRelationship = TripDescriptor.ScheduleRelationship.MODIFIED;
+                updateType = TripUpdateType.MODIFIED;
             }
         }
 
-        return tripScheduleRelationship;
+        return updateType;
+    }
+
+    private TripUpdateType scheduleRelationShipToUpdateType(TripDescriptor.ScheduleRelationship relationship) {
+        switch (relationship) {
+            case SCHEDULED:
+                return TripUpdateType.SCHEDULED;
+            case ADDED:
+                return TripUpdateType.ADDED;
+            case UNSCHEDULED:
+                return TripUpdateType.UNSCHEDULED;
+            case CANCELED:
+                return TripUpdateType.CANCELED;
+        }
+        return null;
     }
 
     private boolean handleScheduledTrip(final TripUpdate tripUpdate, final String feedId, final ServiceDate serviceDate) {
@@ -348,8 +378,8 @@ public class TimetableSnapshotSource {
      * @param serviceDate
      * @return true iff successful
      */
-    private boolean validateAndHandleAddedTrip(final Graph graph, final TripUpdate tripUpdate,
-            final String feedId, final ServiceDate serviceDate) {
+    public boolean validateAndHandleAddedTrip(final Graph graph, final TripUpdate tripUpdate,
+            final String feedId, final ServiceDate serviceDate, int newRouteType) {
         // Preconditions
         Preconditions.checkNotNull(graph);
         Preconditions.checkNotNull(tripUpdate);
@@ -392,6 +422,7 @@ public class TimetableSnapshotSource {
         // Check whether all stop times are available and all stops exist
         final List<Stop> stops = checkNewStopTimeUpdatesAndFindStops(feedId, tripUpdate);
         if (stops == null) {
+            LOG.warn("Not all stops have a stop time or stops not found. skipping.");
             return false;
         }
 
@@ -399,7 +430,10 @@ public class TimetableSnapshotSource {
         // Handle added trip
         //
 
-        final boolean success = handleAddedTrip(graph, tripUpdate, stops, feedId, serviceDate);
+        final boolean success = handleAddedTrip(graph, tripUpdate, stops, feedId, serviceDate, newRouteType);
+        if(success) {
+            LOG.info("Added trip {} to feed '{}'", tripUpdate.getTrip().getTripId(), feedId);
+        }
         return success;
     }
 
@@ -537,7 +571,7 @@ public class TimetableSnapshotSource {
      * @return true iff successful
      */
     private boolean handleAddedTrip(final Graph graph, final TripUpdate tripUpdate, final List<Stop> stops,
-            final String feedId, final ServiceDate serviceDate) {
+            final String feedId, final ServiceDate serviceDate, int newRouteType) {
         // Preconditions
         Preconditions.checkNotNull(stops);
         Preconditions.checkArgument(tripUpdate.getStopTimeUpdateCount() == stops.size(),
@@ -567,9 +601,17 @@ public class TimetableSnapshotSource {
             } else {
                 route.setId(new FeedScopedId(feedId, tripId));
             }
+
+            TripDescriptor trip = tripUpdate.getTrip();
+            if(trip.hasExtension(RealtimeExtension.tripDescriptor)) {
+                String url = trip.getExtension(RealtimeExtension.tripDescriptor).getTripUrl();
+                LOG.info("Trip '{}' has URL '{}'", trip.getTripId(), url);
+                route.setUrl(url);
+            }
+
             route.setAgency(dummyAgency);
             // Guess the route type as it doesn't exist yet in the specifications
-            route.setType(3); // Bus. Used for short- and long-distance bus routes.
+            route.setType(newRouteType); // Bus. Used for short- and long-distance bus routes.
             // Create route name
             route.setLongName(tripId);
         }

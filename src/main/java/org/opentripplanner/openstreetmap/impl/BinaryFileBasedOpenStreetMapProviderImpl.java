@@ -1,12 +1,12 @@
 package org.opentripplanner.openstreetmap.impl;
 
+import org.openstreetmap.osmosis.osmbinary.file.BlockInputStream;
 import org.opentripplanner.openstreetmap.services.OpenStreetMapContentHandler;
 import org.opentripplanner.openstreetmap.services.OpenStreetMapProvider;
 
 import java.io.File;
 import java.io.FileInputStream;
 
-import crosby.binary.file.BlockInputStream;
 
 /**
  * Parser for the OpenStreetMap PBF format. Parses files in three passes:

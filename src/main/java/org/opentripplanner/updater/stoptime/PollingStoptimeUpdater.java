@@ -65,6 +65,15 @@ public class PollingStoptimeUpdater extends PollingGraphUpdater {
      */
     private GtfsRealtimeFuzzyTripMatcher fuzzyTripMatcher;
 
+    /**
+     * What type should a newly added route have.
+     *
+     * Possible values are listed at: https://developers.google.com/transit/gtfs/reference/extended-route-types
+     *
+     * This setting is necessary because as of April 2020 the GTFS-RT spec doesn't allow to specify this.
+     */
+    private int newRouteType = defaultNewRouteType;
+
     @Override
     public void setGraphUpdaterManager(GraphUpdaterManager updaterManager) {
         this.updaterManager = updaterManager;
@@ -74,6 +83,7 @@ public class PollingStoptimeUpdater extends PollingGraphUpdater {
     public void configurePolling(Graph graph, JsonNode config) throws Exception {
         // Create update streamer from preferences
         feedId = config.path("feedId").asText("");
+        newRouteType = config.path("newRouteType").asInt(defaultNewRouteType);
         String sourceType = config.path("sourceType").asText();
         if (sourceType != null) {
             if (sourceType.equals("gtfs-http")) {
@@ -157,7 +167,7 @@ public class PollingStoptimeUpdater extends PollingGraphUpdater {
         if (updates != null) {
             // Handle trip updates via graph writer runnable
             TripUpdateGraphWriterRunnable runnable =
-                    new TripUpdateGraphWriterRunnable(fullDataset, updates, feedId);
+                    new TripUpdateGraphWriterRunnable(fullDataset, updates, feedId, newRouteType);
             updaterManager.execute(runnable);
         }
     }
