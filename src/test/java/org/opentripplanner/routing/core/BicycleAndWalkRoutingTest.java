@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 
 import static org.opentripplanner.routing.core.PolylineAssert.assertThatPolylinesAreEqual;
 
-public class BicycleRoutingTest {
+public class BicycleAndWalkRoutingTest {
 
     static Graph graph;
 
@@ -37,13 +37,17 @@ public class BicycleRoutingTest {
     }
 
     private static String calculatePolyline(Graph graph, GenericLocation from, GenericLocation to, GenericLocation... intermediatePlaces) {
+        return calculatePolyline(graph, from, to, TraverseMode.BICYCLE, intermediatePlaces);
+    }
+
+    private static String calculatePolyline(Graph graph, GenericLocation from, GenericLocation to, TraverseMode mode, GenericLocation... intermediatePlaces) {
         RoutingRequest request = new RoutingRequest();
         request.dateTime = dateTime;
         request.from = from;
         request.to = to;
         request.intermediatePlaces = Arrays.asList(intermediatePlaces);
 
-        request.modes = new TraverseModeSet(TraverseMode.BICYCLE);
+        request.modes = new TraverseModeSet(mode);
 
         request.setNumItineraries(5);
         request.setRoutingContext(graph);
@@ -155,5 +159,23 @@ public class BicycleRoutingTest {
 
         var polyline = calculatePolyline(graph, southOfUnterjettingen, wielandStr);
         assertThatPolylinesAreEqual(polyline, "w{jgHswrt@?fA@dHKCI?K@IBK@IAKCMEMCMEMCa@K[KUGUGQEQA[CYESAC?CAI@I?S?g@ASAQASAQAa@A[@W??R?XJPC?w@\\]N?r@iA?s@BC?");
+    }
+
+    @Test
+    public void shouldWalkOnResidentialRoundabouts() {
+        var start = new GenericLocation(48.59190, 8.85884);
+        var end = new GenericLocation(48.59270, 8.86068);
+
+        var polyline = calculatePolyline(graph, start, end, TraverseMode.WALK);
+        assertThatPolylinesAreEqual(polyline, "grqgHufau@?Ee@cA?ECACAC@?DCBABC?CACCAE?CCKiAsESy@BC");
+    }
+
+    @Test
+    public void shouldNotWalkOnRoundaboutsOutsideTowns() {
+        var start = new GenericLocation(48.56270, 8.75747);
+        var end = new GenericLocation(48.56215, 8.75728);
+
+        var polyline = calculatePolyline(graph, start, end, TraverseMode.WALK);
+        assertThatPolylinesAreEqual(polyline, "{{kgHammt@N?CRARFJBJJXHBLDFBXYLI?MBQ??");
     }
 }

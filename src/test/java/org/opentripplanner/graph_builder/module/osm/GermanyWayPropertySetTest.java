@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
  *
  * @author hbruch
  */
-public class TestGermanyWayPropertySetBikeSafety {
+public class GermanyWayPropertySetTest {
     static WayPropertySet wps = new WayPropertySet();
     static float epsilon = 0.01f;
     static WayPropertySetSource source = new GermanyWayPropertySetSource();
@@ -126,6 +126,20 @@ public class TestGermanyWayPropertySetBikeSafety {
         );
     }
 
+    @Test
+    public void setCorrectPermissionsForRoundabouts() {
+        // https://www.openstreetmap.org/way/184185551
+        var residential = new OSMWithTags();
+        residential.addTag("highway", "residential");
+        residential.addTag("junction", "roundabout");
+        assertEquals(wps.getDataForWay(residential).getPermission(), StreetTraversalPermission.ALL);
 
+        //https://www.openstreetmap.org/way/31109939
+        var primary = new OSMWithTags();
+        primary.addTag("highway", "primary");
+        primary.addTag("junction", "roundabout");
+        assertEquals(wps.getDataForWay(primary).getPermission(), StreetTraversalPermission.BICYCLE_AND_CAR);
+
+    }
 
 }
