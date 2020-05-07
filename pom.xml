@@ -467,13 +467,6 @@
             <id>osgeo</id>
             <name>OSGeo Release Repository</name>
             <url>https://repo.osgeo.org/repository/release/</url>
-            <snapshots><enabled>false</enabled></snapshots>
-            <releases><enabled>true</enabled></releases>
-        </repository>
-        <repository>
-            <id>geosolutions</id>
-            <name>Geosolutions</name>
-            <url>http://maven.geo-solutions.it/</url>
         </repository>
         <repository>
             <id>axis</id>

@@ -182,7 +182,7 @@ public class GraphPathFinder {
                 try {
                     newPaths = compactLegsByReversedSearch(aStar, originalReq, options, newPaths, timeout, reversedSearchHeuristic);
                 } catch (Exception e) {
-                    LOG.warn("CompactLegsByReversedSearch failed on request: " + originalReq.toString());
+                    LOG.debug("CompactLegsByReversedSearch failed on request: " + originalReq.toString());
                 }
             }
 
@@ -530,7 +530,7 @@ public class GraphPathFinder {
             for (Edge e : path.edges) {
                 lastState = e.traverse(lastState);
                 if (lastState==null){
-                    LOG.warn("About to add null lastState to newPath. This may cause nullPointer in next iteration? Caused by traversing edge: " + e);
+                    LOG.debug("About to add null lastState to newPath. This may cause nullPointer in next iteration? Caused by traversing edge: " + e);
                 }
                 newPath.edges.add(e);
                 newPath.states.add(lastState);
