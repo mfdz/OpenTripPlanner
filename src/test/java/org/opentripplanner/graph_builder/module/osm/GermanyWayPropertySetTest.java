@@ -142,4 +142,19 @@ public class GermanyWayPropertySetTest {
 
     }
 
+    @Test
+    public void setCorrectBikeSafetyValuesForBothDirections() {
+        // https://www.openstreetmap.org/way/13420871
+        var residential = new OSMWithTags();
+        residential.addTag("highway", "residential");
+        residential.addTag("lit", "yes");
+        residential.addTag("maxspeed", "30");
+        residential.addTag("name", "Auf der Heide");
+        residential.addTag("surface", "asphalt");
+        assertEquals(
+                wps.getDataForWay(residential).getSafetyFeatures().first,
+                wps.getDataForWay(residential).getSafetyFeatures().second,
+                epsilon
+        );
+    }
 }
