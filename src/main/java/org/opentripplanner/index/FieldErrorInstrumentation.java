@@ -26,8 +26,6 @@ import org.opentripplanner.standalone.Router;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import com.google.common.collect.Maps;
-
 
 /**
  * Log field errors
@@ -130,7 +128,7 @@ public final class FieldErrorInstrumentation implements Instrumentation {
                 } 
                 if(!logged && result.getErrors().size() > 0) {
                     setMetadata();
-                    LOG.warn("Errors executing query");
+                    LOG.warn("Errors executing query: {}", result.getErrors());
                 } 
                 
                 MDC.clear();
@@ -167,11 +165,16 @@ public final class FieldErrorInstrumentation implements Instrumentation {
                 final StringWriter sw = new StringWriter();
                 final PrintWriter pw = new PrintWriter(sw);
                 e.printStackTrace(pw);
+
+                var parent = parameters.getEnvironment().getParentType().getName();
+                var field = parameters.getField().getName();
+
                 MDC.put("trace",  sw.toString());
-                MDC.put("parent", parameters.getEnvironment().getParentType().getName());
-                MDC.put("field", parameters.getField().getName());
+                MDC.put("parent", parent);
+                MDC.put("field", field);
                 setMetadata();
-                LOG.warn("Exception while fetching field", e);      
+
+                LOG.error(String.format("Exception while fetching field '%s' with parent '%s'", field, parent), e);
                 MDC.clear();
             }
         };
