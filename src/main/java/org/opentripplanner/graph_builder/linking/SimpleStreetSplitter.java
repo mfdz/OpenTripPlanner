@@ -423,7 +423,7 @@ public class SimpleStreetSplitter {
             edge.getFromVertex().removeOutgoing(edge);
 
             // As edges created via destructive splitting don't know their parentEdge,
-            // it's restrictions need to be handled explicitly
+            // its restrictions need to be handled explicitly
             copyRestrictionsToSplitEdges(edge, edges);
         }
 
@@ -434,9 +434,16 @@ public class SimpleStreetSplitter {
      * restrictions on incoming edges.
      */
     private void copyRestrictionsToSplitEdges(StreetEdge edge, P2<StreetEdge> edges) {
-        StreetEdge fromEdge = !edge.isBack() ? edges.first : edges.second;
 
         graph.getTurnRestrictions(edge).forEach(restriction -> {
+            StreetEdge fromEdge;
+
+            if(restriction.to.getToVertex() == edge.getToVertex()) {
+                fromEdge = edges.first;
+            } else {
+                fromEdge = edges.second;
+            }
+
             TurnRestriction splitTurnRestriction = new TurnRestriction(fromEdge, restriction.to,
                     restriction.type, restriction.modes);
             splitTurnRestriction.time = restriction.time;
@@ -464,7 +471,7 @@ public class SimpleStreetSplitter {
         LOG.debug("Recreate new restriction {} with split edge as to edge {}", splitTurnRestriction, newEdge);
         graph.addTurnRestriction(restriction.from, splitTurnRestriction);
         // Former turn restriction needs to be removed. Especially no only_turn
-        // restriction to a non existent edge must survive
+        // restriction to a non existent edge must not survive
         graph.removeTurnRestriction(restriction.from, restriction);
     }
 

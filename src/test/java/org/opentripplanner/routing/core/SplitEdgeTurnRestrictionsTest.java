@@ -94,7 +94,6 @@ public class SplitEdgeTurnRestrictionsTest {
         assertThat(legs.size(), is(1));
         Leg leg = legs.get(0);
         System.out.println(leg.mode);
-        assertThat("Car leg should not contain walk steps.", leg.walkSteps.size(), is(0));
         assertThat(leg.mode, is("CAR"));
         return leg.legGeometry.getPoints();
     }
@@ -107,7 +106,7 @@ public class SplitEdgeTurnRestrictionsTest {
         // on top of this, it has a bus stop so this test also makes sure that the turn restrictions work
         // even when the streets are split.
         String noRightTurnPermitted = computeCarPolyline(graph, hardtheimerWeg, steinhaldenWeg);
-        assertThat(noRightTurnPermitted, is("ijbhHuycu@g@Uq@[VeAj@iCTsANoAJiAHsAFuDLoG@_@?YBeGCaAO@C?KBKBKFIJKREf@?d@?h@\\TNb@Ff@?bAMnEKjEOxDWbCc@vCIDMDCB"));
+        assertThatPolylinesAreEqual(noRightTurnPermitted, "ijbhHuycu@g@Uq@[VeAj@iCTsANoAJiAHsAFuDLoG@_@?YBeGCaAO@C?KBKBKFIJKREf@?d@?h@\\TNb@Ff@?bAMnEKjEOxDWbCc@vCIDMDCB");
 
         // when to drive in reverse direction it's fine to go this way
         String leftTurnOk = computeCarPolyline(graph, steinhaldenWeg, hardtheimerWeg);
@@ -171,13 +170,13 @@ public class SplitEdgeTurnRestrictionsTest {
     }
 
     @Test
-    public void shouldBeAbleToRouteAlongSeestr() throws IOException {
+    public void shouldBeAbleToRouteReinholdSchickPlatz() throws IOException {
         Graph graph = buildGraph(ConstantsForTests.HERRENBERG_OSM, ConstantsForTests.HERRENBERG_ONLY_BRONNTOR_BUS_STOP);
 
         var hindenburgStr = new GenericLocation(48.59532, 8.86777);
         var seeStr = new GenericLocation(48.59640, 8.86744);
 
         var polyline = computeCarPolyline(graph, hindenburgStr, seeStr);
-        assertThatPolylinesAreEqual(polyline, "");
+        assertThatPolylinesAreEqual(polyline, "ugrgHo~bu@EHGLIFGHGDIHGFGDIFI@I@MBO@K?IAKAKAQCMEKGA?");
     }
 }
