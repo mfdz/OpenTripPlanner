@@ -40,7 +40,7 @@ init:
 
 graphs/default/vvs-with-shapes.gtfs.zip:
 	mkdir -p graphs/default
-	wget https://gtfs.mfdz.de/gtfs/VVS.with-shapes.gtfs.zip -O graphs/default/vvs-with-shapes.gtfs.zip
+	wget https://gtfs.mfdz.de/hbg.merged.gtfs.zip -O graphs/default/vvs-with-shapes.gtfs.zip
 
 graphs/default/stuttgart.pbf:
 	mkdir -p graphs/default

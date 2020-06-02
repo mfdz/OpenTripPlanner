@@ -320,4 +320,4 @@ public class Leg {
         endTime = calendar;
         agencyTimeZoneOffset = timeZone.getOffset(startTime.getTimeInMillis());
     }
-}
+ }

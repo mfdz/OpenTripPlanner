@@ -40,6 +40,7 @@ public class ConstantsForTests {
 
     public static final String HERRENBERG_OSM = "src/test/resources/herrenberg/herrenberg.osm.pbf";
     public static final String HERRENBERG_AND_AROUND_OSM = "src/test/resources/herrenberg/herrenberg-and-around.osm.pbf";
+    public static final String HERRENBERG_ONLY_BRONNTOR_BUS_STOP = "src/test/resources/herrenberg/only-bronntor-bus-stop.gtfs.zip" ;
 
     public static final String VERMONT_GTFS = "/vermont/ruralcommunity-flex-vt-us.zip";
 

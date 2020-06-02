@@ -32,6 +32,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.opentripplanner.routing.core.PolylineAssert.assertThatPolylinesAreEqual;
 
 public class SplitEdgeTurnRestrictionsTest {
 
@@ -88,8 +89,12 @@ public class SplitEdgeTurnRestrictionsTest {
 
         TripPlan plan = GraphPathToTripPlanConverter.generatePlan(paths, request);
         List<Leg> legs = plan.itinerary.get(0).legs;
+
+
         assertThat(legs.size(), is(1));
         Leg leg = legs.get(0);
+        System.out.println(leg.mode);
+        assertThat("Car leg should not contain walk steps.", leg.walkSteps.size(), is(0));
         assertThat(leg.mode, is("CAR"));
         return leg.legGeometry.getPoints();
     }
@@ -163,5 +168,16 @@ public class SplitEdgeTurnRestrictionsTest {
         // when you approach you cannot turn left so you have to take a long way but it seems that OTP gives up beforehand!
         //String toNorth = computeCarPolyline(graph, herrenbergerStrasse, paulGerhardtWegWest);
         //assertThat(toNorth, is("???"));
+    }
+
+    @Test
+    public void shouldBeAbleToRouteAlongSeestr() throws IOException {
+        Graph graph = buildGraph(ConstantsForTests.HERRENBERG_OSM, ConstantsForTests.HERRENBERG_ONLY_BRONNTOR_BUS_STOP);
+
+        var hindenburgStr = new GenericLocation(48.59532, 8.86777);
+        var seeStr = new GenericLocation(48.59640, 8.86744);
+
+        var polyline = computeCarPolyline(graph, hindenburgStr, seeStr);
+        assertThatPolylinesAreEqual(polyline, "");
     }
 }
