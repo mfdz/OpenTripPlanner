@@ -21,8 +21,6 @@ public class CarRoutingTest {
 
     static Graph graph;
 
-    static GenericLocation seeStrasse = new GenericLocation(48.59724504108028,8.868606090545656);
-    static GenericLocation offTuebingerStr = new GenericLocation(48.58529481682537, 8.888196945190431);
     static long dateTime = TestUtils.dateInSeconds("Europe/Berlin", 2020, 03, 2, 7, 0, 0);
 
     @BeforeClass
@@ -30,28 +28,31 @@ public class CarRoutingTest {
         graph = TestGraphBuilder.buildGraph(ConstantsForTests.HERRENBERG_OSM);
     }
 
-    private static RoutingRequest buildRoutingRequest(Graph graph) {
+    private static String computePolyline(Graph graph, GenericLocation from, GenericLocation to) {
         RoutingRequest request = new RoutingRequest();
         request.dateTime = dateTime;
-        request.from = seeStrasse;
-        request.to = offTuebingerStr;
+        request.from = from;
+        request.to = to;
 
         request.modes = new TraverseModeSet(TraverseMode.CAR);
 
         request.setNumItineraries(1);
         request.setRoutingContext(graph);
 
-        return request;
+        GraphPathFinder gpf = new GraphPathFinder(new Router(graph.routerId, graph));
+        List<GraphPath> paths = gpf.graphPathFinderEntryPoint(request);
+
+        TripPlan plan = GraphPathToTripPlanConverter.generatePlan(paths, request);
+        return plan.itinerary.get(0).legs.get(0).legGeometry.getPoints();
     }
 
     @Test
     public void routeToHighwayTrack() {
-        RoutingRequest req = buildRoutingRequest(graph);
-        GraphPathFinder gpf = new GraphPathFinder(new Router(graph.routerId, graph));
-        List<GraphPath> paths = gpf.graphPathFinderEntryPoint(req);
+        GenericLocation seeStrasse = new GenericLocation(48.59724504108028,8.868606090545656);
+        GenericLocation offTuebingerStr = new GenericLocation(48.58529481682537, 8.888196945190431);
 
-        TripPlan plan = GraphPathToTripPlanConverter.generatePlan(paths, req);
-        String polyline = plan.itinerary.get(0).legs.get(0).legGeometry.getPoints();
+        var polyline = computePolyline(graph, seeStrasse, offTuebingerStr);
+
         assertThat(polyline, is("usrgHyccu@d@bAl@jAT\\JLFHNNLJJHJFLHNJLDPDT?NAN?FANCFAB?JADGDIFKDINULSHONa@FUJ_@Jo@DSBQJw@DkADi@D{@D_ATsDDu@Am@Ee@AUEi@Eu@C{@Bo@@IJYTi@HQT]T]\\e@|A}BZc@FKZg@P]vBgETa@j@cAr@uAv@}ANYVe@Xm@d@}@Ra@Vg@LWTa@`@y@`@w@b@w@Xi@Xg@Zi@RYR]Zg@f@u@X_@V_@r@aAp@y@f@s@h@o@b@k@V[V[X_@Xa@Va@V_@Ta@Ta@R_@Zm@Vk@j@qABGHUN_@Na@Xw@Vu@b@wANk@Pm@z@_DRu@"));
     }
 
