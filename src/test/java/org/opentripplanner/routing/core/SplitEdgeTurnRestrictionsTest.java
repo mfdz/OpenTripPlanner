@@ -93,7 +93,6 @@ public class SplitEdgeTurnRestrictionsTest {
 
         assertThat(legs.size(), is(1));
         Leg leg = legs.get(0);
-        System.out.println(leg.mode);
         assertThat(leg.mode, is("CAR"));
         return leg.legGeometry.getPoints();
     }
@@ -176,6 +175,7 @@ public class SplitEdgeTurnRestrictionsTest {
         var hindenburgStr = new GenericLocation(48.59532, 8.86777);
         var seeStr = new GenericLocation(48.59640, 8.86744);
         var horberStr = new GenericLocation(48.59491, 8.86676);
+        var gisiloStrGueltstein = new GenericLocation(48.5748987, 8.8788304);
 
         var polyline1 = computeCarPolyline(graph, hindenburgStr, seeStr);
         assertThatPolylinesAreEqual(polyline1, "ugrgHo~bu@EHGLIFGHGDIHGFGDIFI@I@MBO@K?IAKAKAQCMEKGA?");
@@ -183,5 +183,7 @@ public class SplitEdgeTurnRestrictionsTest {
         var polyline2 = computeCarPolyline(graph, seeStr, horberStr);
         assertThatPolylinesAreEqual(polyline2, "onrgHm|bu@@?JFLHNJLDLBB@T?NAN?FANCFAB?JAHAF?D@FDB@HDFJHJLPHJJJTV");
 
+        var polyline3 = computeCarPolyline(graph, gisiloStrGueltstein, seeStr);
+        assertThatPolylinesAreEqual(polyline3, "ahngHuceu@ZnC?RGN}@c@cAs@[k@m@j@m@Xi@Ja@Ds@E]MkA_AeA}AMQMUU]MYM[IOSa@gBcDo@gASYc@k@Y][]sBiAu@a@[][a@]u@S_@]y@a@s@[_@i@m@[M]OsA]gCi@}BW_H]}DE]Gk@e@W]OECFk@pAWj@[l@S^U`@U`@W^W`@Y`@Y^WZWZc@j@i@n@g@r@q@x@s@`AW^Y^g@t@[f@S\\SX[h@Yf@Yh@c@v@a@v@a@x@U`@MVWf@S`@e@|@Yl@Wd@OXw@|As@tAk@bAU`@wBfEQ\\[f@GJ[b@}A|B]d@U\\U\\IPUh@KXAHCn@Bz@Dt@Dh@@TDd@@l@Et@UrDE~@Ez@Eh@EjAKv@HFE^MAEPMVKVMXMVS^GLIFGHGDIHGFGDIFI@I@MBO@K?IAKAKAQCMEKGA?");
     }
 }
