@@ -175,8 +175,13 @@ public class SplitEdgeTurnRestrictionsTest {
 
         var hindenburgStr = new GenericLocation(48.59532, 8.86777);
         var seeStr = new GenericLocation(48.59640, 8.86744);
+        var horberStr = new GenericLocation(48.59491, 8.86676);
 
-        var polyline = computeCarPolyline(graph, hindenburgStr, seeStr);
-        assertThatPolylinesAreEqual(polyline, "ugrgHo~bu@EHGLIFGHGDIHGFGDIFI@I@MBO@K?IAKAKAQCMEKGA?");
+        var polyline1 = computeCarPolyline(graph, hindenburgStr, seeStr);
+        assertThatPolylinesAreEqual(polyline1, "ugrgHo~bu@EHGLIFGHGDIHGFGDIFI@I@MBO@K?IAKAKAQCMEKGA?");
+
+        var polyline2 = computeCarPolyline(graph, seeStr, horberStr);
+        assertThatPolylinesAreEqual(polyline2, "onrgHm|bu@@?JFLHNJLDLBB@T?NAN?FANCFAB?JAHAF?D@FDB@HDFJHJLPHJJJTV");
+
     }
 }

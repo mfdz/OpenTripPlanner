@@ -436,13 +436,10 @@ public class SimpleStreetSplitter {
     private void copyRestrictionsToSplitEdges(StreetEdge edge, P2<StreetEdge> edges) {
 
         graph.getTurnRestrictions(edge).forEach(restriction -> {
-            StreetEdge fromEdge;
-
-            if(restriction.to.getToVertex() == edge.getToVertex()) {
-                fromEdge = edges.first;
-            } else {
-                fromEdge = edges.second;
-            }
+            // we used to use the streetEdge.isBack method to figure out which of the parts of the split we need but
+            // that turned out to be incorrect for some cases.
+            // https://github.com/mfdz/OpenTripPlanner/issues/34
+            StreetEdge fromEdge = shouldUseFirstSplitEdge(edge, restriction) ? edges.first : edges.second;
 
             TurnRestriction splitTurnRestriction = new TurnRestriction(fromEdge, restriction.to,
                     restriction.type, restriction.modes);
@@ -455,6 +452,10 @@ public class SimpleStreetSplitter {
 
         applyToAdjacentEdges(edge, edges.second, edge.getToVertex().getOutgoing(), graph);
         applyToAdjacentEdges(edge, edges.first, edge.getFromVertex().getIncoming(), graph);
+    }
+
+    private boolean shouldUseFirstSplitEdge(StreetEdge edge, TurnRestriction restriction) {
+        return restriction.to.getToVertex() == edge.getToVertex();
     }
 
     private static void applyToAdjacentEdges(StreetEdge formerEdge, StreetEdge newToEdge, Collection<Edge> adjacentEdges, Graph graph) {
