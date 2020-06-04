@@ -286,9 +286,10 @@ public class OSMWithTags {
      */
     public boolean isThroughTrafficExplicitlyDisallowed() {
         String access = getTag("access");
-        boolean noThruTraffic = "destination".equals(access) || "private".equals(access)
-                || "customers".equals(access) || "delivery".equals(access);
-        return noThruTraffic;
+        String service = getTag("service");
+        return "destination".equals(access) || "private".equals(access)
+                || "customers".equals(access) || "delivery".equals(access)
+                || "parking_aisle".equals(service);
     }
     
     /**
