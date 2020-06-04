@@ -44,6 +44,10 @@ public class GermanyWayPropertySetSource implements WayPropertySetSource {
         props.setCarSpeed("highway=primary", 27.27f); // 100kph
         props.setCarSpeed("highway=primary_link", 15); // = 54kph
 
+        // you should only use parking aisle if there is no other options
+        // ideally they would be set to noThruTraffic but that would mean the parking lots are inaccessible
+        props.setCarSpeed("service=parking_aisle", 5);
+
         /*
          * Many agricultural ways are tagged as 'track' but have no access tags. We assume this to mean that cars
          * are prohibited.
