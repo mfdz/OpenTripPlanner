@@ -71,6 +71,6 @@ public class CarRoutingTest {
 
         var polyline = computePolyline(hindenburgStrUnderConstruction, gueltsteinerStr, aufDemGraben);
 
-        assertThatPolylinesAreEqual(polyline, "mirgHmkbu@Au@@m@?s@@cF@g@?k@@M@MBKBIHAF?D@FDB@HDFJHJLPHJJJj@n@PLLJHF");
+        assertThatPolylinesAreEqual(polyline, "ouqgH}mcu@gAE]U}BaA]Q}@]uAs@[SAm@Ee@AUEi@XEQkBQ?Bz@Dt@Dh@@TGBC@KBSHGx@");
     }
 }
