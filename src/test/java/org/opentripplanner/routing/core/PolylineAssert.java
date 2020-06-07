@@ -11,9 +11,9 @@ public class PolylineAssert {
     static void assertThatPolylinesAreEqual(String actual, String expected ){
 
         var reason = "Actual polyline is not equal to the expected one. View them on a map: \n" +
-                "Actual:    https://leonard.io/polyline-visualiser/?base64=" + toBase64(actual) + "\n" +
-                "Expected:  https://leonard.io/polyline-visualiser/?base64=" + toBase64(expected) + "\n";
-        assertThat(reason, actual, is(expected));
+                "Expected:  https://leonard.io/polyline-visualiser/?base64=" + toBase64(expected) + "\n" +
+                "Actual:    https://leonard.io/polyline-visualiser/?base64=" + toBase64(actual) + "\n";
+                assertThat(reason, actual, is(expected));
     }
 
     private static String toBase64(String line) {
