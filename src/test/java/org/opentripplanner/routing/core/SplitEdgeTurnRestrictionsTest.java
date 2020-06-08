@@ -51,30 +51,6 @@ public class SplitEdgeTurnRestrictionsTest {
 
     static long dateTime = TestUtils.dateInSeconds("Europe/Berlin", 2020, 03, 3, 7, 0, 0);
 
-    public static Graph buildGraph(String osmFile, String gtfsFile) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode node = mapper.createObjectNode();
-        GraphBuilder graphBuilder = new GraphBuilder(Files.createTempDirectory("otp-").toFile(), new GraphBuilderParameters(node));
-
-        List<OpenStreetMapProvider> osmProviders = ImmutableList.of(new AnyFileBasedOpenStreetMapProviderImpl(new File(osmFile)));
-        OpenStreetMapModule osmModule = new OpenStreetMapModule(osmProviders);
-        osmModule.edgeFactory = new DefaultStreetEdgeFactory();
-        osmModule.skipVisibility = true;
-        osmModule.setDefaultWayPropertySetSource(new GermanyWayPropertySetSource());
-        graphBuilder.addModule(osmModule);
-
-        GtfsModule gtfsModule = new GtfsModule(ImmutableList.of(new GtfsBundle(new File(gtfsFile))));
-        graphBuilder.addModule(gtfsModule);
-
-        graphBuilder.addModule(new StreetLinkerModule());
-        graphBuilder.serializeGraph = false;
-        graphBuilder.run();
-
-        Graph output = graphBuilder.getGraph();
-        output.index(new DefaultStreetVertexIndexFactory());
-        return output;
-    }
-
     private static String computeCarPolyline(Graph graph, GenericLocation from, GenericLocation to) {
         RoutingRequest request = new RoutingRequest();
         request.dateTime = dateTime;
@@ -101,7 +77,7 @@ public class SplitEdgeTurnRestrictionsTest {
 
     @Test
     public void shouldTakeDeufringenTurnRestrictionsIntoAccount() throws IOException {
-        Graph graph = buildGraph(ConstantsForTests.DEUFRINGEN_OSM, ConstantsForTests.DEUFRINGEN_GTFS);
+        Graph graph = TestGraphBuilder.buildGtfsGraph(ConstantsForTests.DEUFRINGEN_OSM, ConstantsForTests.DEUFRINGEN_GTFS);
         // https://www.openstreetmap.org/relation/10264251 has a turn restriction so when leaving Hardtheimer Weg
         // you must turn right and take the long way to Steinhaldenweg.
         // on top of this, it has a bus stop so this test also makes sure that the turn restrictions work
@@ -133,7 +109,7 @@ public class SplitEdgeTurnRestrictionsTest {
     public void shouldTakeBoeblingenTurnRestrictionsIntoAccount() throws IOException {
         // this tests that the following turn restriction is transferred correctly to the split edges
         // https://www.openstreetmap.org/relation/299171
-        Graph graph = buildGraph(ConstantsForTests.BOEBLINGEN_OSM, ConstantsForTests.BOEBLINGEN_GTFS);
+        Graph graph = TestGraphBuilder.buildGtfsGraph(ConstantsForTests.BOEBLINGEN_OSM, ConstantsForTests.BOEBLINGEN_GTFS);
 
         // turning left from the main road onto a residential one
         String turnLeft = computeCarPolyline(graph, parkStrasse, paulGerhardtWegEast);
@@ -172,7 +148,7 @@ public class SplitEdgeTurnRestrictionsTest {
 
     @Test
     public void shouldBeAbleToRouteReinholdSchickPlatz() throws IOException {
-        Graph graph = buildGraph(ConstantsForTests.HERRENBERG_OSM, ConstantsForTests.HERRENBERG_ONLY_BRONNTOR_BUS_STOP);
+        Graph graph = TestGraphBuilder.buildGtfsGraph(ConstantsForTests.HERRENBERG_OSM, ConstantsForTests.HERRENBERG_ONLY_BRONNTOR_BUS_STOP);
 
         var hindenburgStr = new GenericLocation(48.59532, 8.86777);
         var seeStr = new GenericLocation(48.59640, 8.86744);
