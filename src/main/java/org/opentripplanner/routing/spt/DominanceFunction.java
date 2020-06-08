@@ -6,6 +6,7 @@ import org.opentripplanner.routing.edgetype.SimpleTransfer;
 import org.opentripplanner.routing.edgetype.StreetEdge;
 import org.opentripplanner.routing.edgetype.TimedTransferEdge;
 import org.opentripplanner.routing.edgetype.TransitBoardAlight;
+import org.opentripplanner.routing.graph.Vertex;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -27,7 +28,22 @@ import java.util.Objects;
 public abstract class DominanceFunction implements Serializable {
     private static final long serialVersionUID = 1;
 
-    /** 
+    /**
+     * The OTP algorithm tries hard to never visit the same node twice. This is generally a good idea because it avoids
+     * useless loops in the traversal leading to way faster processing time.
+     *
+     * However there is are certain rare pathological cases where through a series of turn restrictions and roadworks
+     * you absolutely must visit a vertex twice if you want to produce a result. One example would be a route like this:
+     *   https://tinyurl.com/ycqux93g (Note: At the time of writing this Hindenburgstr. is closed due to roadworks.)
+     *
+     * Therefore, if we are close to the start or the end of a route we allow this.
+     *
+     * The following variable determines how close you have to be to the start or the end point for it to be
+     * considered "close enough for a loop".
+     */
+    private static final int MAX_METERS_ROUTE_LOOPS = 1000;
+
+    /**
      * Return true if the first state "defeats" the second state or at least ties with it in terms of suitability. 
      * In the case that they are tied, we still want to return true so that an existing state will kick out a new one.
      * Provide this custom logic in subclasses. You would think this could be static, but in Java for some reason 
@@ -91,16 +107,36 @@ public abstract class DominanceFunction implements Serializable {
 
         // Are the two states arriving at a vertex from two different directions where turn restrictions apply?
         if (a.backEdge != b.getBackEdge() && (a.backEdge instanceof StreetEdge)) {
-            if (! a.getOptions().getRoutingContext().graph.getTurnRestrictions(a.backEdge).isEmpty()) {
+            if (backEdgeHasTurnRestrictions(a)
+                /**
+                 * {@link DominanceFunction.MAX_METERS_ROUTE_LOOPS}
+                 */
+                || isCloseToStartOrEnd(a.getVertex(), a.getOptions())) {
                 return false;
             }
         }
-        
+
         // These two states are comparable (they are on the same "plane" or "copy" of the graph).
         return betterOrEqual(a, b);
         
     }
-    
+
+    private static boolean backEdgeHasTurnRestrictions(State a) {
+        return ! a.getOptions().getRoutingContext().graph.getTurnRestrictions(a.backEdge).isEmpty();
+    }
+
+    private static boolean isCloseToStartOrEnd(Vertex v, RoutingRequest req) {
+        var from = req.from.getCoordinate();
+        var to = req.to.getCoordinate();
+        var currentLocation = v.getCoordinate();
+        var allNonNull = from != null && to != null && currentLocation != null;
+        if(allNonNull) {
+            return currentLocation.distance(req.from.getCoordinate()) < MAX_METERS_ROUTE_LOOPS ||
+                    currentLocation.distance(req.to.getCoordinate()) < MAX_METERS_ROUTE_LOOPS;
+        }
+        else return false;
+    }
+
     /**
      * Create a new shortest path tree using this function, considering whether it allows co-dominant States.
      * MultiShortestPathTree is the general case -- it will work with both single- and multi-state functions.

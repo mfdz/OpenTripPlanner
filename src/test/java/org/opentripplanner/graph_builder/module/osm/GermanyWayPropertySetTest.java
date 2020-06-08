@@ -157,4 +157,12 @@ public class GermanyWayPropertySetTest {
                 epsilon
         );
     }
+
+    @Test
+    public void setCorrectPermissionsForSteps() {
+        // https://www.openstreetmap.org/way/64359102
+        var steps = new OSMWithTags();
+        steps.addTag("highway", "steps");
+        assertEquals(wps.getDataForWay(steps).getPermission(), StreetTraversalPermission.PEDESTRIAN);
+    }
 }

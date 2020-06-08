@@ -18,13 +18,12 @@ import static org.opentripplanner.routing.core.PolylineAssert.assertThatPolyline
 
 public class CarRoutingTest {
 
-    static Graph graph;
-
+    static Graph ordinaryHerrenbergGraph = TestGraphBuilder.buildGraph(ConstantsForTests.HERRENBERG_OSM);
+    static Graph hindenburgStrUnderConstruction = TestGraphBuilder.buildGraph(ConstantsForTests.HERRENBERG_HINDENBURG_UNDER_CONSTRUCTION_OSM);
     static long dateTime = TestUtils.dateInSeconds("Europe/Berlin", 2020, 03, 2, 7, 0, 0);
 
     @BeforeClass
     public static void setUp() {
-        graph = TestGraphBuilder.buildGraph(ConstantsForTests.HERRENBERG_OSM);
     }
 
     private static String computePolyline(Graph graph, GenericLocation from, GenericLocation to) {
@@ -33,9 +32,9 @@ public class CarRoutingTest {
         request.from = from;
         request.to = to;
 
-        request.modes = new TraverseModeSet(TraverseMode.CAR);
+        request.modes = new TraverseModeSet(TraverseMode.CAR, TraverseMode.WALK);
 
-        request.setNumItineraries(1);
+        request.setNumItineraries(5);
         request.setRoutingContext(graph);
 
         GraphPathFinder gpf = new GraphPathFinder(new Router(graph.routerId, graph));
@@ -50,7 +49,7 @@ public class CarRoutingTest {
         GenericLocation seeStrasse = new GenericLocation(48.59724504108028,8.868606090545656);
         GenericLocation offTuebingerStr = new GenericLocation(48.58529481682537, 8.888196945190431);
 
-        var polyline = computePolyline(graph, seeStrasse, offTuebingerStr);
+        var polyline = computePolyline(ordinaryHerrenbergGraph, seeStrasse, offTuebingerStr);
 
         assertThatPolylinesAreEqual(polyline, "usrgHyccu@d@bAl@jAT\\JLFHNNLJJHJFLHNJLDPDT?NAN?FANCFAB?JADGDIFKDINULSHONa@FUJ_@Jo@DSBQJw@DkADi@D{@D_ATsDDu@Am@Ee@AUEi@Eu@C{@Bo@@IJYTi@HQT]T]\\e@|A}BZc@FKZg@P]vBgETa@j@cAr@uAv@}ANYVe@Xm@d@}@Ra@Vg@LWTa@`@y@`@w@b@w@Xi@Xg@Zi@RYR]Zg@f@u@X_@V_@r@aAp@y@f@s@h@o@b@k@V[V[X_@Xa@Va@V_@Ta@Ta@R_@Zm@Vk@j@qABGHUN_@Na@Xw@Vu@b@wANk@Pm@z@_DRu@");
     }
@@ -60,8 +59,18 @@ public class CarRoutingTest {
         var nagolderStr = new GenericLocation(48.59559, 8.86472);
         var horberstr = new GenericLocation(48.59459, 8.86647);
 
-        var polyline = computePolyline(graph, nagolderStr, horberstr);
+        var polyline = computePolyline(ordinaryHerrenbergGraph, nagolderStr, horberstr);
 
         assertThatPolylinesAreEqual(polyline, "mirgHmkbu@Au@@m@?s@@cF@g@?k@@M@MBKBIHAF?D@FDB@HDFJHJLPHJJJj@n@PLLJHF");
+    }
+
+    @Test
+    public void shouldBeAbleToTurnIntoAufDemGraben() {
+        var gueltsteinerStr = new GenericLocation(48.59240, 8.87024);
+        var aufDemGraben = new GenericLocation(48.59487, 8.87133);
+
+        var polyline = computePolyline(hindenburgStrUnderConstruction, gueltsteinerStr, aufDemGraben);
+
+        assertThatPolylinesAreEqual(polyline, "ouqgH}mcu@gAE]U}BaA]Q}@]uAs@[SAm@Ee@AUEi@XEQkBQ?Bz@Dt@Dh@@TGBC@KBSHGx@");
     }
 }
