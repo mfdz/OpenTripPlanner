@@ -13,6 +13,7 @@ import org.opentripplanner.graph_builder.GraphBuilder;
 import org.opentripplanner.graph_builder.model.GtfsBundle;
 import org.opentripplanner.graph_builder.module.GtfsModule;
 import org.opentripplanner.graph_builder.module.StreetLinkerModule;
+import org.opentripplanner.graph_builder.module.osm.GermanyWayPropertySetSource;
 import org.opentripplanner.graph_builder.module.osm.OpenStreetMapModule;
 import org.opentripplanner.graph_builder.services.DefaultStreetEdgeFactory;
 import org.opentripplanner.openstreetmap.impl.AnyFileBasedOpenStreetMapProviderImpl;
@@ -59,6 +60,7 @@ public class SplitEdgeTurnRestrictionsTest {
         OpenStreetMapModule osmModule = new OpenStreetMapModule(osmProviders);
         osmModule.edgeFactory = new DefaultStreetEdgeFactory();
         osmModule.skipVisibility = true;
+        osmModule.setDefaultWayPropertySetSource(new GermanyWayPropertySetSource());
         graphBuilder.addModule(osmModule);
 
         GtfsModule gtfsModule = new GtfsModule(ImmutableList.of(new GtfsBundle(new File(gtfsFile))));
