@@ -107,7 +107,7 @@ public class SplitEdgeTurnRestrictionsTest {
         // on top of this, it has a bus stop so this test also makes sure that the turn restrictions work
         // even when the streets are split.
         String noRightTurnPermitted = computeCarPolyline(graph, hardtheimerWeg, steinhaldenWeg);
-        assertThatPolylinesAreEqual(noRightTurnPermitted, "ijbhHuycu@g@Uq@[VeAj@iCTsANoAJiAHsAFuDLoG@_@?YBeGCaAO@C?KBKBKFIJKREf@?d@?h@\\TNb@Ff@?bAMnEKjEOxDWbCc@vCIDMDCB");
+        assertThatPolylinesAreEqual(noRightTurnPermitted, "ijbhHuycu@g@Uq@[e@|BENGVYxA]xAYz@Yp@Yj@^n@JDN_@?Wa@i@Xq@X{@\\yAXyACGAIB]j@_DPaA@e@MDCB");
 
         // when to drive in reverse direction it's fine to go this way
         String leftTurnOk = computeCarPolyline(graph, steinhaldenWeg, hardtheimerWeg);
@@ -137,7 +137,7 @@ public class SplitEdgeTurnRestrictionsTest {
 
         // turning left from the main road onto a residential one
         String turnLeft = computeCarPolyline(graph, parkStrasse, paulGerhardtWegEast);
-        assertThat(turnLeft, is("kochHsl~u@HQL]N_@v@mBDKIK{@~BKXWj@KRKPCFYj@DP^lAJX"));
+        assertThatPolylinesAreEqual(turnLeft, "kochHsl~u@HQL]N_@v@mBDKN]KKM\\{@~BKXWj@KRKPCFYj@DP^lAJX");
 
         // right hand turn out of the the residential road onto the main road, only right turn allowed plus there
         // is a bus station along the way, splitting the edge
@@ -147,10 +147,10 @@ public class SplitEdgeTurnRestrictionsTest {
         // right hand turn out of the the residential road onto the main road, only right turn allowed plus there
         // is a bus station along the way, splitting the edge
         String longWay = computeCarPolyline(graph, paulGerhardtWegEast, herrenbergerStrasse);
-        assertThat(longWay, is("sochHof~u@KY_@mAVi@Te@N]L]N_@v@mBDKIK{@~BKXWj@KRKPCFa@`@_@XWPSHQDMCEAQMKKSgAa@qCMe@"));
+        assertThatPolylinesAreEqual(longWay, "sochHof~u@KY_@mAVi@Te@N]L]N_@v@mBDKN]KKM\\{@~BKXWj@KRKPCFa@`@_@XWPSHQDMCEAQMKKSgAa@qCMe@");
 
         String longWayBack = computeCarPolyline(graph, herrenbergerStrasse, paulGerhardtWegEast);
-        assertThat(longWayBack, is("axchHwq~u@G_@Qc@CGGKGIIRNPFLFLDNDJDZHb@Lx@d@dDBTBRTLNBTARKpAiA^lAJX"));
+        assertThatPolylinesAreEqual(longWayBack, "axchHwq~u@G_@Qc@CGGKGIQKWIWC]Am@EWC[CYGYGg@QSQQKKGMCEIGCG@GBEFCH?H?H@HDHFDD?F?DEDGPBTFVLNBPDNDRDr@Hz@FF@l@JVFLFNPFLFLDNDJDZHb@Lx@d@dDBTBRTLNBTARKpAiA^lAJX");
 
         // test that you can correctly turn right here https://www.openstreetmap.org/relation/415123 when approaching
         // from south
@@ -186,6 +186,6 @@ public class SplitEdgeTurnRestrictionsTest {
         assertThatPolylinesAreEqual(polyline2, "onrgHm|bu@@?JFLHNJLDLBB@T?NAN?FANCFAB?JAHAF?D@FDB@HDFJHJLPHJJJTV");
 
         var polyline3 = computeCarPolyline(graph, gisiloStrGueltstein, seeStr);
-        assertThatPolylinesAreEqual(polyline3, "ahngHuceu@ZnC?RGN}@c@cAs@[k@m@j@m@Xi@Ja@Ds@E]MkA_AeA}AMQMUU]MYM[IOSa@gBcDo@gASYc@k@Y][]sBiAu@a@[][a@]u@S_@]y@a@s@[_@i@m@[M]OsA]gCi@}BW_H]}DE]Gk@e@W]OECFk@pAWj@[l@S^U`@U`@W^W`@Y`@Y^WZWZc@j@i@n@g@r@q@x@s@`AW^Y^g@t@[f@S\\SX[h@Yf@Yh@c@v@a@v@a@x@U`@MVWf@S`@e@|@Yl@Wd@OXw@|As@tAk@bAU`@wBfEQ\\[f@GJ[b@}A|B]d@U\\U\\IPUh@KXAHCn@Bz@Dt@Dh@@TDd@@l@Et@UrDE~@Ez@Eh@EjAKv@HFE^MAEPMVKVMXMVS^GLIFGHGDIHGFGDIFI@I@MBO@K?IAKAKAQCMEKGA?");
+        assertThatPolylinesAreEqual(polyline3, "ahngHuceu@OoAKe@]n@MTWd@i@x@m@j@m@Xi@Ja@Ds@E]MkA_AeA}AMQMUU]MYM[IOSa@gBcDo@gASYc@k@Y][]sBiAu@a@[][a@]u@S_@]y@a@s@[_@i@m@[M]OsA]gCi@}BW_H]}DE]Gk@e@W]OECFk@pAWj@[l@S^U`@U`@W^W`@Y`@Y^WZWZc@j@i@n@g@r@q@x@s@`AW^Y^g@t@[f@S\\SX[h@Yf@Yh@c@v@a@v@a@x@U`@MVWf@S`@e@|@Yl@Wd@OXw@|As@tAk@bAU`@wBfEQ\\[f@GJ[b@}A|B]d@U\\U\\IPUh@KXAHCn@Bz@Dt@Dh@@TDd@@l@Et@UrDE~@Ez@Eh@EjAKv@CPEREPMVKVMXMVS^GLIFGHGDIHGFGDIFI@I@MBO@K?IAKAKAQCMEKGA?");
     }
 }
