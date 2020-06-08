@@ -72,7 +72,6 @@ public class BicycleAndWalkRoutingTest {
         //paths.forEach( p -> System.out.println(GraphPathToGeoJson.toGeoJson(p)));
 
         TripPlan plan = GraphPathToTripPlanConverter.generatePlan(paths, request);
-        plan.itinerary.get(0).legs.forEach(l -> System.out.println(l.mode +": "+l.legGeometry.getPoints()));
         Stream<List<Coordinate>> points = plan.itinerary.get(0).legs.stream().map(l -> PolylineEncoder.decode(l.legGeometry));
         return PolylineEncoder.createEncodings(points.flatMap(List::stream).collect(Collectors.toList())).getPoints();
     }
@@ -100,7 +99,7 @@ public class BicycleAndWalkRoutingTest {
         assertThatPolylinesAreEqual(polyline2, "}uqgHs`cu@AK?Am@kEIo@?eD]UFc@c@iD]mB_@sAAACIKScAuCc@_AUi@GMQJODGm@QsCGi@");
 
         var polyline3 = calculatePolyline(graph, herrenbergErhardtstBismarckstr, brahmsStr);
-        assertThatPolylinesAreEqual(polyline3, "}uqgHs`cu@AK?Am@kEIo@?eD]UFc@c@iD]mB_@sAAACIKScAuCc@_AUi@|A}BZc@GMUe@AUa@uAOs@EAAAYgATi@b@u@j@yAF{@");
+        assertThatPolylinesAreEqual(polyline3, "}uqgHs`cu@AK?Am@kEIo@?eD]UFc@c@iD]mB_@sAAACIKScAuCc@_AUi@GMQJODC@I@Ei@GiAIoAEg@HEGk@MaAn@g@d@i@PWTi@b@u@j@yAF{@");
 
         // here we make sure that we don't take Schulstraße (https://www.openstreetmap.org/way/26403221) just because it is part of several cycle networks
         var polyline4 = calculatePolyline(graph, schillerStr, hildrizhauserStr);
@@ -131,7 +130,7 @@ public class BicycleAndWalkRoutingTest {
         var boeblingenThermalbad = new GenericLocation(48.69406, 9.02869);
 
         var polyline = calculatePolyline(graph, boeblingenHerrenbergerStr, boeblingenThermalbad);
-        assertThatPolylinesAreEqual(polyline, "ouchHwg~u@CQN?BSD_@U}@i@qBMaAIk@COa@_AG?E?GQEKKBCAa@IUSKFED?JCDC?[A]CUEKAu@MWKUI[WQMMKc@_@GSUa@QAO_@IWSa@I]GSGUEUGUYqAGYm@{CEQoA{FFCk@mESkBEi@QiBSqAYuA]{@c@{@g@}@SAEIEMC[AS?QCQYc@k@y@MSc@WaAwA{A}B]k@QWWi@Oa@[cAUw@U{@EQGUQJI]OkAm@iF?UWuB[cC]}BUgAQu@Oq@Gc@Cc@]cAYs@Qa@_@e@MUHMCC");
+        assertThatPolylinesAreEqual(polyline, "ouchHwg~u@CQN?BSD_@U}@i@qBMaAIk@COa@_AG?E?GQEKKBCAa@IUSKFED?JCDC?[A]CUEKAu@MWKUI[WQMMKc@_@GSUa@QAO_@IWSa@I]GSGUEUGUYqAGYHEYqAWiAEQc@}Bi@{Bk@mESkBEi@QiBSqAYuA]{@c@{@g@}@SAEIEMC[AS?QCQYc@k@y@MSc@WaAwA{A}B]k@QWWi@Oa@[cAUw@U{@EQOJIUI]OkAm@iF?UWuB[cC]}BUgAQu@Oq@Gc@Cc@]cAYs@Qa@_@e@MUHMCC");
     }
 
     @Test
@@ -140,7 +139,7 @@ public class BicycleAndWalkRoutingTest {
         var nagold = new GenericLocation(48.55131, 8.72866);
 
         var polyline = calculatePolyline(graph, nufringenBahnhof, nagold);
-        assertThatPolylinesAreEqual(polyline, "mdwgH_hgu@Td@@BBF\\t@X_@pGjMp@pARh@XbALTPQVW_AsB?CRZz@bBDHnAdCJHb@Tz@^hBt@f@Rz@\\RXTLd@Vh@PpAb@|@f@PJFBJFJJDCVJNHF?J@J@TFTJLHNNVZHRjAlAp@t@fBbBpAdAbAv@VZPRd@l@Nb@LVNJ\\NNN^b@^b@r@p@p@n@lAlAHMLSNGT?\\v@r@dArAxAhB`BtArAlBzB|BrCtA`Br@r@d@p@b@^VNT@JCEd@ENGRGHB\\C`AAl@?~@PvA\\fB`@pADTBJFLHH\\d@j@n@FDp@l@~@v@jBzATP~DfDvAdBAPHVFTBAJAF@FBDB\\ZZ`@^r@Xt@\\rAZzAPnAPtAHvAHhBB`D?~I?lDAb@A~@?hBANKH?RA`@JPP@P?@EDGBCBA^?b@Cj@KZKn@YxA_AXM\\OLOXOXKd@GVA~@D~@Lf@@dABJTH?P?J?Fe@`@Wd@Sh@_@HGN?JIFGVbAj@xBDXVbB`@hCBNRbADZTf@~C~Ab@f@LPJXHZDA^MHBHBLGxBuAHE^d@AB?d@AHN`A`Ac@bAyANt@Pv@NRR_@b@Yz@e@x@?d@Cd@Hf@J`@NlABXATCVEFAf@tBb@xAXxAVdC\\zC\\`CNOp@`BDTBPDPNV^Lp@Bn@@L@V?b@BTHb@^Zh@XbAZfA\\rA\\hA^p@\\`@n@d@NTJZNv@L^CPXJ^Tb@F`@Rp@b@r@l@d@t@l@bAjApCNXHBHlAPhAd@~BNr@p@jCZvARzAHx@P~CLrBBVFBDl@Bf@JbB@T@F@PFj@Dr@FfAC|@A`@A`@?FErCARAf@ElB@vABxAHtAVzCT|DDjBDzAFxAHvAPpAZzATl@Pb@f@v@|@jA|@~ATn@h@rB|@pEp@tCLf@x@rCzA`Fj@dCh@lBl@vAfAbCdBtEj@vAf@rA~AxFd@vAj@nBR|@TnA^lB\\rAZdAVn@Vd@`@r@V\\l@l@bCfBd@`@d@l@Zf@b@z@b@lAVjABVDb@JfADt@?VFnC?^BtAD`B@b@Jz@DVTp@Rh@Vl@J\\Rr@Dd@Hv@PnBMDb@rCn@tDn@bD\\hB`@rBl@tCNv@Jh@Lv@TxAHl@P`BVlCLxAN`CJ`BRzEAHFpBFzALhBRlBVnB\\hBRp@`@bAn@~AnB`En@|Ah@`B\\lAPnAFXJh@j@xBf@vAv@jADT@^EtFC`HL`IHpHCpAAp@@^@^@JHd@BTh@vCRdATnBPtB@nG@t@@DB|@HfCTlGLjD?HH|BDpBPrDuDHSBj@zG`@|CXjD@DnAdSv@jJdCzNxAjLnC?UvC?L]tDCd@OpCC\\EJEFEFIFCHAB?DCRARFJBJJXHBLDFBXYLIv@NxAp@z@f@r@j@n@z@pAhClAvEZx@`@bAf@f@ZtB`AJrBHv@Pl@l@PnAZpCCpBFjBr@vCVdAtAbIl@nDnBrDbDvEdAh@zAN`DHtA_@h@Gt@PjBbB`B~BxBfDd@f@DNVCRLPfB@j@?RI~BArACdBIlAa@tC_@zAEXa@BMLIVOfBKr@@v@BtCDfG?tCAf@Ax@IzAWdCWrBW~AMj@Uv@K^Ed@_@`DQ|ACd@@VDTFPh@_@VOR[LSFIDGBJBJ@HDFFBDBFLBRHNAK");
+        assertThatPolylinesAreEqual(polyline, "mdwgH_hgu@wBiEi@{@IER[PWJOHMRZLJn@fA~A`DRd@JRfA~BLVdCrF~BlERZz@bBDHnAdCJHb@Tz@^hBt@f@Rz@\\RXTLd@Vh@PpAb@|@f@PJFBJFJJDCVJNHF?J@J@TFTJLHNNVZHRjAlAp@t@fBbBpAdAbAv@VZPRd@l@Nb@LVNJ\\NNN^b@^b@r@p@p@n@lAlAHMLSNGT?\\v@r@dArAxAhB`BtArAlBzB|BrCtA`Br@r@d@p@b@^VNT@JCEd@ENGRGHB\\C`AAl@?~@PvA\\fB`@pADTBJFLHH\\d@j@n@FDp@l@~@v@jBzATP~DfDvAdBAPHVFTBAJAF@FBDB\\ZZ`@^r@Xt@\\rAZzAPnAPtAHvAHhBB`D?~I?lDAb@A~@?hBANKH?RA`@JPP@P?@EDGBCBA^?b@Cj@KZKn@YxA_AXM\\OLOXOXKd@GVA~@D~@Lf@@dABJTH?P?J?Fe@`@Wd@Sh@_@HGN?JIFGVbAj@xBDXVbB`@hCBNRbADZTf@~C~Ab@f@LPJXHZDA^MHBHBLGxBuAHE^d@AB?d@AHN`A`Ac@bAyANt@Pv@NRR_@b@Yz@e@x@?d@Cd@Hf@J`@NlABXATCVEFAf@tBb@xAXxAVdC\\zC\\`CNOp@`BDTBPDPNV^Lp@Bn@@L@V?b@BTHb@^Zh@XbAZfA\\rA\\hA^p@\\`@n@d@NTJZNv@L^CPXJ^Tb@F`@Rp@b@r@l@d@t@l@bAjApCNXHBHlAPhAd@~BNr@p@jCZvARzAHx@P~CLrBBVFBDl@Bf@JbB@T@F@PFj@Dr@FfAC|@A`@A`@?FErCARAf@ElB@vABxAHtAVzCT|DDjBDzAFxAHvAPpAZzATl@Pb@f@v@|@jA|@~ATn@h@rB|@pEp@tCLf@x@rCzA`Fj@dCh@lBl@vAfAbCdBtEj@vAf@rA~AxFd@vAj@nBR|@TnA^lB\\rAZdAVn@Vd@`@r@V\\l@l@bCfBd@`@d@l@Zf@b@z@b@lAVjABVDb@JfADt@?VFnC?^BtAD`B@b@Jz@DVTp@Rh@Vl@J\\Rr@Dd@Hv@IBHz@Bt@b@rCn@tDn@bD\\hB`@rBl@tCNv@Jh@Lv@TxAHl@P`BVlCLxAN`CJ`BRzEAHFpBFzALhBRlBVnB\\hBRp@`@bAn@~AnB`En@|Ah@`B\\lAPnAFXJh@j@xBf@vAv@jADT@^EtFC`HL`IHpHCpAAp@@^@^@JHd@BTh@vCRdATnBPtB@nG@t@@DB|@HfCTlGLjD?HH|BDpBPrDuDHSBj@zG`@|CXjD@DnAdSv@jJdCzNxAjLnC?UvC?L]tDCd@OpCC\\EJEFEFIFCHAB?DCRARFJBJJXHBLDFBXYLIv@NxAp@z@f@r@j@n@z@pAhClAvEZx@`@bAf@f@ZtB`AJrBHv@Pl@l@PnAZpCCpBFjBr@vCVdAtAbIl@nDnBrDbDvEdAh@zAN`DHtA_@h@Gt@PjBbB`B~BxBfDd@f@DNVCRLPfB@j@?RI~BArACdBIlAa@tC_@zAEXa@BMLIVOfBKr@@v@BtCDfG?tCAf@Ax@IzAWdCWrBW~AMj@Uv@K^Ed@_@`DQ|ACd@@VDTFPh@_@VOR[LSFIDGBJBJ@HDFFBDBFLBRHNAK");
     }
 
     @Test
@@ -158,7 +157,7 @@ public class BicycleAndWalkRoutingTest {
         var wielandStr = new GenericLocation(48.56160, 8.78256);
 
         var polyline = calculatePolyline(graph, southOfUnterjettingen, wielandStr);
-        assertThatPolylinesAreEqual(polyline, "w{jgHswrt@?fA@dHKCI?K@IBK@IAKCMEMCMEMCa@K[KUGUGQEQA[CYESAC?CAI@I?S?g@ASAQASAQAa@A[@W??R?XJPC?w@\\]N?r@iA?s@BC?");
+        assertThatPolylinesAreEqual(polyline, "w{jgHswrt@?fA@dHKCI?K@IBK@IAKCMEMCMEMCa@K[KUGUGQEQA[CYESAC?CAI@I?S?g@ASAQASAQAa@A[@W?I@I?K?KAICCCEGCAK??h@@tA?r@iA?s@BC?");
     }
 
     @Test
