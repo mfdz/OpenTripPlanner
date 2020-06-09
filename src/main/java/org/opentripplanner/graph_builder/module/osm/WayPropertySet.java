@@ -65,7 +65,7 @@ public class WayPropertySet {
         notes = new ArrayList<NotePicker>();
         // regex courtesy http://wiki.openstreetmap.org/wiki/Key:maxspeed
         // and edited
-        maxSpeedPattern = Pattern.compile("^([0-9][\\.0-9]+?)(?:[ ]?(kmh|km/h|kmph|kph|mph|knots))?$");
+        maxSpeedPattern = Pattern.compile("^([0-9][\\.0-9]*)\\s*(kmh|km/h|kmph|kph|mph|knots)?$");
     }
 
     /**
@@ -306,7 +306,7 @@ public class WayPropertySet {
     }
     
     public Float getMetersSecondFromSpeed(String speed) {
-        Matcher m = maxSpeedPattern.matcher(speed);
+        Matcher m = maxSpeedPattern.matcher(speed.trim());
         if (!m.matches())
             return null;
         

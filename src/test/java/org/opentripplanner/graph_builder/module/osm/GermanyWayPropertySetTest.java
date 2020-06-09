@@ -165,4 +165,32 @@ public class GermanyWayPropertySetTest {
         steps.addTag("highway", "steps");
         assertEquals(wps.getDataForWay(steps).getPermission(), StreetTraversalPermission.PEDESTRIAN);
     }
+
+    @Test
+    public void setCorrectCarSpeed() {
+        assertSpeed(1.3889, "5");
+        assertSpeed(1.3889, "5 kmh");
+        assertSpeed(1.3889, " 5 kmh ");
+        assertSpeed(1.3889, " 5 ");
+        assertSpeed(4.166669845581055, "15");
+        assertSpeed(4.305559158325195, "15.5");
+        assertSpeed(4.305559158325195, "15.5 kmh");
+        assertSpeed(4.305559158325195, "15.5 kph");
+        assertSpeed(4.305559158325195, "15.5 km/h");
+        assertSpeed(22.347200393676758, "50 mph");
+        assertSpeed(22.347200393676758, "50.0 mph");
+
+        // https://www.openstreetmap.org/way/10879847 with patched maxspeed
+        var alzentalstr = new OSMWithTags();
+        alzentalstr.addTag("highway", "residential");
+        alzentalstr.addTag("lit", "yes");
+        alzentalstr.addTag("maxspeed", "5");
+        alzentalstr.addTag("name", "Alzentalstraße");
+        alzentalstr.addTag("surface", "asphalt");
+        assertEquals(1.38889, wps.getCarSpeedForWay(alzentalstr, false), epsilon);
+    }
+
+    private void assertSpeed(double v, String s) {
+        assertEquals(v, wps.getMetersSecondFromSpeed(s), epsilon);
+    }
 }
