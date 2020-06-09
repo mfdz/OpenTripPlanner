@@ -39,6 +39,7 @@ public class ConstantsForTests {
     public static final String HSL_MINIMAL_GTFS = "src/test/resources/hsl/hsl_gtfs_minimal.zip";
 
     public static final String HERRENBERG_OSM = "src/test/resources/herrenberg/herrenberg.osm.pbf";
+    // contains Hindenburgstr. being blocked due to roadworks and manually patched maxspeed of 5 km/h in the Alzentag neighbourhood
     public static final String HERRENBERG_HINDENBURG_UNDER_CONSTRUCTION_OSM = "src/test/resources/herrenberg/herrenberg-hindenburg-under-construction.osm.pbf";
     public static final String HERRENBERG_AND_AROUND_OSM = "src/test/resources/herrenberg/herrenberg-and-around.osm.pbf";
     public static final String HERRENBERG_ONLY_BRONNTOR_BUS_STOP = "src/test/resources/herrenberg/only-bronntor-bus-stop.gtfs.zip" ;
