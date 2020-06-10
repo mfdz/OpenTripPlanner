@@ -177,4 +177,19 @@ public class BicycleAndWalkRoutingTest {
         var polyline = calculatePolyline(graph, start, end, TraverseMode.WALK);
         assertThatPolylinesAreEqual(polyline, "{{kgHammt@N?CRARFJBJJXHBLDFBXYLI?MBQ??");
     }
+
+    @Test
+    public void shouldWalkHindenburgStrasseUnderConstruction() {
+        var graph = TestGraphBuilder.buildGraph(ConstantsForTests.HERRENBERG_HINDENBURG_UNDER_CONSTRUCTION_OSM);
+
+        var hindenburgStr = new GenericLocation(48.59468, 8.87210);
+        var nagolderStr = new GenericLocation(48.59567, 8.86637);
+        var horberStr = new GenericLocation(48.59522, 8.86716);
+
+        var polyline1 = calculatePolyline(graph, hindenburgStr, nagolderStr, TraverseMode.WALK);
+        assertThatPolylinesAreEqual(polyline1, "scrgHsycu@@JDh@@TFd@@l@Et@UrDE~@Gz@Eh@EjAKv@CPADCLGPKVIVOXMVS^GLIFGHGDIHGFGDIFCV?REJFLHP?VA^?h@?L");
+
+        var polyline2 = calculatePolyline(graph, hindenburgStr, horberStr, TraverseMode.WALK);
+        assertThatPolylinesAreEqual(polyline2, "scrgHsycu@@JDh@@TFd@@l@Et@UrDE~@Gz@Eh@EjAKv@CPADCLKn@K^ETO`@FHMVKPQ^Jp@LNFMGG");
+    }
 }
