@@ -188,6 +188,17 @@ public class GermanyWayPropertySetTest {
         alzentalstr.addTag("name", "Alzentalstraße");
         alzentalstr.addTag("surface", "asphalt");
         assertEquals(1.38889, wps.getCarSpeedForWay(alzentalstr, false), epsilon);
+
+        // https://www.openstreetmap.org/way/10879847 with patched maxspeed
+        var tuebingerStr = new OSMWithTags();
+        tuebingerStr.addTag("highway", "primary");
+        tuebingerStr.addTag("maxspeed", "5");
+        assertEquals(1.38889, wps.getCarSpeedForWay(tuebingerStr, false), epsilon);
+
+        var autobahn = new OSMWithTags();
+        autobahn.addTag("highway", "motorway");
+        autobahn.addTag("maxspeed", "none");
+        assertEquals(33.33000183105469, wps.getCarSpeedForWay(autobahn, false), epsilon);
     }
 
     private void assertSpeed(double v, String s) {

@@ -210,7 +210,7 @@ public class WayPropertySet {
             		"maxspeed tags; ignoring these tags", this);
         
         // if there was a defined speed and it's not 0, we're done
-        if (speed != null)
+        if (speed != null && speed > 0.0001)
             return speed;
                     
         // otherwise, we use the speedPickers
