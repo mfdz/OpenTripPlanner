@@ -86,6 +86,13 @@ public class GermanyWayPropertySetSource implements WayPropertySetSource {
         props.setProperties("lit=no", StreetTraversalPermission.ALL, 1.05, 1.05, true); // not lit decreases safety
 
 
+       /**
+        * Artifical bicycle bonus/malus for when you want to achieve a certain route, for example when planning
+        * diversions
+        */
+        props.setProperties("bicycle:bonus=yes", StreetTraversalPermission.ALL, 0.2, 0.2, true);
+        props.setProperties("bicycle:malus=yes", StreetTraversalPermission.ALL, 2.5, 2.5, true);
+
         // Read the rest from the default set
 		new DefaultWayPropertySetSource().populateProperties(props);
 	}

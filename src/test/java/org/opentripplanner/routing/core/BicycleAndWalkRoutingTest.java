@@ -190,6 +190,20 @@ public class BicycleAndWalkRoutingTest {
         assertThatPolylinesAreEqual(polyline1, "scrgHsycu@@JDh@@TFd@@l@Et@UrDE~@Gz@Eh@EjAKv@CPADCLGPKVIVOXMVS^GLIFGHGDIHGFGDIFCV?REJFLHP?VA^?h@?L");
 
         var polyline2 = calculatePolyline(graph, hindenburgStr, horberStr, TraverseMode.WALK);
-        assertThatPolylinesAreEqual(polyline2, "scrgHsycu@@JDh@@TFd@@l@Et@UrDE~@Gz@Eh@EjAKv@CPADCLKn@K^ETO`@FHMVKPQ^Jp@LNFMGG");
+        assertThatPolylinesAreEqual(polyline2, "scrgHsycu@@JDh@@TFd@@l@Et@UrDE~@Gz@Eh@EjAKv@CPADCLKn@K^ETO`@INMROT?H?F@HDJJLFJ@B");
+    }
+
+    @Test
+    public void shouldAvoidErhardtStr() {
+        var graph = TestGraphBuilder.buildGraph(ConstantsForTests.HERRENBERG_HINDENBURG_UNDER_CONSTRUCTION_OSM);
+
+        var guelsteinerStr = new GenericLocation(48.59291, 8.87040);
+        var bahnhof = new GenericLocation(48.59364, 8.86331);
+
+        var polyline1 = calculatePolyline(graph, guelsteinerStr, bahnhof, TraverseMode.BICYCLE);
+        assertThatPolylinesAreEqual(polyline1, "sxqgH}ncu@AB\\ThCJ@pCBxAD`AJz@n@~GeBf@V`CFv@BZBXHr@@PBTBP@N?P?H@L?bAw@?ClFGbAQjAgBqAU]KWG[Qu@MOCFGJ_An@A?AE");
+
+        var polyline2 = calculatePolyline(graph, bahnhof, guelsteinerStr, TraverseMode.BICYCLE);
+        assertThatPolylinesAreEqual(polyline2, "c}qgHwbbu@@F~@o@FKBGBMCKMg@GWCOCEAIAIAK?M?OBMDMBIDIHGFEHCJELEd@MPEZKIs@Gq@_@{D`Cq@dBg@o@_HI{@GaACyAAqCiCK]UBC");
     }
 }

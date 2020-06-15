@@ -61,8 +61,8 @@ clean:
 	rm -rf graphs/default/*.pbf
 
 patch-herrenberg: graphs/default/stuttgart.pbf
-	cp ../gtfs-hub/config/osm/alzental_diversion.xml graphs/default/
-	docker run -v `pwd`/graphs/default/:/osm mfdz/osmosis:0.47-1-gd370b8c4 --read-pbf /osm/stuttgart.pbf --tt file=/osm/alzental_diversion.xml stats=/osm/alzental_diversion.log --write-pbf /osm/alzental.osm.pbf
+	cp ../gtfs-hub/config/osm/diversions.xml graphs/default/
+	docker run -v `pwd`/graphs/default/:/osm mfdz/osmosis:0.47-1-gd370b8c4 --read-pbf /osm/stuttgart.pbf --tt file=/osm/diversions.xml stats=/osm/alzental_diversion.log --write-pbf /osm/alzental.osm.pbf
 	sudo chown -R `whoami`:`whoami` graphs/default
 	osmium extract --polygon src/test/resources/herrenberg/herrenberg-and-around.geojson graphs/default/alzental.osm.pbf -o src/test/resources/herrenberg/herrenberg-hindenburg-under-construction.osm.pbf --overwrite
 	rm graphs/default/alzental.osm.pbf
