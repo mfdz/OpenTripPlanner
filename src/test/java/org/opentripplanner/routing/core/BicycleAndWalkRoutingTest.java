@@ -1,6 +1,5 @@
 package org.opentripplanner.routing.core;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.opentripplanner.ConstantsForTests;
@@ -23,13 +22,10 @@ import static org.opentripplanner.routing.core.PolylineAssert.assertThatPolyline
 
 public class BicycleAndWalkRoutingTest {
 
-    static Graph graph;
-
     static long dateTime = TestUtils.dateInSeconds("Europe/Berlin", 2020, 04, 23, 11, 0, 0);
 
-    @BeforeClass
-    public static void setUp() {
-        graph = TestGraphBuilder.buildGraph(
+    public static Graph getDefaultGraph() {
+        return TestGraphBuilder.buildGraph(
                 ConstantsForTests.HERRENBERG_AND_AROUND_OSM,
                 ConstantsForTests.BOEBLINGEN_OSM,
                 ConstantsForTests.VAIHINGEN_NORD_OSM
@@ -80,12 +76,13 @@ public class BicycleAndWalkRoutingTest {
     public void useBikeNetworkRoutesFromNebringenToHerrenberg() {
         var nebringen = new GenericLocation(48.56494, 8.85318);
         var herrenbergWilhelmstr = new GenericLocation(48.59586,8.87710);
-        var polyline = calculatePolyline(graph, nebringen, herrenbergWilhelmstr);
+        var polyline = calculatePolyline(getDefaultGraph(), nebringen, herrenbergWilhelmstr);
         assertThatPolylinesAreEqual(polyline, "{ilgHgc`u@IGC[y@?@qAZaCAKEMGKSAe@CWEOe@GGgCqNa@mEWqCo@eHI_Ay@wIYeDo@kHe@yEu@gGm@aFWmBkHgEKCeC\\gFn@M_@NoAWAOGSWRi@zAsFYKIQc@aAEIo@yAGIG\\IZ]p@e@v@u@|@m@f@cCn@?pBGt@Kx@[fB]bBYx@c@`Ag@x@g@b@S@YEa@Ge@OeBw@eAa@a@Cc@JiBv@_@P]FS@o@KsAg@qAe@e@Co@HyBh@MFMHKLEPCLi@Po@PqAT_@N_Ad@c@Nk@LYJ]JU@i@?w@Cg@?G@K?G??[COGOkAwBs@cBK]]oAa@mAKu@]{ByAtAULg@Hq@Aq@EsCQa@CC?qB@]BkAJ}B^eCCsBGqAE[[o@Go@ToCUkAEmAIKAiCK]UFe@c@iD]kB_@sAACe@Rk@JsCh@?IQkBQ?YBu@NEOS}@Y}ESsCMcBUyCi@oEAE");
     }
 
     @Test
     public void dontUseCycleNetworkInsideHerrenberg() {
+        var graph = getDefaultGraph();
         var herrenbergErhardtstBismarckstr = new GenericLocation(48.59247, 8.86811);
         var herrenbergMarkusstrMarienstr = new GenericLocation(48.59329, 8.87253);
         var hildrizhauserStr = new GenericLocation(48.5944599, 8.874989748);
@@ -108,6 +105,7 @@ public class BicycleAndWalkRoutingTest {
 
     @Test
     public void useDesignatedTrackNearHorberStr() {
+        var graph = getDefaultGraph();
         var herrenbergPoststr = new GenericLocation(48.59370,8.86446);
         var herrenberGueltsteinerStr = new GenericLocation(48.58935, 8.86991);
 
@@ -117,6 +115,7 @@ public class BicycleAndWalkRoutingTest {
 
     @Test
     public void useCorrectPathOutsideGaertringen() {
+        var graph = getDefaultGraph();
         var gaertringen = new GenericLocation(48.64159, 8.90378);
         var ibm = new GenericLocation(48.60487, 8.87472);
 
@@ -126,6 +125,7 @@ public class BicycleAndWalkRoutingTest {
 
     @Test
     public void dontTakeLandhausstrWhenCrossingBoeblingen() {
+        var graph = getDefaultGraph();
         var boeblingenHerrenbergerStr = new GenericLocation(48.68456, 9.00749);
         var boeblingenThermalbad = new GenericLocation(48.69406, 9.02869);
 
@@ -135,6 +135,7 @@ public class BicycleAndWalkRoutingTest {
 
     @Test
     public void takeScenicRouteFromNufringenToNagold() {
+        var graph = getDefaultGraph();
         var nufringenBahnhof = new GenericLocation(48.62039, 8.88977);
         var nagold = new GenericLocation(48.55131, 8.72866);
 
@@ -144,6 +145,7 @@ public class BicycleAndWalkRoutingTest {
 
     @Test
     public void dontCrossBuesnauerStrToGetToCycleLane() {
+        var graph = getDefaultGraph();
         var holderbuschweg = new GenericLocation(48.73613, 9.09802);
         var allmandRing = new GenericLocation(48.74037, 9.09548);
 
@@ -153,6 +155,7 @@ public class BicycleAndWalkRoutingTest {
 
     @Test
     public void takeTrackhOutsideUnterjettingen() {
+        var graph = getDefaultGraph();
         var southOfUnterjettingen = new GenericLocation(48.558041429, 8.784744);
         var wielandStr = new GenericLocation(48.56160, 8.78256);
 
@@ -162,6 +165,7 @@ public class BicycleAndWalkRoutingTest {
 
     @Test
     public void shouldWalkOnResidentialRoundabouts() {
+        var graph = getDefaultGraph();
         var start = new GenericLocation(48.59190, 8.85884);
         var end = new GenericLocation(48.59270, 8.86068);
 
@@ -171,6 +175,7 @@ public class BicycleAndWalkRoutingTest {
 
     @Test
     public void shouldNotWalkOnRoundaboutsOutsideTowns() {
+        var graph = getDefaultGraph();
         var start = new GenericLocation(48.56270, 8.75747);
         var end = new GenericLocation(48.56215, 8.75728);
 
