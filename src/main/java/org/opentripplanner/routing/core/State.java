@@ -877,8 +877,11 @@ public class State implements Cloneable {
         return getElapsedTimeSeconds() - stateData.initialWaitTime;
     }
 
-    public boolean hasEnteredNoThruTrafficArea() {
-        return stateData.enteredNoThroughTrafficArea;
+    public boolean hasEnteredMotorVehicleNoThruTrafficArea() {
+        return stateData.enteredMotorVehicleNoThroughTrafficArea;
     }
 
+    public boolean hasEnteredBicycleNoThruTrafficArea() {
+        return stateData.enteredBicycleNoThroughTrafficArea;
+    }
 }
