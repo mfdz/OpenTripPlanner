@@ -114,4 +114,16 @@ public class CarRoutingTest {
         var polyline5 = computePolyline(hindenburgStrUnderConstruction(), autobahn, aufDemGraben);
         assertThatPolylinesAreEqual(polyline5, "{pogHathu@G`@Gf@Gd@Kf@SjASfAWjAKf@I\\Sp@Ol@Ob@CJKZENQh@Ul@Qd@Sj@Yr@[t@u@dB]v@_@v@i@dA_@r@U`@Ub@U`@]p@Yn@Wl@O`@M\\Of@M\\Mf@Oj@[jA{@~CQl@Oj@c@vAWt@Yv@O`@O^ITCFk@pAWj@[l@S^U`@U`@W^W`@Y`@Y^WZWZc@j@i@n@g@r@q@x@s@`AW^Y^g@t@[f@S\\SX[h@Yf@Yh@c@v@a@v@a@x@U`@MVWf@S`@e@|@Yl@Wd@OXw@|As@tAk@bAU`@wBfEQ\\[f@GJ[b@}A|B]d@U\\U\\IPUh@KXAHCn@Bz@Dt@Dh@@TGBC@KBSHGx@");
     }
+
+    @Test
+    public void shouldRespectNoThroughTraffic() {
+        var mozartStr = new GenericLocation(48.59521, 8.88391);
+        var fritzLeharStr = new GenericLocation(48.59460, 8.88291);
+
+        var polyline1 = computePolyline(ordinaryHerrenbergGraph(), mozartStr, fritzLeharStr);
+        assertThatPolylinesAreEqual(polyline1, "_grgHkcfu@OjBC\\ARGjAKzAfBz@j@n@Rk@E}D");
+
+        var polyline2 = computePolyline(ordinaryHerrenbergGraph(), fritzLeharStr, mozartStr);
+        assertThatPolylinesAreEqual(polyline2, "gcrgHc}eu@D|DSj@k@o@gB{@J{AFkA@SB]NkB");
+    }
 }
