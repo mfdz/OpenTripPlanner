@@ -120,6 +120,10 @@ public class OSMWithTagsTest {
         
         o.addTag("access", "private");
         assertTrue(o.isThroughTrafficExplicitlyDisallowed());
+
+        OSMWithTags way = new OSMWithTags();
+        way.addTag("motor_vehicle", "destination");
+        assertTrue(way.isThroughTrafficExplicitlyDisallowed());
     }
 
     @Test
