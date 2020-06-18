@@ -133,7 +133,7 @@ public class StreetUtils {
     }
 
     private static void collectNeighbourVertices(
-        Graph graph, Map<Vertex, ArrayList<Vertex>> neighborsForVertex, boolean noThruTraffic) {
+        Graph graph, Map<Vertex, ArrayList<Vertex>> neighborsForVertex, boolean motorVehicleNoThruTraffic) {
 
         // RoutingRequest options = new RoutingRequest(new TraverseModeSet(TraverseMode.WALK, TraverseMode.TRANSIT));
         RoutingRequest options = new RoutingRequest(new TraverseModeSet(TraverseMode.WALK));
@@ -149,7 +149,7 @@ public class StreetUtils {
                       e instanceof ElevatorEdge || e instanceof FreeEdge)) {
                     continue;
                 }
-                if ((e instanceof StreetEdge && ((StreetEdge)e).isNoThruTraffic()) != noThruTraffic) {
+                if ((e instanceof StreetEdge && ((StreetEdge)e).isMotorVehicleNoThruTraffic()) != motorVehicleNoThruTraffic) {
                     continue;
                 }
                 State s1 = e.traverse(s0);
@@ -231,7 +231,7 @@ public class StreetUtils {
                         if (!isolated.containsKey(e)) {
                             // not a true island edge but has limited access
                             // so convert to noThruTraffic
-                            pse.setNoThruTraffic(true);
+                            pse.setMotorVehicleNoThruTraffic(true);
                             stats.put("noThru", stats.get("noThru") + 1);
                         } else {
                             StreetTraversalPermission permission = pse.getPermission();

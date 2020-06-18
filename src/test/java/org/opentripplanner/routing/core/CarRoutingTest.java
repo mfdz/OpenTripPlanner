@@ -44,7 +44,7 @@ public class CarRoutingTest {
         GenericLocation seeStrasse = new GenericLocation(48.59724504108028,8.868606090545656);
         GenericLocation offTuebingerStr = new GenericLocation(48.58529481682537, 8.888196945190431);
 
-        var polyline = computePolyline(hindenburgStrUnderConstruction(), seeStrasse, offTuebingerStr);
+        var polyline = computePolyline(ordinaryHerrenbergGraph(), seeStrasse, offTuebingerStr);
 
         assertThatPolylinesAreEqual(polyline, "usrgHyccu@d@bAl@jAT\\JLFHNNLJJHJFLHNJLDPDT?NAN?FANCFAB?JADGDIFKDINULSHONa@FUJ_@Jo@DSBQJw@DkADi@D{@D_ATsDDu@Am@Ee@AUEi@Eu@C{@Bo@@IJYTi@HQT]T]\\e@|A}BZc@FKZg@P]vBgETa@j@cAr@uAv@}ANYVe@Xm@d@}@Ra@Vg@LWTa@`@y@`@w@b@w@Xi@Xg@Zi@RYR]Zg@f@u@X_@V_@r@aAp@y@f@s@h@o@b@k@V[V[X_@Xa@Va@V_@Ta@Ta@R_@Zm@Vk@j@qABGHUN_@Na@Xw@Vu@b@wANk@Pm@z@_DRu@");
     }
@@ -57,6 +57,16 @@ public class CarRoutingTest {
         var polyline = computePolyline(ordinaryHerrenbergGraph(), nagolderStr, horberstr);
 
         assertThatPolylinesAreEqual(polyline, "mirgHmkbu@Au@@m@?s@@cF@g@?k@@M@MBKBIHAF?D@FDB@HDFJHJLPHJJJj@n@PLLJHF");
+    }
+
+    @Test
+    public void shouldAvoidResidentialStreet() {
+        var nagolderStr = new GenericLocation(48.59571, 8.86581);
+        var zeppelinStr = new GenericLocation(48.59985,8.86537);
+
+        var polyline = computePolyline(hindenburgStrUnderConstruction(), nagolderStr, zeppelinStr);
+
+        assertThatPolylinesAreEqual(polyline, "}irgHgrbu@?bA?zB@XBnCInB]jFGrAGdAC|AU?eAFg@C}@Ks@CGAY?YD]Fm@X_@Pw@d@eAn@k@VM@]He@Fo@Bi@??c@?Q@gD?Q?Q@mD?y@?aD?eCAw@EiBKgB");
     }
 
     @Test
@@ -103,5 +113,17 @@ public class CarRoutingTest {
 
         var polyline5 = computePolyline(hindenburgStrUnderConstruction(), autobahn, aufDemGraben);
         assertThatPolylinesAreEqual(polyline5, "{pogHathu@G`@Gf@Gd@Kf@SjASfAWjAKf@I\\Sp@Ol@Ob@CJKZENQh@Ul@Qd@Sj@Yr@[t@u@dB]v@_@v@i@dA_@r@U`@Ub@U`@]p@Yn@Wl@O`@M\\Of@M\\Mf@Oj@[jA{@~CQl@Oj@c@vAWt@Yv@O`@O^ITCFk@pAWj@[l@S^U`@U`@W^W`@Y`@Y^WZWZc@j@i@n@g@r@q@x@s@`AW^Y^g@t@[f@S\\SX[h@Yf@Yh@c@v@a@v@a@x@U`@MVWf@S`@e@|@Yl@Wd@OXw@|As@tAk@bAU`@wBfEQ\\[f@GJ[b@}A|B]d@U\\U\\IPUh@KXAHCn@Bz@Dt@Dh@@TGBC@KBSHGx@");
+    }
+
+    @Test
+    public void shouldRespectNoThroughTraffic() {
+        var mozartStr = new GenericLocation(48.59521, 8.88391);
+        var fritzLeharStr = new GenericLocation(48.59460, 8.88291);
+
+        var polyline1 = computePolyline(ordinaryHerrenbergGraph(), mozartStr, fritzLeharStr);
+        assertThatPolylinesAreEqual(polyline1, "_grgHkcfu@OjBC\\ARGjAKzAfBz@j@n@Rk@E}D");
+
+        var polyline2 = computePolyline(ordinaryHerrenbergGraph(), fritzLeharStr, mozartStr);
+        assertThatPolylinesAreEqual(polyline2, "gcrgHc}eu@D|DSj@k@o@gB{@J{AFkA@SB]NkB");
     }
 }

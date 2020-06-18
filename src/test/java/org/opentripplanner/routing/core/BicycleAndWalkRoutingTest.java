@@ -211,4 +211,16 @@ public class BicycleAndWalkRoutingTest {
         var polyline2 = calculatePolyline(graph, bahnhof, guelsteinerStr, TraverseMode.BICYCLE);
         assertThatPolylinesAreEqual(polyline2, "c}qgHwbbu@@F~@o@FKBGBMCKMg@GWCOCEAIAIAK?M?OBMDMBIDIHGFEHCJELEd@MPEZKIs@Gq@_@{D`Cq@dBg@o@_HI{@GaACyAAqCiCK]UBC");
     }
+
+    @Test
+    public void shouldRespectNoThroughTraffic() {
+        var mozartStr = new GenericLocation(48.59521, 8.88391);
+        var fritzLeharStr = new GenericLocation(48.59460, 8.88291);
+
+        var polyline1 = calculatePolyline(getDefaultGraph(), mozartStr, fritzLeharStr);
+        assertThatPolylinesAreEqual(polyline1, "_grgHkcfu@OjBC\\ARGjAKzAfBz@j@n@Rk@E}D");
+
+        var polyline2 = calculatePolyline(getDefaultGraph(), fritzLeharStr, mozartStr);
+        assertThatPolylinesAreEqual(polyline2, "gcrgHc}eu@D|DSj@k@o@gB{@J{AFkA@SB]NkB");
+    }
 }

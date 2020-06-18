@@ -21,7 +21,6 @@ import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.location.TemporaryStreetLocation;
 import org.opentripplanner.routing.services.StreetVertexIndexService;
-import org.opentripplanner.routing.util.ElevationUtils;
 import org.opentripplanner.routing.vertextype.SampleVertex;
 import org.opentripplanner.routing.vertextype.StreetVertex;
 import org.opentripplanner.routing.vertextype.TransitStop;
@@ -175,14 +174,16 @@ public class StreetVertexIndexServiceImpl implements StreetVertexIndexService {
             TemporaryPartialStreetEdge temporaryPartialStreetEdge = new TemporaryPartialStreetEdge(
                     street, fromv, base, geometries.first, name, lengthIn);
 
-            temporaryPartialStreetEdge.setNoThruTraffic(street.isNoThruTraffic());
+            temporaryPartialStreetEdge.setMotorVehicleNoThruTraffic(street.isMotorVehicleNoThruTraffic());
+            temporaryPartialStreetEdge.setBicycleNoThruTraffic(street.isBicycleNoThruTraffic());
             temporaryPartialStreetEdge.setStreetClass(street.getStreetClass());
         } else {
             TemporaryPartialStreetEdge temporaryPartialStreetEdge = new TemporaryPartialStreetEdge(
                     street, base, tov, geometries.second, name, lengthOut);
 
             temporaryPartialStreetEdge.setStreetClass(street.getStreetClass());
-            temporaryPartialStreetEdge.setNoThruTraffic(street.isNoThruTraffic());
+            temporaryPartialStreetEdge.setMotorVehicleNoThruTraffic(street.isMotorVehicleNoThruTraffic());
+            temporaryPartialStreetEdge.setBicycleNoThruTraffic(street.isBicycleNoThruTraffic());
         }
     }
 

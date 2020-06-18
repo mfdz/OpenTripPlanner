@@ -266,10 +266,14 @@ public class StateEditor {
         child.stateData.previousTrip = previousTrip;
     }
 
-    public void setEnteredNoThroughTrafficArea() {
-        child.stateData.enteredNoThroughTrafficArea = true;
+    public void setEnteredMotorVerhicleNoThroughTrafficArea() {
+        child.stateData.enteredMotorVehicleNoThroughTrafficArea = true;
     }
-    
+
+    public void setEnteredBicycleNoThroughTrafficArea() {
+        child.stateData.enteredBicycleNoThroughTrafficArea= true;
+    }
+
     /**
      * Initial wait time is recorded so it can be subtracted out of paths in lieu of "reverse optimization".
      * This happens in Analyst.
@@ -552,8 +556,11 @@ public class StateEditor {
         child.stateData.bikeRentalNetworks = networks;
     }
 
-    public boolean hasEnteredNoThroughTrafficArea() {
-        return child.hasEnteredNoThruTrafficArea();
+    public boolean hasEnteredMotorVehicleNoThroughTrafficArea() {
+        return child.hasEnteredMotorVehicleNoThruTrafficArea();
     }
 
+    public boolean hasEnteredBicycleNoThroughTrafficArea() {
+        return child.hasEnteredBicycleNoThruTrafficArea();
+    }
 }
