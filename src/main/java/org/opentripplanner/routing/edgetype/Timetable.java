@@ -188,6 +188,9 @@ public class Timetable implements Serializable {
 
         boolean omitCanceled =  s0.getOptions().omitCanceled;
 
+        boolean isReverseOptimizing = s0.getOptions().reverseOptimizing;
+        int requestStartTime = serviceDay.secondsSinceMidnight(s0.getOptions().getSecondsSinceEpoch());
+
         for (TripTimes tt : tripTimes) {
             if (tt.isCanceled() && omitCanceled) continue;
             if ((tt.getNumStops() <= stopIndex)) continue;
@@ -238,6 +241,9 @@ public class Timetable implements Serializable {
 
                 int arvTime = tt.getArrivalTime(stopIndex) + flexTimeAdjustment;
                 if (arvTime < 0) continue;
+                if (isReverseOptimizing && arvTime < requestStartTime) {
+                    continue;
+                }
                 if (arvTime <= adjustedTime && arvTime > bestTime) {
                     bestTrip = tt;
                     bestTime = arvTime;
