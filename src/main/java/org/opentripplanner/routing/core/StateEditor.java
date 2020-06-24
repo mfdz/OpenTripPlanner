@@ -15,6 +15,9 @@ import org.opentripplanner.routing.vertextype.TemporaryVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.opentripplanner.routing.core.TraverseMode.BICYCLE;
+import static org.opentripplanner.routing.core.TraverseMode.WALK;
+
 /**
  * This class is a wrapper around a new State that provides it with setter and increment methods,
  * allowing it to be modified before being put to use.
@@ -136,7 +139,14 @@ public class StateEditor {
         // Only apply limit in transit-only case, unless this is a one-to-many request with hard
         // walk limiting, in which case we want to cut off the search.
         if (options.modes.isTransit() || !options.softWalkLimiting && options.batch)
-            return child.walkDistance >= options.maxWalkDistance;
+            return child.getWalkDistance()>= options.maxWalkDistance;
+
+        return false;
+    }
+
+    public boolean weHaveCycledTooFar(RoutingRequest options) {
+        if (options.modes.isTransit())
+            return child.getBikeDistance() >= options.maxBikeDistance;
 
         return false;
     }
@@ -216,13 +226,14 @@ public class StateEditor {
         child.time += (traversingBackward ? -milliseconds : milliseconds);
     }
 
-    public void incrementWalkDistance(double length) {
+    public void incrementDistance(double length, TraverseMode mode) {
         if (length < 0) {
             LOG.warn("A state's walk distance is being incremented by a negative amount.");
             defectiveTraversal = true;
             return;
         }
-        child.walkDistance += length;
+        if(WALK == mode) child.incrementWalkDistance(length);
+        else if(BICYCLE == mode) child.incrementBikeDistance(length);
     }
 
     public void incrementPreTransitTime(int seconds) {
@@ -308,10 +319,6 @@ public class StateEditor {
         child.stateData.lastNextArrivalDelta = lastNextArrivalDelta;
     }
 
-    public void setWalkDistance(double walkDistance) {
-        child.walkDistance = walkDistance;
-    }
-
     public void setPreTransitTime(int preTransitTime) {
         child.preTransitTime = preTransitTime;
     }
@@ -367,7 +374,7 @@ public class StateEditor {
     public void doneVehicleRenting() {
         cloneStateDataAsNeeded();
         child.stateData.usingRentedBike = false;
-        child.stateData.nonTransitMode = TraverseMode.WALK;
+        child.stateData.nonTransitMode = WALK;
     }
 
     /**
@@ -379,7 +386,7 @@ public class StateEditor {
         child.stateData.carParked = carParked;
         if (carParked) {
             // We do not handle mixed-mode P+BIKE...
-            child.stateData.nonTransitMode = TraverseMode.WALK;
+            child.stateData.nonTransitMode = WALK;
         } else {
             child.stateData.nonTransitMode = TraverseMode.CAR;
         }
@@ -389,9 +396,9 @@ public class StateEditor {
         cloneStateDataAsNeeded();
         child.stateData.bikeParked = bikeParked;
         if (bikeParked) {
-            child.stateData.nonTransitMode = TraverseMode.WALK;
+            child.stateData.nonTransitMode = WALK;
         } else {
-            child.stateData.nonTransitMode = TraverseMode.BICYCLE;
+            child.stateData.nonTransitMode = BICYCLE;
         }
     }
 
@@ -563,4 +570,5 @@ public class StateEditor {
     public boolean hasEnteredBicycleNoThroughTrafficArea() {
         return child.hasEnteredBicycleNoThruTrafficArea();
     }
+
 }

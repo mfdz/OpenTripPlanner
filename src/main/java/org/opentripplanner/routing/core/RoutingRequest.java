@@ -88,6 +88,8 @@ public class RoutingRequest implements Cloneable, Serializable {
      */
     public double maxWalkDistance = Double.MAX_VALUE;
 
+    public double maxBikeDistance = 30000;
+
     /**
      * The maximum distance (in meters) the user is willing to walk for transfer legs.
      * Defaults to unlimited. Currently set to be the same value as maxWalkDistance.

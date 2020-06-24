@@ -123,7 +123,7 @@ public class BikeRentalRoutingTest {
         request.bikeSpeed = 5;
         request.bikeSwitchCost = 1;
         request.walkReluctance = 20;
-        request.maxWalkDistance = 15000;
+        request.maxWalkDistance = 800;
         request.setWalkReluctance(2);
         request.wheelchairAccessible = false;
         request.setNumItineraries(3);

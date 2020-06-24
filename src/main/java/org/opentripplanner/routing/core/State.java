@@ -11,6 +11,7 @@ import org.opentripplanner.routing.edgetype.*;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.trippattern.TripTimes;
+import org.opentripplanner.routing.vertextype.ElevatorOffboardVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,9 +39,9 @@ public class State implements Cloneable {
     public StateData stateData;
 
     // how far have we walked
-    // TODO(flamholz): this is a very confusing name as it actually applies to all non-transit modes.
-    // we should DEFINITELY rename this variable and the associated methods.
-    public double walkDistance;
+    private double walkDistance;
+    // how far have we have cycled
+    private double bikeDistance;
 
     // The time traveled pre-transit, for park and ride or kiss and ride searches
     int preTransitTime;
@@ -318,6 +319,19 @@ public class State implements Cloneable {
     public double getWalkDistance() {
         return walkDistance;
     }
+
+    public double getBikeDistance() {
+        return bikeDistance;
+    }
+
+    protected void incrementWalkDistance(double distance) {
+        walkDistance += distance;
+    }
+
+    protected void incrementBikeDistance(double distance) {
+        bikeDistance += distance;
+    }
+
 
     public int getPreTransitTime() {
         return preTransitTime;
@@ -778,7 +792,7 @@ public class State implements Cloneable {
 
                 editor.incrementTimeInSeconds(orig.getAbsTimeDeltaSeconds());
                 editor.incrementWeight(orig.getWeightDelta());
-                editor.incrementWalkDistance(orig.getWalkDistanceDelta());
+                editor.incrementDistance(orig.getWalkDistanceDelta(), orig.getBackMode());
                 editor.incrementPreTransitTime(orig.getPreTransitTimeDelta());
                 
                 // propagate the modes through to the reversed edge
@@ -909,4 +923,5 @@ public class State implements Cloneable {
     public boolean hasEnteredBicycleNoThruTrafficArea() {
         return stateData.enteredBicycleNoThroughTrafficArea;
     }
+
 }

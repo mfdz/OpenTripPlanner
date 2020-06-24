@@ -252,13 +252,14 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
         // activated so that a euclidean heuristic will be used to estimate the remaining weight.
         useEuclideanRemainingWeightEstimateForPreTransitVertices = request.modes.getCar() || (
             request.modes.getBicycle() &&
-                request.maxWalkDistance > PRE_TRANSIT_EUCLIDEAN_WALK_DISTANCE_THRESHOLD
+                request.maxBikeDistance > PRE_TRANSIT_EUCLIDEAN_WALK_DISTANCE_THRESHOLD
         );
 
         // once street searches are done, raise the limits to max
         // because hard walk limiting is incorrect and is observed to cause problems
         // for trips near the cutoff.
         request.setMaxWalkDistance(Double.POSITIVE_INFINITY);
+        request.maxBikeDistance = Double.POSITIVE_INFINITY;
         request.setMaxPreTransitTime(Integer.MAX_VALUE);
 
         LOG.debug("initialized SSSP");
@@ -492,9 +493,13 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
                     stopReached = true;
                     rr.softWalkLimiting = false;
                     rr.softPreTransitLimiting = false;
-                    if (s.walkDistance > rr.maxWalkDistance) {
+                    if (s.getWalkDistance() > rr.maxWalkDistance) {
                         // Add 300 meters in order to search for nearby stops
-                        rr.maxWalkDistance = s.walkDistance + 300;
+                        rr.maxWalkDistance = s.getWalkDistance() + 300;
+                    }
+                    if (s.getBikeDistance() > rr.maxBikeDistance) {
+                        // Add 300 meters in order to search for nearby stops
+                        rr.maxBikeDistance = s.getBikeDistance() + 300;
                     }
                 }
                 if (!initialStop) continue;

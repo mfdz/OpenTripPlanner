@@ -540,7 +540,7 @@ public class StreetEdge extends Edge implements Cloneable {
             }
 
             if (!traverseMode.isDriving()) {
-                s1.incrementWalkDistance(realTurnCost / 100);  // just a tie-breaker
+                s1.incrementDistance(realTurnCost / 100, traverseMode);  // just a tie-breaker
             }
 
             int turnTime = (int) Math.ceil(realTurnCost);
@@ -557,7 +557,7 @@ public class StreetEdge extends Edge implements Cloneable {
         }
 
         if (!traverseMode.isDriving()) {
-            s1.incrementWalkDistance(getDistance());
+            s1.incrementDistance(getDistance(), traverseMode);
         }
 
         /* On the pre-kiss/pre-park leg, limit both walking and driving, either soft or hard. */
@@ -590,6 +590,10 @@ public class StreetEdge extends Edge implements Cloneable {
                 LOG.debug("Too much walking. Bailing.");
                 return null;
             }
+        }
+        if (s1.weHaveCycledTooFar(options)) {
+            LOG.debug("Too much cycling. Bailing.");
+            return null;
         }
 
         s1.incrementTimeInSeconds(roundedTime);
