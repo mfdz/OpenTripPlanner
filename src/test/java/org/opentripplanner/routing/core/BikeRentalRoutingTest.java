@@ -116,6 +116,8 @@ public class BikeRentalRoutingTest {
                 plan.itinerary.get(0).legs.stream().anyMatch(leg -> leg.rentedBike)
         );
 
+        //plan.itinerary.get(0).legs.forEach(l -> System.out.println(PolylineAssert.makeUrl(l.legGeometry.getPoints())));
+
         Stream<List<Coordinate>> points = plan.itinerary.get(0).legs.stream().map(l -> PolylineEncoder.decode(l.legGeometry));
         return PolylineEncoder.createEncodings(points.flatMap(List::stream).collect(Collectors.toList())).getPoints();
     }
