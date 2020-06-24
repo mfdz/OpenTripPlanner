@@ -39,19 +39,13 @@ public class BikeRentalRoutingTest {
     static long dateTime = TestUtils.dateInSeconds("Europe/Berlin", 2020, 06, 23, 15, 0, 0);
 
     public static Graph getDefaultGraph() {
-        var graph = TestGraphBuilder.buildGraph(ConstantsForTests.HERRENBERG_OSM);
+        var graph = TestGraphBuilder.buildGtfsGraph(ConstantsForTests.HERRENBERG_AND_AROUND_OSM, ConstantsForTests.HERRENBERG_S1_TRAIN_ONLY);
 
-        var defaultNetworks = ImmutableSet.of("default");
-        // Apply stations to graph
-        var rentalStation = new BikeRentalStation();
-        rentalStation.bikesAvailable = 10;
-        rentalStation.y = 48.59438;
-        rentalStation.x = 8.86210;
-        rentalStation.networks = defaultNetworks;
-        rentalStation.id = "1";
-        rentalStation.name = new NonLocalizedString("Herrenberg Bahnhof");
-
-        Set<BikeRentalStation> stations = ImmutableSet.of(rentalStation);
+        Set<BikeRentalStation> stations = ImmutableSet.of(
+                makeBikeStation("1", "Herrenberg Bahnhof", 48.59438, 8.86210),
+                makeBikeStation("2", "Kuppingen", 48.61115, 8.84013),
+                makeBikeStation("3", "Herrenberg Meisenweg", 48.5870, 8.8566)
+        );
 
         var service = new BikeRentalStationService();
         graph.putService(BikeRentalStationService.class, service);
@@ -64,7 +58,6 @@ public class BikeRentalRoutingTest {
             var linker = new SimpleStreetSplitter(graph);
 
             if (!linker.link(vertex)) {
-                // the toString includes the text "Bike rental station"
                 LOG.warn("{} not near any streets; it will not be usable.", station);
             } else {
                 LOG.warn("Added {} to street network.", station);
@@ -76,13 +69,27 @@ public class BikeRentalRoutingTest {
         return graph;
     }
 
+    private static BikeRentalStation makeBikeStation(String id, String name, double lat, double lon) {
+        var defaultNetworks = ImmutableSet.of("default");
+        var rentalStation = new BikeRentalStation();
+        rentalStation.bikesAvailable = 10;
+        rentalStation.y = lat;
+        rentalStation.x = lon;
+        rentalStation.allowDropoff = true;
+        rentalStation.spacesAvailable = 100;
+        rentalStation.networks = defaultNetworks;
+        rentalStation.id = id;
+        rentalStation.name = new NonLocalizedString(name);
+        return rentalStation;
+    }
+
     private static String calculatePolyline(Graph graph, GenericLocation from, GenericLocation to) {
         RoutingRequest request = new RoutingRequest();
         request.dateTime = dateTime;
         request.from = from;
         request.to = to;
 
-        request.modes = new TraverseModeSet(TraverseMode.BICYCLE);
+        request.modes = new TraverseModeSet(TraverseMode.BICYCLE, TraverseMode.TRANSIT, TraverseMode.WALK);
         new QualifiedMode(TraverseMode.BICYCLE, QualifiedMode.Qualifier.RENT).applyToRoutingRequest(request, false);
 
         request.setNumItineraries(5);
@@ -92,10 +99,9 @@ public class BikeRentalRoutingTest {
         request.setOptimize(OptimizeType.QUICK);
         request.walkSpeed = 1.2;
         request.bikeSpeed = 5;
-        request.bikeSwitchCost = 20;
+        request.bikeSwitchCost = 1;
         request.walkReluctance = 20;
-        request.maxWalkDistance = 100;
-        request.walkBoardCost = 60;
+        request.maxWalkDistance = 1500;
         request.setWalkReluctance(2);
         request.wheelchairAccessible = false;
 
@@ -115,7 +121,7 @@ public class BikeRentalRoutingTest {
     }
 
     @Test
-    public void useBikeNetworkRoutesFromNebringenToHerrenberg() {
+    public void rentBikeAndRideToDestination() {
         var graph = getDefaultGraph();
 
         var bahnhof = new GenericLocation(48.59385, 8.86399);
@@ -123,5 +129,16 @@ public class BikeRentalRoutingTest {
 
         var polyline = calculatePolyline(graph, bahnhof, herrenbergWilhelmstr);
         assertThatPolylinesAreEqual(polyline, "q~qgH{fbu@Jf@b@`BMRDf@?BGHMv@?NA@WRYRMHm@d@?ECC??EGm@TEDOE]DAQESSq@?CSo@GSI]O]]aAUe@A?GE?_AAaBAyA@m@?u@@cF@e@?m@@K@MBKBIDGDIFKDINULSHONa@FUJ_@Jo@DSBQJw@DkADi@D{@D_ATsDDu@Am@Ee@AUEi@Eu@C{@YBu@NEOS}@Y}ESsCMcBUyCi@oEAE");
+    }
+
+    @Test
+    public void rentBikeCycleToStationAndTakeTrain() {
+        var graph = getDefaultGraph();
+
+        var gärtringen = new GenericLocation(48.64100, 8.90832);
+        var herrenbergImVogelsang = new GenericLocation(48.5867, 8.8549);
+
+        var polyline = calculatePolyline(graph, herrenbergImVogelsang, gärtringen);
+        assertThatPolylinesAreEqual(polyline, "yqpgHan`u@BGTu@XmAg@]Yc@a@iBCIEU??Kg@Oo@s@oDqAyGqAz@GE}@eDo@qAmAsAcDcAIKEBgAZWF}@b@MA]OW]Uc@c@w@S_@Sg@u@cAgA}@iBqAU]KWYqAMOCFGJ_An@MRDf@?B@DR|@C@WYCDLf@MAKEA@WRYRMHm@d@?ECC??BB?Dl@e@LIXS@DSqA@CgB{Gg@uAcCmEwAaB}@m@y@c@eBi@yAOuA?mBTyDrA}JdE}DtAwA^y@LuCNyACiCYgCw@wBcAqAy@iBcBgCeD_AaBkBoEo@{BeAiFe@yDuCwYi@mEc@cCm@aC{@cC_AyBkB_DkByBuBeBuHyE}C{BkBcBuBcCsAoBsBoDsO{ZsCmFgDyFoFaIwCsDwByBsh@qe@_I}FgHgEaEoBkOqGkAq@oDiCeB}AyCgDkCiD@EBBBGZ^ABSd@?AY[E@GNA@CB]`@LPBF");
     }
 }
