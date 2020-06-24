@@ -101,7 +101,7 @@ public class BikeRentalRoutingTest {
         request.bikeSpeed = 5;
         request.bikeSwitchCost = 1;
         request.walkReluctance = 20;
-        request.maxWalkDistance = 1500;
+        request.maxWalkDistance = 15000;
         request.setWalkReluctance(2);
         request.wheelchairAccessible = false;
 
@@ -137,10 +137,25 @@ public class BikeRentalRoutingTest {
     public void rentBikeCycleToStationAndTakeTrain() {
         var graph = getDefaultGraph();
 
-        var gärtringen = new GenericLocation(48.64100, 8.90832);
         var herrenbergImVogelsang = new GenericLocation(48.5867, 8.8549);
+        var gärtringen = new GenericLocation(48.64100, 8.90832);
 
         var polyline = calculatePolyline(graph, herrenbergImVogelsang, gärtringen);
         assertThatPolylinesAreEqual(polyline, "yqpgHan`u@BGTu@XmAg@]Yc@a@iBCIEU??Kg@Oo@s@oDqAyGqAz@GE}@eDo@qAmAsAcDcAIKEBgAZWF}@b@MA]OW]Uc@c@w@S_@Sg@u@cAgA}@iBqAU]KWYqAMOCFGJ_An@MRDf@?B@DR|@C@WYCDLf@MAKEA@WRYRMHm@d@?ECC??BB?Dl@e@LIXS@DSqA@CgB{Gg@uAcCmEwAaB}@m@y@c@eBi@yAOuA?mBTyDrA}JdE}DtAwA^y@LuCNyACiCYgCw@wBcAqAy@iBcBgCeD_AaBkBoEo@{BeAiFe@yDuCwYi@mEc@cCm@aC{@cC_AyBkB_DkByBuBeBuHyE}C{BkBcBuBcCsAoBsBoDsO{ZsCmFgDyFoFaIwCsDwByBsh@qe@_I}FgHgEaEoBkOqGkAq@oDiCeB}AyCgDkCiD@EBBBGZ^ABSd@?AY[E@GNA@CB]`@LPBF");
+    }
+
+    @Test
+    public void rentBikeAfterGettingOffTrain() {
+        var graph = getDefaultGraph();
+
+        var gärtringen = new GenericLocation(48.64100, 8.90832);
+        var nebringen = new GenericLocation(48.5627, 8.8483);
+        var herrenbergWilhelmstr = new GenericLocation(48.59586, 8.87710);
+
+        var polyline1 = calculatePolyline(graph, gärtringen, herrenbergWilhelmstr);
+        assertThatPolylinesAreEqual(polyline1, "ee{gH_|ju@CGMQ\\a@BC@AFODA@IECBGfFfGbAdArFtEdEtBtL~E~DnBhHhE~H|Ffb@r_@bIvHpB`CfD~EtDnGfFvJbQl\\pB~CpAbBjBrBbCtBrK~GbBrAvAzAv@`AhBzC~@xBz@dCj@zBd@fCh@fEzC|Zx@vFj@hCn@zBlBrEnB`DvAdBjBdBnAx@xB`AfCx@jCXxABvAE~AQ|DeAlKoEvGaCpBSrAAvAPfBf@rBtAt@t@nBnC`AjCrBnI??b@hAAEYRMHm@d@?ECC??EGm@TEDOE]DAQESSq@?CSo@GSI]O]]aAUe@A?GE?_AAaBAyA@m@?u@@cF@e@?m@@K@MBKBIDGDIFKDINULSHONa@FUJ_@Jo@DSBQJw@DkADi@D{@D_ATsDDu@Am@Ee@AUEi@Eu@C{@YBu@NEOS}@Y}ESsCMcBUyCi@oEAE");
+
+        var polyline2 = calculatePolyline(graph, gärtringen, nebringen);
+        assertThatPolylinesAreEqual(polyline2, "ee{gH_|ju@CGMQ\\a@BC@AFODA@IECBGfFfGbAdArFtEdEtBtL~E~DnBhHhE~H|Ffb@r_@bIvHpB`CfD~EtDnGfFvJbQl\\pB~CpAbBjBrBbCtBrK~GbBrAvAzAv@`AhBzC~@xBz@dCj@zBd@fCh@fEzC|Zx@vFj@hCn@zBlBrEnB`DvAdBjBdBnAx@xB`AfCx@jCXxABvAE~AQ|DeAlKoEvGaCpBSrAAvAPfBf@rBtAt@t@nBnC`AjCrBnI??b@hAAEYRMHm@d@?ECC??BB?Dl@e@LIXSVS@AJDL@Mg@BEVXB?S_AAE?CEg@LQ~@o@FKBG@MCKMg@GWCOAEAIAIAK?M?ODBDBD@H@B@F?X@X@p@BfB@v@?lA@D?xA@b@?Z@h@?f@?VCTCXCVA`AKdAKbCSvBSxAIt@G|@Ax@Fd@Nx@^dAbAp@pAT`@h@rAl@xBRl@HXf@n@b@Vj@PjAHj@@N?bA@`@?`@EVG`@OjAi@t@UhAYnBa@lB_@tBSZCtGk@xAO|BUrCUl@?j@Bh@FrAPNFPFLDHDF@DB@FBF@BBDBBB@F@F?HLHNHPJTJNBHJZL\\p@jBp@hCpAnF^nA\\fAXt@FGLMPXZh@`@h@^b@XVh@^^R~Av@dAb@j@^tCbALFP@XLzAl@bA\\dA^jA`@p@Rr@TRHLDdErAtAh@b@Hj@T\\HVDd@BR@FJDL@J[`CApA?rB?nD?dA@dJD@j@Pj@Pz@V|@V\\J\\L^L\\Ln@Tr@VJFHDHFFBF@H?FNFJDHHJHLIR");
     }
 }

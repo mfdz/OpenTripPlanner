@@ -766,7 +766,8 @@ public class State implements Cloneable {
                 if (orig.isBikeRenting() && !orig.getBackState().isBikeRenting()) {
                     editor.doneVehicleRenting();
                 } else if (!orig.isBikeRenting() && orig.getBackState().isBikeRenting()) {
-                    editor.beginVehicleRenting(((BikeRentalStationVertex)orig.vertex).getVehicleMode());
+                    var vehicleMode = orig.getBackMode();
+                    editor.beginVehicleRenting(vehicleMode);
                 }
                 if (orig.isCarParked() != orig.getBackState().isCarParked())
                     editor.setCarParked(!orig.isCarParked());
