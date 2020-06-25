@@ -11,8 +11,6 @@ import org.opentripplanner.routing.edgetype.*;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.trippattern.TripTimes;
-import org.opentripplanner.routing.vertextype.BikeRentalStationVertex;
-import org.opentripplanner.routing.vertextype.ElevatorOffboardVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -501,10 +499,19 @@ public class State implements Cloneable {
         State newState = new State(this.vertex, getTimeSeconds(), stateData.opt.reversedClone());
         newState.stateData.tripTimes = stateData.tripTimes;
         newState.stateData.initialWaitTime = stateData.initialWaitTime;
+
+        if (!stateData.opt.arriveBy && !stateData.usingRentedBike) {
+            newState.stateData.nonTransitMode = TraverseMode.WALK;
+        }
+        else if (!stateData.opt.arriveBy && stateData.usingRentedBike) {
+            newState.stateData.backMode = TraverseMode.BICYCLE;
+        }
+
         // TODO Check if those two lines are needed:
         newState.stateData.usingRentedBike = stateData.usingRentedBike;
         newState.stateData.carParked = stateData.carParked;
         newState.stateData.bikeParked = stateData.bikeParked;
+        newState.stateData.nonTransitMode = stateData.nonTransitMode;
         return newState;
     }
 
@@ -723,14 +730,28 @@ public class State implements Cloneable {
                     ret = edge.traverse(ret);
                 }
 
-                if (ret != null && ret.getBackMode() != null && orig.getBackMode() != null &&
-                    ret.getBackMode() != orig.getBackMode() &&
-                    orig.getBackMode() != TraverseMode.LEG_SWITCH &&
-                    ret.getBackMode() != TraverseMode.LEG_SWITCH &&
-                    // Ignore switching between walking and biking in elevators
-                    !(edge.getFromVertex() instanceof ElevatorOffboardVertex ||
-                        edge.getToVertex() instanceof ElevatorOffboardVertex )
-                    ) {
+                // Sometimes states are forked, so we have to find the proper forked state to continue reverse
+                // optimization.
+                while (
+                    // avoid non-reverse-traversable edges
+                        ret != null &&
+                                // make sure the backmode is not null (can occur on first/last states)
+                                ret.getBackMode() != null &&
+                                orig.getBackMode() != null &&
+                                // make sure the modes are the same
+                                (ret.getBackMode() != orig.getBackMode() ||
+                                        // Also make sure that bike rental states are the same if the mode is the same. The rental
+                                        // states can differ despite the modes being the same when a vehicle rental is ended on an
+                                        // edge like steps that requires walking
+                                        (ret.getBackMode() == orig.getBackMode() &&
+                                                ret.isBikeRenting() != orig.isBikeRenting() &&
+                                                // Only take into consideration edge traversals that were not on
+                                                // RentAVehicleAbstractEdges as the rented vehicle state differs on arriveBy vs departAt
+                                                // queries
+                                                !(edge instanceof RentABikeAbstractEdge)
+                                        )
+                                )
+                ) {
                     ret = ret.next; // Keep the mode the same as on the original graph path (in K+R)
                 }
 

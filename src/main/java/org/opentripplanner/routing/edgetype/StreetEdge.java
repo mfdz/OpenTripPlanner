@@ -339,7 +339,7 @@ public class StreetEdge extends Edge implements Cloneable {
             // possible backward transition of completing a dropping off of a floating bike when in "arrive by" mode
             else if (
                     !s0.isBikeRenting() &&
-                            getPermission().allows(TraverseMode.BICYCLE) &&
+                            (getPermission().allows(TraverseMode.BICYCLE) || getPermission().allows(TraverseMode.WALK)) &&
                             currMode != TraverseMode.BICYCLE &&
                             options.arriveBy
             ) {
@@ -349,6 +349,17 @@ public class StreetEdge extends Edge implements Cloneable {
                     editorWithVehicleRental.incrementWeight(options.bikeRentalFreeFloatDropoffCost);
                     editorWithVehicleRental.incrementTimeInSeconds(options.bikeRentalPickupTime);
                     editorWithVehicleRental.beginVehicleRenting(TraverseMode.BICYCLE);
+                    // in arriveBy mode transitions on a street edge, we must immediately set the backmode to
+                    // bicycle to make sure proper state is maintained for correct state slicing and reverse
+                    // optimization. In rentABikeOn/OffEdges, the mode should not change until the following state to
+                    // ensure that the state is sliced at the rentABikeOn/OffEdge. However, here, the slice must
+                    // occur here. NOTE: if the edge is only traversable by walking, then the backMode should be set to
+                    // walk
+                    editorWithVehicleRental.setBackMode(
+                            canTraverse(options, TraverseMode.BICYCLE)
+                                    ? TraverseMode.BICYCLE
+                                    : TraverseMode.WALK
+                    );
                     State editorWithVehicleRentalState = editorWithVehicleRental.makeState();
                     if (state != null) {
                         // make the forkState be of the non-vehicle-rental mode so it's possible to build walk steps

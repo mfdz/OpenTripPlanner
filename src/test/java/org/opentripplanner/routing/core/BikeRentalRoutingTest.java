@@ -1,10 +1,10 @@
 package org.opentripplanner.routing.core;
 
 import com.google.common.collect.ImmutableSet;
-import org.junit.Assert;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.opentripplanner.ConstantsForTests;
+import org.opentripplanner.api.model.Itinerary;
 import org.opentripplanner.api.model.TripPlan;
 import org.opentripplanner.api.parameter.QualifiedMode;
 import org.opentripplanner.api.resource.GraphPathToTripPlanConverter;
@@ -26,10 +26,14 @@ import org.opentripplanner.util.TestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.opentripplanner.routing.core.PolylineAssert.assertThatPolylinesAreEqual;
 
 public class BikeRentalRoutingTest {
@@ -84,6 +88,15 @@ public class BikeRentalRoutingTest {
     }
 
     private static String calculatePolyline(Graph graph, GenericLocation from, GenericLocation to) {
+        var plan = getTripPlan(graph, from, to);
+
+        //plan.itinerary.get(0).legs.forEach(l -> System.out.println(PolylineAssert.makeUrl(l.legGeometry.getPoints())));
+
+        Stream<List<Coordinate>> points = plan.itinerary.get(0).legs.stream().map(l -> PolylineEncoder.decode(l.legGeometry));
+        return PolylineEncoder.createEncodings(points.flatMap(List::stream).collect(Collectors.toList())).getPoints();
+    }
+
+    private static TripPlan getTripPlan(Graph graph, GenericLocation from, GenericLocation to) {
         RoutingRequest request = new RoutingRequest();
         request.dateTime = dateTime;
         request.from = from;
@@ -104,6 +117,7 @@ public class BikeRentalRoutingTest {
         request.maxWalkDistance = 15000;
         request.setWalkReluctance(2);
         request.wheelchairAccessible = false;
+        request.setNumItineraries(3);
 
 
         GraphPathFinder gpf = new GraphPathFinder(new Router(graph.routerId, graph));
@@ -111,15 +125,11 @@ public class BikeRentalRoutingTest {
 
         TripPlan plan = GraphPathToTripPlanConverter.generatePlan(paths, request);
 
-        Assert.assertTrue(
+        assertTrue(
                 "Should contain a bike rental leg, but doesn't.",
                 plan.itinerary.get(0).legs.stream().anyMatch(leg -> leg.rentedBike)
         );
-
-        //plan.itinerary.get(0).legs.forEach(l -> System.out.println(PolylineAssert.makeUrl(l.legGeometry.getPoints())));
-
-        Stream<List<Coordinate>> points = plan.itinerary.get(0).legs.stream().map(l -> PolylineEncoder.decode(l.legGeometry));
-        return PolylineEncoder.createEncodings(points.flatMap(List::stream).collect(Collectors.toList())).getPoints();
+        return plan;
     }
 
     @Test
@@ -157,5 +167,35 @@ public class BikeRentalRoutingTest {
 
         var polyline2 = calculatePolyline(graph, gärtringen, nebringen);
         assertThatPolylinesAreEqual(polyline2, "ee{gH_|ju@CGMQ\\a@BC@AFODA@IECBGfFfGbAdArFtEdEtBtL~E~DnBhHhE~H|Ffb@r_@bIvHpB`CfD~EtDnGfFvJbQl\\pB~CpAbBjBrBbCtBrK~GbBrAvAzAv@`AhBzC~@xBz@dCj@zBd@fCh@fEzC|Zx@vFj@hCn@zBlBrEnB`DvAdBjBdBnAx@xB`AfCx@jCXxABvAE~AQ|DeAlKoEvGaCpBSrAAvAPfBf@rBtAt@t@nBnC`AjCrBnI??b@hAAEYRMHm@d@?ECC??BB?Dl@e@LIXSVS@AJDL@Mg@BEVXB?S_AAE?CEg@LQ~@o@FKBG@MCKMg@GWCOAEAIAIAK?M?ODBDBD@H@B@F?X@X@p@BfB@v@?lA@D?xA@b@?Z@h@?f@?VCTCXCVA`AKdAKbCSvBSxAIt@G|@Ax@Fd@Nx@^dAbAp@pAT`@h@rAl@xBRl@HXf@n@b@Vj@PjAHj@@N?bA@`@?`@EVG`@OjAi@t@UhAYnBa@lB_@tBSZCtGk@xAO|BUrCUl@?j@Bh@FrAPNFPFLDHDF@DB@FBF@BBDBBB@F@F?HLHNHPJTJNBHJZL\\p@jBp@hCpAnF^nA\\fAXt@FGLMPXZh@`@h@^b@XVh@^^R~Av@dAb@j@^tCbALFP@XLzAl@bA\\dA^jA`@p@Rr@TRHLDdErAtAh@b@Hj@T\\HVDd@BR@FJDL@J[`CApA?rB?nD?dA@dJD@j@Pj@Pz@V|@V\\J\\L^L\\Ln@Tr@VJFHDHFFBF@H?FNFJDHHJHLIR");
+    }
+
+    @Test
+    public void reverseOptimizeBikeRentalTrips() {
+        var graph = getDefaultGraph();
+
+        var gärtringen = new GenericLocation(48.64100, 8.90832);
+        var herrenbergWilhelmstr = new GenericLocation(48.59586, 8.87710);
+
+        var itinerary = getTripPlan(graph, gärtringen, herrenbergWilhelmstr).itinerary;
+
+        var firstTrip = itinerary.get(0);
+        var secondTrip = itinerary.get(1);
+
+        var firstStart = calendarToOffsetDateTime(firstTrip.startTime);
+        var secondStart = calendarToOffsetDateTime(secondTrip.startTime);
+
+        assertTrue(firstStart.isBefore(secondStart));
+
+        assertTrue(firstStart.isEqual(OffsetDateTime.parse("2020-07-23T13:05:59Z")));
+        assertEquals(secondStart.toString(), "2020-07-23T13:20:59Z");
+
+        var firstArrival = calendarToOffsetDateTime(firstTrip.endTime);
+        var secondArrival = calendarToOffsetDateTime(secondTrip.endTime);
+
+        assertTrue(firstArrival.isBefore(secondArrival));
+    }
+
+    private OffsetDateTime calendarToOffsetDateTime(Calendar time) {
+        return time.toInstant().atOffset(ZoneOffset.UTC);
     }
 }
