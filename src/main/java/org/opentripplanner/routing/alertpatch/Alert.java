@@ -43,6 +43,12 @@ public class Alert implements Serializable {
         return note;
     }
 
+    public static Alert createFloatingDropOffAlert() {
+        var alert = createSimpleAlerts("Free-floating bicycle drop off");
+        alert.alertDescriptionText = new NonLocalizedString("You are returning the bike outside a desiganted drop-off area. Please check the terms for additional fees.");
+        return alert;
+    }
+
     public boolean equals(Object o) {
         if (!(o instanceof Alert)) {
             return false;

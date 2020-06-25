@@ -29,10 +29,10 @@ public class TestGraphBuilder {
     }
 
     static Graph buildGtfsGraph(String osmFile, String gtfsFile) {
-        return buildGraph(new String[]{osmFile}, new String[]{gtfsFile});
+        return buildGraph(new String[]{ osmFile }, new String[]{gtfsFile});
     }
 
-    private static Graph buildGraph(String[] osmFiles, String[] gtfsFiles) {
+    static Graph buildGraph(String[] osmFiles, String[] gtfsFiles) {
         var cacheKey = cacheKey(osmFiles, gtfsFiles);
         if(cache.containsKey(cacheKey)) {
             return cache.get(cacheKey);

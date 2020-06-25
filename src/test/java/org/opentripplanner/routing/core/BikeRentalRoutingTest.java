@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.opentripplanner.ConstantsForTests;
-import org.opentripplanner.api.model.Itinerary;
+import org.opentripplanner.api.model.Leg;
 import org.opentripplanner.api.model.TripPlan;
 import org.opentripplanner.api.parameter.QualifiedMode;
 import org.opentripplanner.api.resource.GraphPathToTripPlanConverter;
@@ -32,8 +32,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.opentripplanner.routing.core.PolylineAssert.assertThatPolylinesAreEqual;
 
 public class BikeRentalRoutingTest {
@@ -42,13 +41,20 @@ public class BikeRentalRoutingTest {
 
     static long dateTime = TestUtils.dateInSeconds("Europe/Berlin", 2020, 06, 23, 15, 0, 0);
 
+    Graph graph = getDefaultGraph();
+
     public static Graph getDefaultGraph() {
-        var graph = TestGraphBuilder.buildGtfsGraph(ConstantsForTests.HERRENBERG_AND_AROUND_OSM, ConstantsForTests.HERRENBERG_S1_TRAIN_ONLY);
+        var graph = TestGraphBuilder.buildGraph(
+                new String[] { ConstantsForTests.HERRENBERG_AND_AROUND_OSM, ConstantsForTests.BOEBLINGEN_OSM },
+                new String[] { ConstantsForTests.HERRENBERG_S1_TRAIN_ONLY}
+
+        );
 
         Set<BikeRentalStation> stations = ImmutableSet.of(
                 makeBikeStation("1", "Herrenberg Bahnhof", 48.59438, 8.86210),
                 makeBikeStation("2", "Kuppingen", 48.61115, 8.84013),
-                makeBikeStation("3", "Herrenberg Meisenweg", 48.5870, 8.8566)
+                makeBikeStation("3", "Herrenberg Meisenweg", 48.5870, 8.8566),
+                makeBikeStation("4", "Böblingen Schwabstr.", 48.6866, 9.0285)
         );
 
         var service = new BikeRentalStationService();
@@ -62,7 +68,7 @@ public class BikeRentalRoutingTest {
             var linker = new SimpleStreetSplitter(graph);
 
             if (!linker.link(vertex)) {
-                LOG.warn("{} not near any streets; it will not be usable.", station);
+                throw new RuntimeException("Bike station not near any street.");
             } else {
                 LOG.warn("Added {} to street network.", station);
             }
@@ -91,7 +97,10 @@ public class BikeRentalRoutingTest {
         var plan = getTripPlan(graph, from, to);
 
         //plan.itinerary.get(0).legs.forEach(l -> System.out.println(PolylineAssert.makeUrl(l.legGeometry.getPoints())));
+        return firstTripToPolyline(plan);
+    }
 
+    private static String firstTripToPolyline(TripPlan plan) {
         Stream<List<Coordinate>> points = plan.itinerary.get(0).legs.stream().map(l -> PolylineEncoder.decode(l.legGeometry));
         return PolylineEncoder.createEncodings(points.flatMap(List::stream).collect(Collectors.toList())).getPoints();
     }
@@ -134,8 +143,6 @@ public class BikeRentalRoutingTest {
 
     @Test
     public void rentBikeAndRideToDestination() {
-        var graph = getDefaultGraph();
-
         var bahnhof = new GenericLocation(48.59385, 8.86399);
         var herrenbergWilhelmstr = new GenericLocation(48.59586, 8.87710);
 
@@ -145,8 +152,6 @@ public class BikeRentalRoutingTest {
 
     @Test
     public void rentBikeCycleToStationAndTakeTrain() {
-        var graph = getDefaultGraph();
-
         var herrenbergImVogelsang = new GenericLocation(48.5867, 8.8549);
         var gärtringen = new GenericLocation(48.64100, 8.90832);
 
@@ -156,8 +161,6 @@ public class BikeRentalRoutingTest {
 
     @Test
     public void rentBikeAfterGettingOffTrain() {
-        var graph = getDefaultGraph();
-
         var gärtringen = new GenericLocation(48.64100, 8.90832);
         var nebringen = new GenericLocation(48.5627, 8.8483);
         var herrenbergWilhelmstr = new GenericLocation(48.59586, 8.87710);
@@ -171,8 +174,6 @@ public class BikeRentalRoutingTest {
 
     @Test
     public void reverseOptimizeBikeRentalTrips() {
-        var graph = getDefaultGraph();
-
         var gärtringen = new GenericLocation(48.64100, 8.90832);
         var herrenbergWilhelmstr = new GenericLocation(48.59586, 8.87710);
 
@@ -197,5 +198,49 @@ public class BikeRentalRoutingTest {
 
     private OffsetDateTime calendarToOffsetDateTime(Calendar time) {
         return time.toInstant().atOffset(ZoneOffset.UTC);
+    }
+
+    @Test
+    public void addAlertWhenLastLegIsFreeFloatingDropOff() {
+        var gärtringen = new GenericLocation(48.64100, 8.90832);
+        var herrenbergWilhelmstr = new GenericLocation(48.59586, 8.87710);
+
+        var itinerary = getTripPlan(graph, gärtringen, herrenbergWilhelmstr).itinerary;
+
+        var firstTrip = itinerary.get(0).legs;
+        assertThatBikeLegHasDropOffAlert(firstTrip.get(firstTrip.size() - 1));
+    }
+
+    @Test
+    public void addAlertDroppingOffNearTrainStation() {
+        var böblingenBeethovenstr = new GenericLocation(48.6865, 9.0345);
+        var herrenberg = new GenericLocation(48.5934, 8.8629);
+
+        var plan = getTripPlan(graph, böblingenBeethovenstr, herrenberg);
+
+        assertThatBikeLegHasDropOffAlert(plan.itinerary.get(0).legs.get(1));
+
+        var polyline = firstTripToPolyline(plan);
+        assertThatPolylinesAreEqual(polyline, "uadhHspcv@iAhS@JL`Cx@|IEZOV??GHv@bBNZTT^BlACD~@LfBJrADrACfC@~CWpDMzCIrCEx@QhIGx@Gx@Sp@QVMNNpAVrC?J@pA@bA?@Bf@Df@DX\\hDB\\?P?n@Af@e@xB[nAM`@Wv@Qh@CNCX?p@AXD~AFhAJjAFb@Ht@DXTnAVv@h@xADJED?JCD@N@R@RJbA}@bCKVm@~AOj@Sj@}@hCa@lA[|@_@fA_@`AMZELIJA@Yk@Y^?A[`@??ABUZSX??FNNZF@?AfOtZrGzLnBhE~ArEx@fDv@zDlRfgAdKtk@dBvHrCtJpE|Lxy@vwBnPrd@vEhMjAjE`ApF|CnVfAzGjBjGhCdHhBfE|AbCnBzB~PfNhIlGrCdC~DhF~CjGtP`c@pAlCtAbClBxCrAdBvMdPtLrNfFfGbAdArFtEdEtBtL~E~DnBhHhE~H|Ffb@r_@bIvHnB`ChD~ErDnGfFvJdQl\\nB~CpAbBjBrBbCtBtK~GbBrAvAzAt@`AhBzC~@xB|@dCh@zBf@fCh@fEzC|Zx@vFj@hCn@zBjBrEnB`DvAdBjBdBnAx@xB`AfCx@lCXxABtAE`BQ|DeAlKoEvGaCpBSrAAvAPfBf@rBtAt@t@nBnC`AjCrBnI??OgA?Eb@]TOLKRv@LS\\xA");
+    }
+
+    private void assertThatBikeLegHasDropOffAlert(Leg leg) {
+        assertEquals(leg.mode, "BICYCLE");
+        assertTrue(leg.rentedBike);
+        assertFalse(leg.alerts.isEmpty());
+        assertEquals(leg.alerts.get(0).getAlertHeaderText(), "Free-floating bicycle drop off");
+    }
+
+    @Test
+    public void dontAddAlertWhenLeavingInStation() {
+        var herrenbergImVogelsang = new GenericLocation(48.5867, 8.8549);
+        var gärtringen = new GenericLocation(48.64100, 8.90832);
+
+        var itinerary = getTripPlan(graph, herrenbergImVogelsang, gärtringen).itinerary;
+
+        var firstTrip = itinerary.get(0);
+        var secondLeg = firstTrip.legs.get(1);
+        assertEquals(secondLeg.mode, "BICYCLE");
+        assertNull(secondLeg.alerts);
     }
 }

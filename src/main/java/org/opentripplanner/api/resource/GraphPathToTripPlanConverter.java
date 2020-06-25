@@ -4,7 +4,6 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
 import org.opentripplanner.api.model.*;
-import org.opentripplanner.api.resource.TripPlanFilter;
 import org.opentripplanner.common.geometry.DirectionUtils;
 import org.opentripplanner.common.geometry.GeometryUtils;
 import org.opentripplanner.common.geometry.PackedCoordinateSequence;
@@ -580,6 +579,18 @@ public abstract class GraphPathToTripPlanConverter {
                     }
                 }
             }
+        }
+
+        addFreeFloatingBicycleDropOffAlerts(leg, states[states.length - 1], requestedLocale);
+    }
+
+    /**
+     * When it is a bike rental leg but the last state is not a bike rental station, then send an alert that
+     * it is a free floating drop off which may incur extra costs.
+     */
+    private static void addFreeFloatingBicycleDropOffAlerts(Leg leg, State lastStateInLeg, Locale requestedLocale) {
+        if (lastStateInLeg.isBikeRenting() && !(lastStateInLeg.getBackEdge() instanceof StreetBikeRentalLink)) {
+            leg.addAlert(Alert.createFloatingDropOffAlert(), requestedLocale);
         }
     }
 
