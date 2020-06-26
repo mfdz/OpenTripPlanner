@@ -261,6 +261,18 @@ public abstract class GraphPathToTripPlanConverter {
                 if (backMode != TraverseMode.LEG_SWITCH) {              // Start of leg switch
                     legIndexPairs[1] = i;
                 } else if (forwardMode != TraverseMode.LEG_SWITCH) {    // End of leg switch
+                    // if the start edge of the first state in the current leg index pair is a TransitBoardAlight edge
+                    // and the edge of the state just after the current leg index pair is a TransitBoardAlight edge,
+                    // then make that index be the final state of the current leg. This is to ensure that alerts
+                    // associated with TransitBoardAlight vertices are able to be found for legs.
+                    if (
+                        states[legIndexPairs[0]].getBackMode() != null &&
+                        states[legIndexPairs[0]].backEdge instanceof TransitBoardAlight &&
+                            states[legIndexPairs[1] + 1].backEdge instanceof TransitBoardAlight &&
+                            legIndexPairs[1] + 1 < states.length - 1
+                    ) {
+                        legIndexPairs[1] = legIndexPairs[1] + 1;
+                    }
                     if (legIndexPairs[1] != states.length - 1) {
                         legsIndexes.add(legIndexPairs);
                     }
@@ -312,7 +324,11 @@ public abstract class GraphPathToTripPlanConverter {
         Edge[] edges = new Edge[states.length - 1];
 
         leg.startTime = makeCalendar(states[0]);
-        leg.endTime = makeCalendar(states[states.length - 1]);
+        leg.endTime = makeCalendar(
+            states[states.length - 1].backEdge instanceof TransitBoardAlight
+                ? states[states.length - 2]
+                : states[states.length - 1]
+        );
 
         // Calculate leg distance and fill array of edges
         leg.distance = 0.0;
@@ -556,7 +572,8 @@ public abstract class GraphPathToTripPlanConverter {
             Set<Alert> alerts = graph.streetNotesService.getNotes(state);
             Edge edge = state.getBackEdge();
 
-            if (mode != null) {
+            // Update the mode for each state, unless it is null or a LEG_SWITCH mode
+            if (mode != null && mode != TraverseMode.LEG_SWITCH) {
                 leg.mode = mode.toString();
             }
 
@@ -595,14 +612,19 @@ public abstract class GraphPathToTripPlanConverter {
         if (trip != null) {
             Route route = trip.getRoute();
             Agency agency = route.getAgency();
-            ServiceDay serviceDay = states[states.length - 1].getServiceDay();
+            // in some states, the final state might be a TransitBoardAlight edge type, where instead we may want a
+            // pattern edge instead. Find the right index to use in these cases.
+            int lastTransitStateIndex = states[states.length - 1].backEdge instanceof TransitBoardAlight
+                ? states.length - 2
+                : states.length - 1;
+            ServiceDay serviceDay = states[lastTransitStateIndex].getServiceDay();
 
             leg.agencyId = agency.getId();
             leg.agencyName = agency.getName();
             leg.agencyUrl = agency.getUrl();
             leg.agencyBrandingUrl = agency.getBrandingUrl();
             leg.headsign = states[1].getBackDirection();
-            leg.route = states[states.length - 1].getBackEdge().getName(requestedLocale);
+            leg.route = states[lastTransitStateIndex].getBackEdge().getName(requestedLocale);
             leg.routeColor = route.getColor();
             leg.routeId = route.getId();
             leg.routeLongName = route.getLongName();
@@ -628,14 +650,14 @@ public abstract class GraphPathToTripPlanConverter {
                 leg.headsign = trip.getTripHeadsign();
             }
 
-            Edge edge = states[states.length - 1].backEdge;
+            Edge edge = states[lastTransitStateIndex].backEdge;
             if (edge instanceof TemporaryDirectPatternHop) {
                 leg.callAndRide = true;
             }
             if (edge instanceof PartialPatternHop) {
                 PartialPatternHop hop = (PartialPatternHop) edge;
                 int directTime = hop.getDirectVehicleTime();
-                TripTimes tt = states[states.length - 1].getTripTimes();
+                TripTimes tt = states[lastTransitStateIndex].getTripTimes();
                 int maxTime = tt.getDemandResponseMaxTime(directTime);
                 int avgTime = tt.getDemandResponseAvgTime(directTime);
                 int delta = maxTime - avgTime;
@@ -677,7 +699,10 @@ public abstract class GraphPathToTripPlanConverter {
 
         leg.from = makePlace(states[0], firstVertex, edges[0], firstStop, tripTimes, requestedLocale);
         leg.from.arrival = null;
-        leg.to = makePlace(states[states.length - 1], lastVertex, null, lastStop, tripTimes, requestedLocale);
+        int lastTransitStateIndex = states[states.length - 1].backEdge instanceof TransitBoardAlight
+            ? states.length - 2
+            : states.length - 1;
+        leg.to = makePlace(states[lastTransitStateIndex], lastVertex, null, lastStop, tripTimes, requestedLocale);
         leg.to.departure = null;
 
         if (states[0].getBackEdge() instanceof LegSwitchingEdge) {
@@ -743,7 +768,7 @@ public abstract class GraphPathToTripPlanConverter {
             place.platformCode = stop.getPlatformCode();
             place.zoneId = stop.getZoneId();
             place.stopIndex = ((OnboardEdge) edge).getStopIndex();
-            if (endOfLeg) place.stopIndex++;
+            if (endOfLeg && !(edge instanceof TransitBoardAlight)) place.stopIndex++;
             if (tripTimes != null) {
                 place.stopSequence = tripTimes.getStopSequence(place.stopIndex);
             }
@@ -814,9 +839,9 @@ public abstract class GraphPathToTripPlanConverter {
 
     /**
      * Converts a list of street edges to a list of turn-by-turn directions.
-     * 
+     *
      * @param previous a non-transit leg that immediately precedes this one (bike-walking, say), or null
-     * 
+     *
      * @return
      */
     public static List<WalkStep> generateWalkSteps(Graph graph, State[] states, WalkStep previous, Locale requestedLocale) {
@@ -1046,34 +1071,34 @@ public abstract class GraphPathToTripPlanConverter {
 
                     if (twoBack.distance < MAX_ZAG_DISTANCE
                             && lastStep.streetNameNoParens().equals(threeBack.streetNameNoParens())) {
-                        
-                        if (((lastStep.relativeDirection == RelativeDirection.RIGHT || 
+
+                        if (((lastStep.relativeDirection == RelativeDirection.RIGHT ||
                                 lastStep.relativeDirection == RelativeDirection.HARD_RIGHT) &&
                                 (twoBack.relativeDirection == RelativeDirection.RIGHT ||
                                 twoBack.relativeDirection == RelativeDirection.HARD_RIGHT)) ||
-                                ((lastStep.relativeDirection == RelativeDirection.LEFT || 
+                                ((lastStep.relativeDirection == RelativeDirection.LEFT ||
                                 lastStep.relativeDirection == RelativeDirection.HARD_LEFT) &&
                                 (twoBack.relativeDirection == RelativeDirection.LEFT ||
                                 twoBack.relativeDirection == RelativeDirection.HARD_LEFT))) {
                             // in this case, we have two left turns or two right turns in quick 
                             // succession; this is probably a U-turn.
-                            
+
                             steps.remove(last - 1);
-                            
+
                             lastStep.distance += twoBack.distance;
-                            
+
                             // A U-turn to the left, typical in the US. 
-                            if (lastStep.relativeDirection == RelativeDirection.LEFT || 
+                            if (lastStep.relativeDirection == RelativeDirection.LEFT ||
                                     lastStep.relativeDirection == RelativeDirection.HARD_LEFT)
                                 lastStep.relativeDirection = RelativeDirection.UTURN_LEFT;
                             else
                                 lastStep.relativeDirection = RelativeDirection.UTURN_RIGHT;
-                            
+
                             // in this case, we're definitely staying on the same street 
                             // (since it's zag removal, the street names are the same)
                             lastStep.stayOn = true;
                         }
-                                
+
                         else {
                             // What is a zag? TODO write meaningful documentation for this.
                             // It appears to mean simplifying out several rapid turns in succession
@@ -1120,11 +1145,11 @@ public abstract class GraphPathToTripPlanConverter {
 
         // add bike rental information if applicable
         if(onBikeRentalState != null && !steps.isEmpty()) {
-            steps.get(steps.size()-1).bikeRentalOnStation = 
+            steps.get(steps.size()-1).bikeRentalOnStation =
                     new BikeRentalStationInfo((BikeRentalStationVertex) onBikeRentalState.getBackEdge().getToVertex());
         }
         if(offBikeRentalState != null && !steps.isEmpty()) {
-            steps.get(0).bikeRentalOffStation = 
+            steps.get(0).bikeRentalOffStation =
                     new BikeRentalStationInfo((BikeRentalStationVertex) offBikeRentalState.getBackEdge().getFromVertex());
         }
 
