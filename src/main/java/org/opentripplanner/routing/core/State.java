@@ -286,7 +286,7 @@ public class State implements Cloneable {
         boolean parkAndRide = stateData.opt.parkAndRide || stateData.opt.kissAndRide;
         boolean rideAndPark = stateData.opt.rideAndKiss;
         boolean bikeParkAndRide = stateData.opt.bikeParkAndRide;
-        boolean bikeRentingOk = isBikeRentFinal();
+        boolean bikeRentingOk;
         boolean bikeParkAndRideOk= false;
         boolean carParkAndRideOk = false;
         boolean carRideAndParkOk = false;
@@ -294,10 +294,13 @@ public class State implements Cloneable {
             bikeParkAndRideOk = !bikeParkAndRide || !isBikeParked();
             carParkAndRideOk = !parkAndRide || !isCarParked();
             carRideAndParkOk = !rideAndPark || isCarParked();
-        } else {
+            bikeRentingOk = !isBikeRenting();
+        }
+         else {
             bikeParkAndRideOk = !bikeParkAndRide || isBikeParked();
             carParkAndRideOk = !parkAndRide || isCarParked();
             carRideAndParkOk = !rideAndPark || !isCarParked();
+            bikeRentingOk = !isBikeRenting() || isBikeRentFinal();
         }
         return bikeRentingOk && bikeParkAndRideOk && carParkAndRideOk && carRideAndParkOk;
     }
