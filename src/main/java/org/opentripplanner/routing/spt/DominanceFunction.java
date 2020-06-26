@@ -111,7 +111,7 @@ public abstract class DominanceFunction implements Serializable {
                 /**
                  * {@link DominanceFunction.MAX_METERS_ROUTE_LOOPS}
                  */
-                || isCloseToStartOrEnd(a.getVertex(), a.getOptions())) {
+                || (a.getBackMode().isDriving() && isCloseToStartOrEnd(a.getVertex(), a.getOptions()))) {
                 return false;
             }
         }
