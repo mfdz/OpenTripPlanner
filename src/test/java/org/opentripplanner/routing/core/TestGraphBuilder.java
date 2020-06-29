@@ -50,6 +50,7 @@ public class TestGraphBuilder {
 
             OpenStreetMapModule osmModule = new OpenStreetMapModule(osmProviders);
             osmModule.skipVisibility = true;
+            osmModule.staticBikeParkAndRide = true;
             osmModule.setDefaultWayPropertySetSource(new GermanyWayPropertySetSource());
             graphBuilder.addModule(osmModule);
             graphBuilder.addModule(new StreetLinkerModule());

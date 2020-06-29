@@ -286,7 +286,7 @@ public class State implements Cloneable {
         boolean parkAndRide = stateData.opt.parkAndRide || stateData.opt.kissAndRide;
         boolean rideAndPark = stateData.opt.rideAndKiss;
         boolean bikeParkAndRide = stateData.opt.bikeParkAndRide;
-        boolean bikeRentingOk;
+        boolean bikeRentingOk = true; // TODO: check that bike renting network really allows free-floating drop-offs
         boolean bikeParkAndRideOk= false;
         boolean carParkAndRideOk = false;
         boolean carRideAndParkOk = false;
@@ -294,20 +294,13 @@ public class State implements Cloneable {
             bikeParkAndRideOk = !bikeParkAndRide || !isBikeParked();
             carParkAndRideOk = !parkAndRide || !isCarParked();
             carRideAndParkOk = !rideAndPark || isCarParked();
-            bikeRentingOk = !isBikeRenting();
         }
          else {
             bikeParkAndRideOk = !bikeParkAndRide || isBikeParked();
             carParkAndRideOk = !parkAndRide || isCarParked();
             carRideAndParkOk = !rideAndPark || !isCarParked();
-            bikeRentingOk = !isBikeRenting() || isBikeRentFinal();
         }
         return bikeRentingOk && bikeParkAndRideOk && carParkAndRideOk && carRideAndParkOk;
-    }
-
-    // TODO: check if the network really allows floating drop-offs
-    private boolean isBikeRentFinal() {
-        return true;
     }
 
     public Stop getPreviousStop() {

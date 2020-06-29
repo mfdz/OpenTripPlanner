@@ -54,16 +54,20 @@ public abstract class RentABikeAbstractEdge extends Edge {
         BikeRentalStationVertex dropoff = (BikeRentalStationVertex) tov;
         if (options.useBikeRentalAvailabilityInformation && dropoff.getBikesAvailable() == 0)
             return null;
-        
-        StateEditor editor = state.edit(this);
+
+        return startRental(this, state, options, networks, ((BikeRentalStationVertex)fromv).getVehicleMode());
+    }
+
+    public static State startRental(Edge edge, State state, RoutingRequest options, Set<String> networks, TraverseMode vehicleMode) {
+        StateEditor editor = state.edit(edge);
         editor.incrementWeight(options.arriveBy ? options.bikeRentalDropoffCost : options.bikeRentalPickupCost);
         editor.incrementTimeInSeconds(options.arriveBy ? options.bikeRentalDropoffTime : options.bikeRentalPickupTime);
-        editor.beginVehicleRenting(((BikeRentalStationVertex)fromv).getVehicleMode());
+        editor.beginVehicleRenting(vehicleMode);
         editor.setBikeRentalNetworks(networks);
         editor.setBackMode(state.getNonTransitMode());
         return editor.makeState();
     }
-    
+
     private boolean noBikeRentalNetworkAllowed(Set<String> allowedBikeRentalNetworks) {
         // allowedBikeRentalNetworks parameter is undefined -> allow all networks by default
         if (allowedBikeRentalNetworks == null)
@@ -94,8 +98,17 @@ public abstract class RentABikeAbstractEdge extends Edge {
         BikeRentalStationVertex pickup = (BikeRentalStationVertex) tov;
         if (options.useBikeRentalAvailabilityInformation && pickup.getSpacesAvailable() == 0)
             return null;
-        
-        StateEditor editor = state.edit(this);
+
+        return dropOffBike(this, state, options, false);
+    }
+
+    public static State dropOffBike(Edge currentEdge, State state, RoutingRequest options, boolean freeFloatingDropOff) {
+        StateEditor editor = state.edit(currentEdge);
+
+        if(freeFloatingDropOff) {
+            editor.incrementWeight(options.bikeRentalFreeFloatDropoffCost);
+        }
+
         editor.incrementWeight(options.arriveBy ? options.bikeRentalPickupCost : options.bikeRentalDropoffCost);
         editor.incrementTimeInSeconds(options.arriveBy ? options.bikeRentalPickupTime : options.bikeRentalDropoffTime);
         editor.doneVehicleRenting();

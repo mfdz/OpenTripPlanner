@@ -47,10 +47,10 @@ graphs/default/stuttgart.pbf:
 	wget http://download.geofabrik.de/europe/germany/baden-wuerttemberg/stuttgart-regbez-latest.osm.pbf -O graphs/default/stuttgart.pbf
 
 build-herrenberg: graphs/default/vvs-with-shapes.gtfs.zip graphs/default/stuttgart.pbf
-	java -Xmx4G -jar otp.jar --build ./graphs/default
+	java -jar otp.jar --build ./graphs/default
 
 run:
-	java -Xmx5G -server -Dmaven.javadoc.skip=true -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=127.0.0.1:8000 -jar otp.jar --server --basePath ./ --router default --insecure
+	java -server -Dmaven.javadoc.skip=true -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=127.0.0.1:8000 -jar otp.jar --server --basePath ./ --router default --insecure
 
 rebuild:
 	mvn package -DskipTests -Dmaven.javadoc.skip=true

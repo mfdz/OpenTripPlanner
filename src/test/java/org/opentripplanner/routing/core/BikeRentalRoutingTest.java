@@ -46,8 +46,7 @@ public class BikeRentalRoutingTest {
     public static Graph getDefaultGraph() {
         var graph = TestGraphBuilder.buildGraph(
                 new String[] { ConstantsForTests.HERRENBERG_AND_AROUND_OSM, ConstantsForTests.BOEBLINGEN_OSM },
-                new String[] { ConstantsForTests.HERRENBERG_S1_TRAIN_ONLY}
-
+                new String[] { ConstantsForTests.HERRENBERG_S1_TRAIN_ONLY }
         );
 
         Set<BikeRentalStation> stations = ImmutableSet.of(
@@ -147,7 +146,7 @@ public class BikeRentalRoutingTest {
         var herrenbergWilhelmstr = new GenericLocation(48.59586, 8.87710);
 
         var polyline = calculatePolyline(graph, bahnhof, herrenbergWilhelmstr);
-        assertThatPolylinesAreEqual(polyline, "q~qgH{fbu@Jf@b@`BMRDf@?BGHMv@?NA@WRYRMHm@d@?ECC??EGm@TEDOE]DAQESSq@?CSo@GSI]O]]aAUe@A?GE?_AAaBAyA@m@?u@@cF@e@?m@@K@MBKBIDGDIFKDINULSHONa@FUJ_@Jo@DSBQJw@DkADi@D{@D_ATsDDu@Am@Ee@AUEi@Eu@C{@YBu@NEOS}@Y}ESsCMcBUyCi@oEAE");
+        assertThatPolylinesAreEqual(polyline, "q~qgH{fbu@Jf@b@`BMRDf@?BGHMv@?NA@WRYRMHUPGDOL?ECC????EGm@TEDOE]DAQESSq@?CSo@GSI]O]]aAUe@A?GE?_AAaBAyA@m@?u@@cF@e@?m@@K@MBKBIDGDIFKDINULSHONa@FUJ_@Jo@DSBQJw@@[Bo@Di@D{@D_ATsDDu@Am@Ee@AUEi@Eu@C{@YBu@NEOS}@Y}ESsCMcBUyCi@oEAE");
     }
 
     @Test
@@ -156,7 +155,7 @@ public class BikeRentalRoutingTest {
         var gärtringen = new GenericLocation(48.64100, 8.90832);
 
         var polyline = calculatePolyline(graph, herrenbergImVogelsang, gärtringen);
-        assertThatPolylinesAreEqual(polyline, "yqpgHan`u@BGTu@XmAg@]Yc@a@iBCIEU??Kg@Oo@s@oDqAyGqAz@GE}@eDo@qAmAsAcDcAIKEBgAZWF}@b@MA]OW]Uc@c@w@S_@Sg@u@cAgA}@iBqAU]KWYqAMOCFGJ_An@MRDf@?B@DR|@C@WYCDLf@MAKEA@WRYRMHm@d@?ECC??BB?Dl@e@LIXS@DSqA@CgB{Gg@uAcCmEwAaB}@m@y@c@eBi@yAOuA?mBTyDrA}JdE}DtAwA^y@LuCNyACiCYgCw@wBcAqAy@iBcBgCeD_AaBkBoEo@{BeAiFe@yDuCwYi@mEc@cCm@aC{@cC_AyBkB_DkByBuBeBuHyE}C{BkBcBuBcCsAoBsBoDsO{ZsCmFgDyFoFaIwCsDwByBsh@qe@_I}FgHgEaEoBkOqGkAq@oDiCeB}AyCgDkCiD@EBBBGZ^ABSd@?AY[E@GNA@CB]`@LPBF");
+        assertThatPolylinesAreEqual(polyline, "yqpgHan`u@BGTu@XmAg@]Yc@a@iBCIEU??Kg@Oo@s@oDqAyGqAz@GE}@eDo@qAmAsAcDcAIKEBgAZWF}@b@MA]OW]Uc@c@w@S_@Sg@u@cAgA}@iBqAU]KWYqAMOCFGJ_An@MRDf@?B@DR|@C@WYCDLf@MAKEA@WRYRMHUPGDOL?ECC??BB?DNMFETQLIXS@DSqA@CgB{Gg@uAcCmEwAaB}@m@y@c@eBi@yAOuA?mBTyDrA}JdE}DtAwA^y@LuCNyACiCYgCw@wBcAqAy@iBcBgCeD_AaBkBoEo@{BeAiFe@yDuCwYi@mEc@cCm@aC{@cC_AyBkB_DkByBuBeBuHyE}C{BkBcBuBcCsAoBsBoDsO{ZsCmFgDyFoFaIwCsDwByBsh@qe@_I}FgHgEaEoBkOqGkAq@oDiCeB}AyCgDkCiD@EBBBGZ^ABSd@?AY[E@GNA@CB]`@LPBF");
     }
 
     @Test
@@ -166,10 +165,10 @@ public class BikeRentalRoutingTest {
         var herrenbergWilhelmstr = new GenericLocation(48.59586, 8.87710);
 
         var polyline1 = calculatePolyline(graph, gärtringen, herrenbergWilhelmstr);
-        assertThatPolylinesAreEqual(polyline1, "ee{gH_|ju@CGMQ\\a@BC@AFODA@IECBGfFfGbAdArFtEdEtBtL~E~DnBhHhE~H|Ffb@r_@bIvHpB`CfD~EtDnGfFvJbQl\\pB~CpAbBjBrBbCtBrK~GbBrAvAzAv@`AhBzC~@xBz@dCj@zBd@fCh@fEzC|Zx@vFj@hCn@zBlBrEnB`DvAdBjBdBnAx@xB`AfCx@jCXxABvAE~AQ|DeAlKoEvGaCpBSrAAvAPfBf@rBtAt@t@nBnC`AjCrBnI??b@hAAEYRMHm@d@?ECC??EGm@TEDOE]DAQESSq@?CSo@GSI]O]]aAUe@A?GE?_AAaBAyA@m@?u@@cF@e@?m@@K@MBKBIDGDIFKDINULSHONa@FUJ_@Jo@DSBQJw@DkADi@D{@D_ATsDDu@Am@Ee@AUEi@Eu@C{@YBu@NEOS}@Y}ESsCMcBUyCi@oEAE");
+        assertThatPolylinesAreEqual(polyline1, "ee{gH_|ju@CGMQ\\a@BC@AFODA@IECBGfFfGbAdArFtEdEtBtL~E~DnBhHhE~H|Ffb@r_@bIvHpB`CfD~EtDnGfFvJbQl\\pB~CpAbBjBrBbCtBrK~GbBrAvAzAv@`AhBzC~@xBz@dCj@zBd@fCh@fEzC|Zx@vFj@hCn@zBlBrEnB`DvAdBjBdBnAx@xB`AfCx@jCXxABvAE~AQ|DeAlKoEvGaCpBSrAAvAPfBf@rBtAt@t@nBnC`AjCrBnI??b@hAAEYRMHUPGDOL?ECC????EGm@TEDOE]DAQESSq@?CSo@GSI]O]]aAUe@A?GE?_AAaBAyA@m@?u@@cF@e@?m@@K?GAI?ICGAAACCECCG?BWJGDGFEFIBGK[KYQ{@AGUgBPGRG^SF[FuBEqA?s@?OBILc@X[Fm@@y@g@OJiADo@F_@T}@EOS}@Y}ESsCMcBUyCi@oEAE");
 
         var polyline2 = calculatePolyline(graph, gärtringen, nebringen);
-        assertThatPolylinesAreEqual(polyline2, "ee{gH_|ju@CGMQ\\a@BC@AFODA@IECBGfFfGbAdArFtEdEtBtL~E~DnBhHhE~H|Ffb@r_@bIvHpB`CfD~EtDnGfFvJbQl\\pB~CpAbBjBrBbCtBrK~GbBrAvAzAv@`AhBzC~@xBz@dCj@zBd@fCh@fEzC|Zx@vFj@hCn@zBlBrEnB`DvAdBjBdBnAx@xB`AfCx@jCXxABvAE~AQ|DeAlKoEvGaCpBSrAAvAPfBf@rBtAt@t@nBnC`AjCrBnI??b@hAAEYRMHm@d@?ECC??BB?Dl@e@LIXSVS@AJDL@Mg@BEVXB?S_AAE?CEg@LQ~@o@FKBG@MCKMg@GWCOAEAIAIAK?M?ODBDBD@H@B@F?X@X@p@BfB@v@?lA@D?xA@b@?Z@h@?f@?VCTCXCVA`AKdAKbCSvBSxAIt@G|@Ax@Fd@Nx@^dAbAp@pAT`@h@rAl@xBRl@HXf@n@b@Vj@PjAHj@@N?bA@`@?`@EVG`@OjAi@t@UhAYnBa@lB_@tBSZCtGk@xAO|BUrCUl@?j@Bh@FrAPNFPFLDHDF@DB@FBF@BBDBBB@F@F?HLHNHPJTJNBHJZL\\p@jBp@hCpAnF^nA\\fAXt@FGLMPXZh@`@h@^b@XVh@^^R~Av@dAb@j@^tCbALFP@XLzAl@bA\\dA^jA`@p@Rr@TRHLDdErAtAh@b@Hj@T\\HVDd@BR@FJDL@J[`CApA?rB?nD?dA@dJD@j@Pj@Pz@V|@V\\J\\L^L\\Ln@Tr@VJFHDHFFBF@H?FNFJDHHJHLIR");
+        assertThatPolylinesAreEqual(polyline2, "ee{gH_|ju@CGMQ\\a@BC@AFODA@IECBGfFfGbAdArFtEdEtBtL~E~DnBhHhE~H|Ffb@r_@bIvHpB`CfD~EtDnGfFvJbQl\\pB~CpAbBjBrBbCtBrK~GbBrAvAzAv@`AhBzC~@xBz@dCj@zBd@fCh@fEzC|Zx@vFj@hCn@zBlBrEnB`DvAdBjBdBnAx@xB`AfCx@jCXxABvAE~AQ|DeAlKoEvGaCpBSrAAvAPfBf@rBtAt@t@nBnC`AjCrBnI??b@hAAEYRMHUPGDOL?ECC??BB?DNMFETQLIXSVS@AJDL@Mg@@EXXB?S_AAE?CEg@LQ~@o@FKBG@MCKMg@GWCOAEAIAIAK?M?ODBDBD@H@B@F?X@X@p@BfB@v@?lA@D?xA@b@?Z@h@?d@?XCTCVCXA`AKdAKbCStBSxAIv@Gz@Ax@Fd@Nx@^dAbAr@pAR`@h@rAl@xBTl@HXf@n@b@Vj@PjAHj@@L?bA@`@?`@EXG`@OjAi@t@UhAYnBa@lB_@tBSZCtGk@xAO|BUrCUl@?h@Bh@FrAPNFPFLDHDF@DBBF@FBBBDBBB@D@F?HLJNHPJTHNBHJZL\\p@jBp@hCrAnF^nAZfAXt@f@|@b@p@l@p@b@^b@Zp@^tCfAd[bLtG`CdNhF\\ZbAj@x@f@rBxAZTJTDBENQd@Ob@Yv@Yt@Wv@MVKX[p@sBdDSd@GPCLCL?NFNFJDHHJHLIR");
     }
 
     @Test
@@ -221,7 +220,7 @@ public class BikeRentalRoutingTest {
         assertThatBikeLegHasDropOffAlert(plan.itinerary.get(0).legs.get(1));
 
         var polyline = firstTripToPolyline(plan);
-        assertThatPolylinesAreEqual(polyline, "uadhHspcv@iAhS@JL`Cx@|IEZOV??GHv@bBNZTT^BlACD~@LfBJrADrACfC@~CWpDMzCIrCEx@QhIGx@Gx@Sp@QVMNNpAVrC?J@pA@bA?@Bf@Df@DX\\hDB\\?P?n@Af@e@xB[nAM`@Wv@Qh@CNCX?p@AXD~AFhAJjAFb@Ht@DXTnAVv@h@xADJED?JCD@N@R@RJbA}@bCKVm@~AOj@Sj@}@hCa@lA[|@_@fA_@`AMZELIJA@Yk@Y^?A[`@??ABUZSX??FNNZF@?AfOtZrGzLnBhE~ArEx@fDv@zDlRfgAdKtk@dBvHrCtJpE|Lxy@vwBnPrd@vEhMjAjE`ApF|CnVfAzGjBjGhCdHhBfE|AbCnBzB~PfNhIlGrCdC~DhF~CjGtP`c@pAlCtAbClBxCrAdBvMdPtLrNfFfGbAdArFtEdEtBtL~E~DnBhHhE~H|Ffb@r_@bIvHnB`ChD~ErDnGfFvJdQl\\nB~CpAbBjBrBbCtBtK~GbBrAvAzAt@`AhBzC~@xB|@dCh@zBf@fCh@fEzC|Zx@vFj@hCn@zBjBrEnB`DvAdBjBdBnAx@xB`AfCx@lCXxABtAE`BQ|DeAlKoEvGaCpBSrAAvAPfBf@rBtAt@t@nBnC`AjCrBnI??OgA?Eb@]TOLKRv@LS\\xA");
+        assertThatPolylinesAreEqual(polyline, "uadhHspcv@iAhS@JL`Cx@|IEZOV??GHv@bBNZTT^BlACD~@LfBJrADrACfC@~CWpDMzCIrCEx@QhIGx@Gx@Sp@QVMNNpAVrC?J@pA@bA?@Bf@Df@DX\\hDB\\?P?n@Af@e@xB[nAM`@Wv@Qh@CNCX?p@AXD~AFhAJjAFb@Ht@DXTnAVv@h@xA@?BJED?JCD@N@R@RJbA}@bCKVm@~AOj@Sj@u@vBGPa@lA[|@_@fAKXSf@ADKTELIJA@Yk@Y^EKo@uAKNBD?ACEOPt@`BABUZSXFNNZF@?AfOtZrGzLnBhE~ArEx@fDv@zDlRfgAdKtk@dBvHrCtJpE|Lxy@vwBnPrd@vEhMjAjE`ApF|CnVfAzGjBjGhCdHhBfE|AbCnBzB~PfNhIlGrCdC~DhF~CjGtP`c@pAlCtAbClBxCrAdBvMdPtLrNfFfGbAdArFtEdEtBtL~E~DnBhHhE~H|Ffb@r_@bIvHnB`ChD~ErDnGfFvJdQl\\nB~CpAbBjBrBbCtBtK~GbBrAvAzAt@`AhBzC~@xB|@dCh@zBf@fCh@fEzC|Zx@vFj@hCn@zBjBrEnB`DvAdBjBdBnAx@xB`AfCx@lCXxABtAE`BQ|DeAlKoEvGaCpBSrAAvAPfBf@rBtAt@t@nBnC`AjCrBnI??OgA?Eb@]TOLKRv@LS\\xA");
     }
 
     private void assertThatBikeLegHasDropOffAlert(Leg leg) {
