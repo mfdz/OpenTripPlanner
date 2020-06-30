@@ -11,6 +11,7 @@ import graphql.relay.SimpleListConnection;
 import graphql.schema.*;
 import org.opentripplanner.api.common.Message;
 import org.opentripplanner.api.model.*;
+import org.opentripplanner.api.model.alertpatch.LocalizedAlert;
 import org.opentripplanner.api.parameter.QualifiedMode;
 import org.opentripplanner.api.parameter.QualifiedModeSet;
 import org.opentripplanner.common.model.P2;
@@ -3683,6 +3684,30 @@ public class IndexGraphQLSchema {
                         .build())
                 .build();
 
+        GraphQLOutputType legAlertType = GraphQLObjectType.newObject()
+                .name("LegAlert")
+                .description("Alert of a leg")
+                .field(GraphQLFieldDefinition.newFieldDefinition()
+                        .name("alertHeaderText")
+                        .type(Scalars.GraphQLString)
+                        .description("Header of the alert, if available")
+                        .dataFetcher(environment -> ((LocalizedAlert) environment.getSource()).alert.alertHeaderText)
+                        .build())
+                .field(GraphQLFieldDefinition.newFieldDefinition()
+                        .name("alertDescriptionText")
+                        .type(new GraphQLNonNull(Scalars.GraphQLString))
+                        .description("Long description of the alert")
+                        .dataFetcher(environment -> ((LocalizedAlert) environment.getSource()).alert.alertDescriptionText)
+                        .build())
+                .field(GraphQLFieldDefinition.newFieldDefinition()
+                        .name("alertUrl")
+                        .type(Scalars.GraphQLString)
+                        .description("Url with more information")
+                        .dataFetcher(environment -> ((LocalizedAlert) environment.getSource()).alert.alertUrl)
+                        .build())
+                .build();
+
+
         final GraphQLObjectType legType = GraphQLObjectType.newObject()
                 .name("Leg")
                 .field(GraphQLFieldDefinition.newFieldDefinition()
@@ -3762,6 +3787,12 @@ public class IndexGraphQLSchema {
                         .description("Whether this leg is traversed with a rented bike.")
                         .type(Scalars.GraphQLBoolean)
                         .dataFetcher(environment -> ((Leg) environment.getSource()).rentedBike)
+                        .build())
+                .field(GraphQLFieldDefinition.newFieldDefinition()
+                        .name("alerts")
+                        .description("Alerts for a leg")
+                        .type(new GraphQLList(legAlertType))
+                        .dataFetcher(environment -> ((Leg) environment.getSource()).alerts)
                         .build())
                 .field(GraphQLFieldDefinition.newFieldDefinition()
                         .name("from")
