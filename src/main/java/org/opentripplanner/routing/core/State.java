@@ -1,8 +1,5 @@
 package org.opentripplanner.routing.core;
 
-import java.util.Date;
-import java.util.Set;
-
 import org.opentripplanner.model.FeedScopedId;
 import org.opentripplanner.model.Stop;
 import org.opentripplanner.model.Trip;
@@ -11,8 +8,13 @@ import org.opentripplanner.routing.edgetype.*;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.trippattern.TripTimes;
+import org.opentripplanner.routing.vertextype.BikeRentalStationVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Date;
+import java.util.Optional;
+import java.util.Set;
 
 public class State implements Cloneable {
     /* Data which is likely to change at most traversals */
@@ -783,7 +785,10 @@ public class State implements Cloneable {
                 if (orig.isBikeRenting() && !orig.getBackState().isBikeRenting()) {
                     editor.doneVehicleRenting();
                 } else if (!orig.isBikeRenting() && orig.getBackState().isBikeRenting()) {
-                    var vehicleMode = orig.getBackMode();
+                    var vehicleMode = Optional.ofNullable(orig.vertex)
+                            .filter(v -> v instanceof BikeRentalStationVertex)
+                            .map(v -> ((BikeRentalStationVertex) v).getVehicleMode())
+                            .orElse(orig.getBackMode());
                     editor.beginVehicleRenting(vehicleMode);
                 }
                 if (orig.isCarParked() != orig.getBackState().isCarParked())
