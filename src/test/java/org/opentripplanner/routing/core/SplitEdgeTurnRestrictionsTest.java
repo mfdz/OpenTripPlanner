@@ -126,7 +126,7 @@ public class SplitEdgeTurnRestrictionsTest {
         assertThatPolylinesAreEqual(longWay, "sochHof~u@KY_@mAVi@Te@N]L]N_@v@mBDKN]KKM\\{@~BKXWj@KRKPCFa@`@_@XWPSHQDMCEAQMKKSgAa@qCMe@");
 
         String longWayBack = computeCarPolyline(graph, herrenbergerStrasse, paulGerhardtWegEast);
-        assertThatPolylinesAreEqual(longWayBack, "axchHwq~u@G_@Qc@CGGKGIQKWIWC]Am@EWC[CYGYGg@QSQQKKGMCEIGCG@GBEFCH?H?H@HDHFDD?F?DEDGPBTFVLNBPDNDRDr@Hz@FF@l@JVFLFNPFLFLDNDJDZHb@Lx@d@dDBTBRTLNBTARKpAiA^lAJX");
+        assertThatPolylinesAreEqual(longWayBack, "axchHwq~u@G_@Qc@CGGKGIQKKEKCWC]Am@EWC[CYGYGg@QSQQKKGMCEIGCG@GBEFCH?H?H@HDHFDD?F?DEDGPBTFVLNBPDNDRDr@Hz@FF@l@JVFLFNPFLFLDNDJDZHb@Lx@d@dDBTBRTLNBTARKpAiA^lAJX");
 
         // test that you can correctly turn right here https://www.openstreetmap.org/relation/415123 when approaching
         // from south
@@ -162,6 +162,6 @@ public class SplitEdgeTurnRestrictionsTest {
         assertThatPolylinesAreEqual(polyline2, "onrgHm|bu@@?JFLHNJLDLBB@T?NAN?FANCFAB?JAHAF?D@FDB@HDFJHJLPHJJJTV");
 
         var polyline3 = computeCarPolyline(graph, gisiloStrGueltstein, seeStr);
-        assertThatPolylinesAreEqual(polyline3, "ahngHuceu@OoAKe@]n@MTWd@i@x@m@j@m@Xi@Ja@Ds@E]MkA_AeA}AMQMUU]MYM[IOSa@gBcDo@gASYc@k@Y][]sBiAu@a@[][a@]u@S_@]y@a@s@[_@i@m@[M]OsA]gCi@}BW_H]}DE]Gk@e@W]OECFk@pAWj@[l@S^U`@U`@W^W`@Y`@Y^WZWZc@j@i@n@g@r@q@x@s@`AW^Y^g@t@[f@S\\SX[h@Yf@Yh@c@v@a@v@a@x@U`@MVWf@S`@e@|@Yl@Wd@OXw@|As@tAk@bAU`@wBfEQ\\[f@GJ[b@}A|B]d@U\\U\\IPUh@KXAHCn@Bz@Dt@Dh@@TDd@@l@Et@UrDE~@Ez@Eh@EjAKv@CPEREPMVKVMXMVS^GLIFGHGDIHGFGDIFI@I@MBO@K?IAKAKAQCMEKGA?");
+        assertThatPolylinesAreEqual(polyline3, "ahngHuceu@OoAKe@]n@MTWd@i@x@m@j@m@Xi@Ja@Ds@E]MkA_AeA}AMQMUU]MYM[IOSa@gBcDo@gASYc@k@Y][]sBiAu@a@[][a@]u@S_@]y@a@s@[_@i@m@[M]OsA]gCi@}BW_H]}DE]Gk@e@W]OECFk@pAWj@[l@S^U`@U`@W^W`@Y`@Y^WZWZc@j@i@n@g@r@q@x@s@`AW^Y^g@t@[f@S\\SX[h@Yf@Yh@c@v@a@v@a@x@U`@MVWf@S`@e@|@Yl@Wd@OXw@|As@tAk@bAU`@wBfEQ\\[f@GJ[b@}A|B]d@U\\U\\IPUh@KXAHCn@Bz@Dt@Dh@@TDd@@l@Et@UrDE~@Ez@Eh@Cn@AZKv@CPEREPMVKVMXMVS^GLIFGHGDIHGFGDIFI@I@MBO@K?IAKAKAQCMEKGA?");
     }
 }

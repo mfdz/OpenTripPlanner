@@ -57,7 +57,7 @@ public class FanOutGraphPathFinderTest {
         // driving to P&R car park
         assertThatPolylinesAreEqual(parkAndRide.get(0), "iypgHuf`u@y@s@o@S_@Eq@I{APo@BYeBEOKq@KuAIqB@mB?m@?G@Q@cAA}AKiCQsBE]Eg@?GC}@?e@?{@AaE?OgAZWF}@b@MA]OW]Uc@c@w@S_@q@r@w@n@_@XuA~@oAeFCBA@");
         // walking the rest
-        assertThatPolylinesAreEqual(parkAndRide.get(1), "ezqgHcyau@@ABCaBgHc@aB]_B_AaEYkACa@Ao@?_@Gc@QOOMMKQMk@o@KKIKMQIKGKKMEKAI?G?INULSHONa@FUJ_@Jo@DSBQJw@DkADi@D{@D_ATsDDu@Am@Ee@AUEi@Eu@C{@YBu@NEOS}@Y}ESsCMcBUyCi@oEAE");
+        assertThatPolylinesAreEqual(parkAndRide.get(1), "ezqgHcyau@@ABCaBgHc@aB]_B_AaEYkACa@Ao@?_@Gc@QOOMMKQMk@o@KKIKMQIKGKKMEKAI?G?INULSHONa@FUJ_@Jo@DSBQJw@@[Bo@Di@D{@D_ATsDDu@Am@Ee@AUEi@Eu@C{@YBu@NEOS}@Y}ESsCMcBUyCi@oEAE");
 
         var driveOnly = plan.itinerary.get(1).legs.get(0).legGeometry.getPoints();
         // second request drives all the way there
