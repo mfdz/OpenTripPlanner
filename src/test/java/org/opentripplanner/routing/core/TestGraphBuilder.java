@@ -29,7 +29,7 @@ public class TestGraphBuilder {
     }
 
     static Graph buildGtfsGraph(String osmFile, String gtfsFile) {
-        return buildGraph(new String[]{ osmFile }, new String[]{gtfsFile});
+        return buildGraph(new String[]{ osmFile }, new String[]{ gtfsFile });
     }
 
     static Graph buildGraph(String[] osmFiles, String[] gtfsFiles) {
