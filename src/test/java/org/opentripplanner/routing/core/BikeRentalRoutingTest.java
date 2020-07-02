@@ -1,5 +1,6 @@
 package org.opentripplanner.routing.core;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
@@ -49,6 +50,10 @@ public class BikeRentalRoutingTest {
                 new String[] { ConstantsForTests.HERRENBERG_S1_TRAIN_ONLY }
         );
 
+        return addBikesToGraph(graph);
+    }
+
+    private static Graph addBikesToGraph(Graph graph) {
         Set<BikeRentalStation> stations = ImmutableSet.of(
                 makeBikeStation("1", "Herrenberg Bahnhof", 48.59438, 8.86210),
                 makeBikeStation("2", "Kuppingen", 48.61115, 8.84013),
@@ -67,13 +72,15 @@ public class BikeRentalRoutingTest {
             var linker = new SimpleStreetSplitter(graph);
 
             if (!linker.link(vertex)) {
-                throw new RuntimeException("Bike station not near any street.");
+                LOG.warn("Bike station not near any street.");
             } else {
-                LOG.warn("Added {} to street network.", station);
+                LOG.info("Added {} to street network.", station);
             }
             new RentABikeOnEdge(vertex, vertex, station.networks);
             new RentABikeOffEdge(vertex, vertex, station.networks);
         });
+
+        graph.getService(BikeRentalStationService.class).allowFreeFloatingDropOff("default");
 
         return graph;
     }
@@ -241,5 +248,23 @@ public class BikeRentalRoutingTest {
         var secondLeg = firstTrip.legs.get(1);
         assertEquals(secondLeg.mode, "BICYCLE");
         assertNull(secondLeg.alerts);
+    }
+
+    @Test
+    public void dontAllowFreeFloatingDropOffWhenDisabled() {
+        var graph = TestGraphBuilder.buildGtfsGraph(ConstantsForTests.HERRENBERG_OSM, ConstantsForTests.HERRENBERG_S1_TRAIN_ONLY);
+        addBikesToGraph(graph);
+        var herrenbergImVogelsang = new GenericLocation(48.5867, 8.8549);
+        var horberStr = new GenericLocation(48.59520, 8.86716);
+
+        graph.getService(BikeRentalStationService.class).disallowFreeFloatingDropOff("default");
+
+        var tripPlan = getTripPlan(graph, herrenbergImVogelsang, horberStr);
+        var modes = tripPlan.itinerary.get(0).legs.stream().map(l -> l.mode).collect(Collectors.toList());
+
+        assertEquals(modes, ImmutableList.of("WALK", "BICYCLE", "WALK"));
+
+        var polyline = firstTripToPolyline(tripPlan);
+        assertThatPolylinesAreEqual(polyline, "yqpgHan`u@BGTu@XmAg@]Yc@a@iBCIEU??Kg@Oo@s@oDqAyGqAz@GE}@eDo@qAmAsAcDcAIKEBgAZWF}@b@MA]OW]Uc@c@w@S_@Sg@u@cAgA}@iBqAU]KWYqAMOCFGJ_An@MRDf@?B@DR|@C@WYCDLf@MAKEA@WRYRMHUPGDOL?ECC??BB?DNMFETQLIXSVS@A?OLw@FI?CEg@Sw@Ok@AKCSWeAS{@i@{BCMWmAAe@A[Gu@K]IKSQDOQMk@o@KKIKMQCE");
     }
 }

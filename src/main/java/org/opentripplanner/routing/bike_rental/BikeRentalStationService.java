@@ -2,9 +2,11 @@ package org.opentripplanner.routing.bike_rental;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.google.common.collect.Sets;
 import org.opentripplanner.routing.bike_park.BikePark;
 
 public class BikeRentalStationService implements Serializable {
@@ -13,6 +15,8 @@ public class BikeRentalStationService implements Serializable {
     private Set<BikeRentalStation> bikeRentalStations = new HashSet<>();
 
     private Set<BikePark> bikeParks = new HashSet<>();
+
+    private Set<String> networksAllowingFreeFloatingDropOff = Sets.newHashSet();
 
     public Collection<BikeRentalStation> getBikeRentalStations() {
         return bikeRentalStations;
@@ -40,5 +44,17 @@ public class BikeRentalStationService implements Serializable {
 
     public void removeBikePark(BikePark bikePark) {
         bikeParks.remove(bikePark);
+    }
+
+    public void allowFreeFloatingDropOff(String network) {
+        networksAllowingFreeFloatingDropOff.add(network);
+    }
+
+    public void disallowFreeFloatingDropOff(String network) {
+        networksAllowingFreeFloatingDropOff.remove(network);
+    }
+
+    public boolean networkAllowsFreeFloatingDropOff(Set<String> network) {
+        return network.stream().anyMatch(n -> networksAllowingFreeFloatingDropOff.contains(n));
     }
 }

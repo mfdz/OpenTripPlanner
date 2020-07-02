@@ -48,6 +48,7 @@ public class BikeRentalUpdater extends PollingGraphUpdater {
     private BikeRentalStationService service;
 
     private String network = "default";
+    private boolean allowFreeFloatingDropOff;
 
     @Override
     public void setGraphUpdaterManager(GraphUpdaterManager updaterManager) {
@@ -62,7 +63,7 @@ public class BikeRentalUpdater extends PollingGraphUpdater {
         String apiKey = config.path("apiKey").asText();
         // Each updater can be assigned a unique network ID in the configuration to prevent returning bikes at
         // stations for another network. TODO shouldn't we give each updater a unique network ID by default?
-        String networkName = config.path("network").asText();
+        String networkName = config.path("network").asText(DEFAULT_NETWORK_LIST);
         BikeRentalDataSource source = null;
         if (sourceType != null) {
             if (sourceType.equals("jcdecaux")) {
@@ -116,7 +117,10 @@ public class BikeRentalUpdater extends PollingGraphUpdater {
         LOG.info("Setting up bike rental updater.");
         this.graph = graph;
         this.source = source;
-        this.network = config.path("networks").asText(DEFAULT_NETWORK_LIST);
+        this.network = networkName;
+        this.allowFreeFloatingDropOff = config.path("freeFloatingDropOff").asBoolean(true);
+
+
         if (pollingPeriodSeconds <= 0) {
             LOG.info("Creating bike-rental updater running once only (non-polling): {}", source);
         } else {
@@ -136,6 +140,9 @@ public class BikeRentalUpdater extends PollingGraphUpdater {
         linker = new SimpleStreetSplitter(graph);
         // Adding a bike rental station service needs a graph writer runnable
         service = graph.getService(BikeRentalStationService.class, true);
+        if(allowFreeFloatingDropOff) {
+            service.allowFreeFloatingDropOff(this.network);
+        }
     }
 
     @Override

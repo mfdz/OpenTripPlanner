@@ -82,7 +82,7 @@ public class BikeParkEdge extends Edge {
         // we are dropping of a free-floating rented bike at a bike parking lot
         // why not just anywhere? we tried this and it would make the search space explode as there are too many states
         // to traverse
-        if(s0.isBikeRenting()) {
+        if(s0.isBikeRenting() && s0.getContext().graph.networkAllowsFreeFloatingDropOff(s0.stateData.bikeRentalNetworks)) {
             return RentABikeAbstractEdge.dropOffBike(this, s0, options, true);
         }
 
