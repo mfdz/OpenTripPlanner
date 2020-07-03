@@ -508,6 +508,9 @@ public class State implements Cloneable {
         newState.stateData.usingRentedBike = stateData.usingRentedBike;
         newState.stateData.carParked = stateData.carParked;
         newState.stateData.bikeParked = stateData.bikeParked;
+        // begin with the same non-transit mode that the end state had
+        // copied from IBI group and required for reverse optimization of free-floating bike rentals
+        // https://github.com/ibi-group/OpenTripPlanner/blob/5452d2c2a674bdda0807c614e5deaab4b051ca5f/src/main/java/org/opentripplanner/routing/core/State.java#L643-L645
         newState.stateData.nonTransitMode = stateData.nonTransitMode;
         return newState;
     }
