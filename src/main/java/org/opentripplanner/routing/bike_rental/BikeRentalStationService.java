@@ -1,13 +1,12 @@
 package org.opentripplanner.routing.bike_rental;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
-import com.google.common.collect.Sets;
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import org.opentripplanner.routing.bike_park.BikePark;
+import org.opentripplanner.updater.bike_rental.BikeRentalUpdater;
 
 public class BikeRentalStationService implements Serializable {
     private static final long serialVersionUID = -1288992939159246764L;
@@ -16,7 +15,7 @@ public class BikeRentalStationService implements Serializable {
 
     private Set<BikePark> bikeParks = new HashSet<>();
 
-    private Set<String> networksAllowingFreeFloatingDropOff = Sets.newHashSet();
+    private Map<String, RentalType> networkRentalTypes = Maps.newConcurrentMap();
 
     public Collection<BikeRentalStation> getBikeRentalStations() {
         return bikeRentalStations;
@@ -46,15 +45,39 @@ public class BikeRentalStationService implements Serializable {
         bikeParks.remove(bikePark);
     }
 
-    public void allowFreeFloatingDropOff(String network) {
-        networksAllowingFreeFloatingDropOff.add(network);
+    public void setNetworkType(String network, RentalType type) {
+        networkRentalTypes.put(network, type);
     }
 
-    public void disallowFreeFloatingDropOff(String network) {
-        networksAllowingFreeFloatingDropOff.remove(network);
+    public boolean networksAllowsFreeFloatingDropOff(Set<String> networks) {
+        return networks.stream().anyMatch(n -> {
+            var type = networkRentalTypes.getOrDefault(n, RentalType.STATION_BASED);
+            return type == RentalType.FREE_FLOATING || type == RentalType.STATION_BASED_WITH_TEMPORARY_DROP_OFF;
+        });
     }
 
-    public boolean networkAllowsFreeFloatingDropOff(Set<String> network) {
-        return network.stream().anyMatch(n -> networksAllowingFreeFloatingDropOff.contains(n));
+    public boolean shouldAddFreeFloatingAlertForNetworks(Set<String> networks) {
+        return networks.stream().anyMatch(n -> networkRentalTypes.get(n) == RentalType.STATION_BASED_WITH_TEMPORARY_DROP_OFF);
+    }
+
+    public enum RentalType {
+        // bikes can only be dropped off at designated docks or areas
+        STATION_BASED("station-based"),
+        // bikes can be dropped off anywhere (note: business areas are not implemented)
+        FREE_FLOATING("free-floating"),
+        // bikes can be dropped off anywhere but response will contain an alert that the rental has not ended
+        // and that extra charges may be levied
+        STATION_BASED_WITH_TEMPORARY_DROP_OFF("station-based-with-temporary-drop-off");
+
+        public final String name;
+
+        RentalType(String name) {
+            this.name = name;
+        }
+
+        public static Optional<RentalType> fromString(String name) {
+            var cleaned = Strings.nullToEmpty(name).trim().toLowerCase();
+            return Arrays.stream(values()).filter(t -> t.name.equals(cleaned)).findFirst();
+        }
     }
 }

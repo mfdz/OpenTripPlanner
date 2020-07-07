@@ -1110,19 +1110,15 @@ public class Graph implements Serializable {
         this.useFlexService = useFlexService;
     }
 
-    // caching to speed up lookup being done for every StreetEdge
-    private Map<Set<String>, Boolean> freeFloatingDropOffCache = Maps.newHashMap();
-
     public boolean networkAllowsFreeFloatingDropOff(Set<String> networks) {
-        if(freeFloatingDropOffCache.containsKey(networks)) {
-            return freeFloatingDropOffCache.get(networks);
-        }
-        else {
-            Boolean ret = Optional.ofNullable(this.getService(BikeRentalStationService.class))
-                    .map(s -> s.networkAllowsFreeFloatingDropOff(networks))
+            return  Optional.ofNullable(this.getService(BikeRentalStationService.class))
+                    .map(s -> s.networksAllowsFreeFloatingDropOff(networks))
                     .orElse(true);
-            freeFloatingDropOffCache.put(networks, ret);
-            return ret;
-        }
+    }
+
+    public boolean shouldAddAltertForFreeFloatingDropOff(Set<String> networks) {
+        return  Optional.ofNullable(this.getService(BikeRentalStationService.class))
+                .map(s -> s.shouldAddFreeFloatingAlertForNetworks(networks))
+                .orElse(false);
     }
 }

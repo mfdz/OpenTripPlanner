@@ -8,11 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import org.opentripplanner.graph_builder.linking.SimpleStreetSplitter;
 import org.opentripplanner.routing.bike_rental.BikeRentalStation;
 import org.opentripplanner.routing.bike_rental.BikeRentalStationService;
+import org.opentripplanner.routing.bike_rental.BikeRentalStationService.RentalType;
 import org.opentripplanner.routing.edgetype.RentABikeOffEdge;
 import org.opentripplanner.routing.edgetype.RentABikeOnEdge;
 import org.opentripplanner.routing.graph.Graph;
@@ -23,8 +24,6 @@ import org.opentripplanner.updater.JsonConfigurable;
 import org.opentripplanner.updater.PollingGraphUpdater;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Dynamic bike-rental station updater which updates the Graph with bike rental stations from one BikeRentalDataSource.
@@ -48,7 +47,7 @@ public class BikeRentalUpdater extends PollingGraphUpdater {
     private BikeRentalStationService service;
 
     private String network = "default";
-    private boolean allowFreeFloatingDropOff;
+    private RentalType rentalType;
 
     @Override
     public void setGraphUpdaterManager(GraphUpdaterManager updaterManager) {
@@ -118,7 +117,7 @@ public class BikeRentalUpdater extends PollingGraphUpdater {
         this.graph = graph;
         this.source = source;
         this.network = networkName;
-        this.allowFreeFloatingDropOff = config.path("freeFloatingDropOff").asBoolean(true);
+        this.rentalType = parseRentalType(config.path("rentalType").asText(), networkName);
 
 
         if (pollingPeriodSeconds <= 0) {
@@ -140,9 +139,16 @@ public class BikeRentalUpdater extends PollingGraphUpdater {
         linker = new SimpleStreetSplitter(graph);
         // Adding a bike rental station service needs a graph writer runnable
         service = graph.getService(BikeRentalStationService.class, true);
-        if(allowFreeFloatingDropOff) {
-            service.allowFreeFloatingDropOff(this.network);
+        service.setNetworkType(this.network, this.rentalType);
+    }
+
+    public static RentalType parseRentalType(String input, String network) {
+        var parseResult = RentalType.fromString(input);
+        if(parseResult.isEmpty()) {
+            LOG.warn("Could not parse rentalType value '{}' of bike sharing with id '{}'. Defaulting to {}.",
+                    input, network, RentalType.STATION_BASED);
         }
+        return parseResult.orElse(RentalType.STATION_BASED);
     }
 
     @Override
@@ -161,6 +167,15 @@ public class BikeRentalUpdater extends PollingGraphUpdater {
 
     @Override
     public void teardown() {
+    }
+
+    @Override
+    public String toString() {
+        return "BikeRentalUpdater{" +
+                "network='" + network + '\'' +
+                ", rentalType=" + rentalType +
+                ", source=" + source +
+                '}';
     }
 
     private class BikeRentalGraphWriterRunnable implements GraphWriterRunnable {

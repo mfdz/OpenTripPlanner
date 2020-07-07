@@ -38,7 +38,7 @@ import static org.opentripplanner.routing.core.PolylineAssert.assertThatPolyline
 
 public class BikeRentalRoutingTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BikeRentalUpdater.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BikeRentalRoutingTest.class);
 
     static long dateTime = TestUtils.dateInSeconds("Europe/Berlin", 2020, 06, 23, 15, 0, 0);
 
@@ -80,7 +80,7 @@ public class BikeRentalRoutingTest {
             new RentABikeOffEdge(vertex, vertex, station.networks);
         });
 
-        graph.getService(BikeRentalStationService.class).allowFreeFloatingDropOff("default");
+        graph.getService(BikeRentalStationService.class).setNetworkType("default", BikeRentalStationService.RentalType.STATION_BASED_WITH_TEMPORARY_DROP_OFF);
 
         return graph;
     }
@@ -218,6 +218,19 @@ public class BikeRentalRoutingTest {
     }
 
     @Test
+    public void dontAddAlertForProperFreeFloatingNetwork() {
+        graph.getService(BikeRentalStationService.class).setNetworkType("default", BikeRentalStationService.RentalType.FREE_FLOATING);
+        var gärtringen = new GenericLocation(48.64100, 8.90832);
+        var herrenbergWilhelmstr = new GenericLocation(48.59586, 8.87710);
+
+        var itinerary = getTripPlan(graph, gärtringen, herrenbergWilhelmstr).itinerary;
+
+        var firstTrip = itinerary.get(0).legs;
+        var lastLeg = firstTrip.get(firstTrip.size() - 1);
+        assertNull(lastLeg.alerts);
+    }
+
+    @Test
     public void addAlertDroppingOffNearTrainStation() {
         var böblingenBeethovenstr = new GenericLocation(48.6865, 9.0345);
         var herrenberg = new GenericLocation(48.5934, 8.8629);
@@ -252,12 +265,10 @@ public class BikeRentalRoutingTest {
 
     @Test
     public void dontAllowFreeFloatingDropOffWhenDisabled() {
-        var graph = TestGraphBuilder.buildGtfsGraph(ConstantsForTests.HERRENBERG_OSM, ConstantsForTests.HERRENBERG_S1_TRAIN_ONLY);
-        addBikesToGraph(graph);
         var herrenbergImVogelsang = new GenericLocation(48.5867, 8.8549);
         var horberStr = new GenericLocation(48.59520, 8.86716);
 
-        graph.getService(BikeRentalStationService.class).disallowFreeFloatingDropOff("default");
+        graph.getService(BikeRentalStationService.class).setNetworkType("default", BikeRentalStationService.RentalType.STATION_BASED);
 
         var tripPlan = getTripPlan(graph, herrenbergImVogelsang, horberStr);
         var modes = tripPlan.itinerary.get(0).legs.stream().map(l -> l.mode).collect(Collectors.toList());
@@ -267,4 +278,5 @@ public class BikeRentalRoutingTest {
         var polyline = firstTripToPolyline(tripPlan);
         assertThatPolylinesAreEqual(polyline, "yqpgHan`u@BGTu@XmAg@]Yc@a@iBCIEU??Kg@Oo@s@oDqAyGqAz@GE}@eDo@qAmAsAcDcAIKEBgAZWF}@b@MA]OW]Uc@c@w@S_@Sg@u@cAgA}@iBqAU]KWYqAMOCFGJ_An@MRDf@?B@DR|@C@WYCDLf@MAKEA@WRYRMHUPGDOL?ECC??BB?DNMFETQLIXSVS@A?OLw@FI?CEg@Sw@Ok@AKCSWeAS{@i@{BCMWmAAe@A[Gu@K]IKSQDOQMk@o@KKIKMQCE");
     }
+
 }
