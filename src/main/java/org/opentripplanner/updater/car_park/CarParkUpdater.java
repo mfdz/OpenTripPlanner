@@ -72,8 +72,7 @@ public class CarParkUpdater extends PollingGraphUpdater {
 
     private SimpleStreetSplitter linker;
 
-    public CarParkUpdater() {
-    }
+    public CarParkUpdater() { }
 
     @Override
     public void setGraphUpdaterManager(GraphUpdaterManager updaterManager) {
@@ -88,6 +87,9 @@ public class CarParkUpdater extends PollingGraphUpdater {
         if (sourceType != null) {
             if (sourceType.equals("hsl-parkandride")) {
                 source = new HslCarParkDataSource();
+            }
+            else if (sourceType.equals("park-api")) {
+                source = new ParkApiDataSource();
             }
         }
 
@@ -195,5 +197,12 @@ public class CarParkUpdater extends PollingGraphUpdater {
                 verticesByPark.remove(carPark);
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return "CarParkUpdater{" +
+                "source=" + source +
+                '}';
     }
 }

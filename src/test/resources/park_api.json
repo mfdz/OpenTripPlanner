@@ -1,0 +1,261 @@
+{
+  "data_source": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze",
+  "last_downloaded": "2020-07-08T11:58:24.466582",
+  "last_updated": "2020-07-08T11:58:24.466582",
+  "lots": [
+    {
+      "lot_type": "Parkplatz",
+      "address": "Aischbachstraße",
+      "name": "Aischbachstraße",
+      "forecast": false,
+      "state": "nodata",
+      "coords": {
+        "lat": 48.596319,
+        "lng": 8.865461
+      },
+      "total": 58,
+      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1016"
+    },
+    {
+      "lot_type": "Parkhaus",
+      "address": "Altstadtgarage",
+      "name": "Altstadtgarage",
+      "forecast": false,
+      "state": "nodata",
+      "coords": {
+        "lat": 48.593768,
+        "lng": 8.872705
+      },
+      "total": 97,
+      "url": "https://stadtwerke.herrenberg.de/oepnv-parken/parken/sicher-und-zentral-parken/parkhaeuser-und-parkgebuehren/altstadtgarage/"
+    },
+    {
+      "id": "946955a0-a5bb-11ea-8d72-81c79f744047",
+      "lot_type": "Parkplatz",
+      "address": "Oberer Graben",
+      "name": "Oberer Graben",
+      "forecast": false,
+      "state": "nodata",
+      "coords": {
+        "lat": 48.59502,
+        "lng": 8.87029
+      },
+      "total": 24,
+      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1002",
+      "opening_hours": "Mo - Su 00:00-24:00; PH 00:00-24:00",
+      "free": 6
+    },
+    {
+      "id": "5c4224c0-0a0e-11ea-9bc9-896973774264",
+      "lot_type": "Parkplatz",
+      "address": "Unterer Graben",
+      "name": "Unterer Graben",
+      "forecast": false,
+      "state": "nodata",
+      "coords": {
+        "lat": 48.59518,
+        "lng": 8.86898
+      },
+      "total": 39,
+      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1002",
+      "opening_hours": "Mo,We,Th,Fr,Su 00:00-24:00; Tu,Sa 00:00-02:00, 14:30-24:00; PH 00:00-24:00",
+      "free": 24
+    },
+    {
+      "lot_type": "Parkplatz",
+      "address": "Kurzzeitparkplätze Bahnhofstraße",
+      "name": "Kurzzeitparkplätze Bahnhofstraße",
+      "forecast": false,
+      "state": "nodata",
+      "coords": {
+        "lat": 48.593634,
+        "lng": 8.863247
+      },
+      "total": 47,
+      "url": "https://stadtwerke.herrenberg.de/oepnv-parken/parken/sicher-und-zentral-parken/parkhaeuser-und-parkgebuehren/kurzzeitparkplaetze-bahnhofstrasse/"
+    },
+    {
+      "lot_type": "Park-Ride",
+      "address": "P+R Bahnhofstraße",
+      "name": "P+R Bahnhofstraße",
+      "forecast": false,
+      "state": "nodata",
+      "coords": {
+        "lat": 48.59309,
+        "lng": 8.86126
+      },
+      "total": 122,
+      "url": "https://www.dbbahnpark.de/standorte/karte/parkplatz-bahnhof-herrenberg/"
+    },
+    {
+      "lot_type": "Tiefgarage",
+      "address": "Bronntor",
+      "name": "Bronntor",
+      "forecast": false,
+      "state": "nodata",
+      "coords": {
+        "lat": 48.596636,
+        "lng": 8.867949
+      },
+      "total": 90,
+      "url": "https://stadtwerke.herrenberg.de/oepnv-parken/parken/sicher-und-zentral-parken/parkhaeuser-und-parkgebuehren/bronntor-tiefgarage/",
+      "opening_hours": "Mo-Fr 07:30-22:00; Sa 07:30-18:00; PH off"
+    },
+    {
+      "lot_type": "Parkplatz",
+      "address": "Gültsteiner Straße",
+      "name": "Gültsteiner Straße",
+      "forecast": false,
+      "state": "nodata",
+      "coords": {
+        "lat": 48.594364,
+        "lng": 8.871189
+      },
+      "total": 69,
+      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1022"
+    },
+    {
+      "lot_type": "Parkplatz",
+      "address": "Hasenplatz",
+      "name": "Hasenplatz",
+      "forecast": false,
+      "state": "nodata",
+      "coords": {
+        "lat": 48.594601,
+        "lng": 8.872216
+      },
+      "total": 20,
+      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1021"
+    },
+    {
+      "lot_type": "Parkplatz",
+      "address": "Horber Straße/Nagolder Straße",
+      "name": "Horber Straße/Nagolder Straße",
+      "forecast": false,
+      "state": "nodata",
+      "coords": {
+        "lat": 48.595168,
+        "lng": 8.866325
+      },
+      "total": 36,
+      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1017"
+    },
+    {
+      "lot_type": "Parkhaus",
+      "address": "Nufringer Tor",
+      "name": "Nufringer Tor",
+      "forecast": false,
+      "state": "nodata",
+      "coords": {
+        "lat": 48.597865,
+        "lng": 8.870266
+      },
+      "total": 242,
+      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1012"
+    },
+    {
+      "lot_type": "Park-Ride",
+      "address": "P+R Kalkofenstraße",
+      "name": "P+R Kalkofenstraße",
+      "forecast": false,
+      "state": "nodata",
+      "coords": {
+        "lat": 48.59403,
+        "lng": 8.8615
+      },
+      "total": 398,
+      "url": "https://stadtwerke.herrenberg.de/oepnv-parken/parken/sicher-und-zentral-parken/parkhaeuser-und-parkgebuehren/p-r-parkhaus/"
+    },
+    {
+      "lot_type": "Parkplatz",
+      "address": "Seelesplatz",
+      "name": "Seelesplatz",
+      "forecast": false,
+      "state": "nodata",
+      "coords": {
+        "lat": 48.597414,
+        "lng": 8.86927
+      },
+      "total": 27,
+      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1014"
+    },
+    {
+      "lot_type": "Parkplatz",
+      "address": "Stadthalle",
+      "name": "Stadthalle",
+      "forecast": false,
+      "state": "nodata",
+      "coords": {
+        "lat": 48.599227,
+        "lng": 8.869871
+      },
+      "total": 211,
+      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1006"
+    },
+    {
+      "lot_type": "Parkplatz",
+      "address": "Volksbank",
+      "name": "Volksbank",
+      "forecast": false,
+      "state": "nodata",
+      "coords": {
+        "lat": 48.59435,
+        "lng": 8.869386
+      },
+      "total": 47,
+      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1020"
+    },
+    {
+      "lot_type": "Parkplatz",
+      "address": "Wilhelmstraße",
+      "name": "Wilhelmstraße",
+      "forecast": false,
+      "state": "nodata",
+      "coords": {
+        "lat": 48.595431,
+        "lng": 8.874739
+      },
+      "total": 18,
+      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1023"
+    },
+    {
+      "lot_type": "Parkplatz",
+      "address": "Viehversteigerungshalle",
+      "name": "Viehversteigerungshalle",
+      "forecast": false,
+      "state": "nodata",
+      "coords": {
+        "lat": 48.59946,
+        "lng": 8.86822
+      },
+      "total": 95,
+      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1025"
+    },
+    {
+      "lot_type": "Wohnmobilparkplatz",
+      "address": "Wohnmobilhafen Herrenberg",
+      "name": "Wohnmobilhafen Herrenberg",
+      "forecast": false,
+      "state": "nodata",
+      "coords": {
+        "lat": 48.59019,
+        "lng": 8.87751
+      },
+      "total": 10,
+      "free": 0,
+      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Tourismus-Gaeste/uebernachten/Wohnmobilstellplaetze"
+    },
+    {
+      "lot_type": "Park-Carpool",
+      "address": "Parken + Mitfahren A81/B296",
+      "name": "Parken + Mitfahren A81/B296",
+      "forecast": false,
+      "state": "nodata",
+      "coords": {
+        "lat": 48.5807,
+        "lng": 8.9022
+      },
+      "total": 10
+    }
+  ]
+}

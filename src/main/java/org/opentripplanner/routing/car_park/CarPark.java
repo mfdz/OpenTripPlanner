@@ -50,6 +50,14 @@ public class CarPark implements Serializable {
     @JsonSerialize
     public int maxCapacity = Integer.MAX_VALUE;
 
+    @XmlAttribute
+    @JsonSerialize
+    public String openingHours;
+
+    @XmlAttribute
+    @JsonSerialize
+    public String url;
+
     /**
      * Whether this parking has space available information updated in real-time. If no real-time
      * data, users should take spacesAvailable with a pinch of salt, as they are a crude estimate.
