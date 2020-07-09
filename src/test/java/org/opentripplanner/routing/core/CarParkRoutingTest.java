@@ -51,7 +51,9 @@ public class CarParkRoutingTest {
 
     private static Graph addCarParksToGraph(Graph graph) {
         var carParks = ImmutableSet.of(
-                makeCarPark("1", "Goethestr.", 100, 48.59077, 8.86707)
+                makeCarPark("1", "Goethestr.", 100, 48.59077, 8.86707),
+                makeCarPark("2", "Affstädter Tal", 0, 48.59978, 8.87140)
+
         );
 
         var service = new CarParkService();
@@ -148,5 +150,14 @@ public class CarParkRoutingTest {
 
         var polyline = calculatePolyline(graph, zwickauerStr, hölderlinStr);
         assertThatPolylinesAreEqual(polyline, "adrgHez~t@gAW_AO]KKEDcCDkCD{ABw@@_@FwC@S?[F}EK{DMoCEiB@_CLmEBaBFiDCuBGiAK_BYyEQoCEs@GuA?gA?]?_@BuABaAb@uGBe@D_A?_AAaBAyA@m@?s@@cF@g@?k@@M@MBIBIHAF?D@FDB@HDFJHJLPHHJJj@n@PLLJNLPNp@p@NNNPJN`Au@^Sn@W`@Kj@Q`Cq@dBg@j@Il@Ed@?z@?A?{@?e@?[kD");
+    }
+
+    @Test
+    public void driveToDynamicallyAddedCarParkEvenIfItHasZeroFreeSpaces() {
+        var nufringen = new GenericLocation(48.6225, 8.8884);
+        var benzStr = new GenericLocation(48.59878, 8.87175);
+
+        var polyline = calculatePolyline(graph, nufringen, benzStr);
+        assertThatPolylinesAreEqual(polyline, "arwgHg_gu@Hl@NRPL\\Rf@Lf@T`@Ln@NdBVd@VRHjAh@BBtE~BXLjClAj@XjAz@LLPR`BpCrF~Hv@bAd@n@f@r@l@hA`@bAJLJLFFHBN@JAJAAe@AY?U?S?a@@]@U@[BYBMFi@Fc@PgABSJo@DYrAf@hAb@j@^bBbArAxAjCrDhCpDDJvAbB~CvCTRNNVV`HfHxD|DrDtEx@bAzBpBh@b@NLzAp@`A\\n@RhA\\dAXLDzFrALDn@RVJtAf@~Av@hAz@Pv@l@n@K\\M\\KKEEAC??@BDDJJ`BpBVi@Tg@RQXg@b@{@WYYZA@");
     }
 }

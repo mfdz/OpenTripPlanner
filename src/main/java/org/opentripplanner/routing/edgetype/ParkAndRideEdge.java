@@ -36,9 +36,6 @@ public class ParkAndRideEdge extends Edge {
         if (!request.parkAndRide) {
             return null;
         }
-        if (((ParkAndRideVertex) tov).spacesAvailable == 0) {
-            return null;
-        }
         if (request.arriveBy) {
             /*
              * To get back a car, we need to walk and have car mode enabled.
