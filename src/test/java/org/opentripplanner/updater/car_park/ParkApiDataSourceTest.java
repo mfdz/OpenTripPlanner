@@ -1,6 +1,5 @@
 package org.opentripplanner.updater.car_park;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 
 import java.util.stream.Collectors;
