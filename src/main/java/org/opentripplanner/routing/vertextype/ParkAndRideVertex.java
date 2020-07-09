@@ -21,6 +21,7 @@ public class ParkAndRideVertex extends Vertex {
     private String id;
 
     public int spacesAvailable = Integer.MAX_VALUE;
+    public int capacity = Integer.MAX_VALUE;
 
     private CarPark carPark;
 
@@ -46,5 +47,10 @@ public class ParkAndRideVertex extends Vertex {
 
     public CarPark getCarPark() {
         return carPark;
+    }
+
+    public boolean hasFewSpacesAvailable() {
+        var percentFree = ((float) spacesAvailable / capacity);
+        return percentFree < 0.1;
     }
 }

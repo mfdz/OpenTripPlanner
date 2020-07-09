@@ -356,6 +356,7 @@ public abstract class GraphPathToTripPlanConverter {
         leg.rentedBike = states[0].isBikeRenting() && states[states.length - 1].isBikeRenting();
 
         addModeAndAlerts(graph, leg, states, disableAlertFiltering, requestedLocale);
+
         if (leg.isTransitLeg()) addRealTimeData(leg, states);
 
         return leg;
