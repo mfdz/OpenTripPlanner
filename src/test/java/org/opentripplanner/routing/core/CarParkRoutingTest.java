@@ -27,6 +27,9 @@ import org.opentripplanner.util.TestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,7 +42,7 @@ public class CarParkRoutingTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(CarParkRoutingTest.class);
 
-    static long dateTime = TestUtils.dateInSeconds("Europe/Berlin", 2020, 07, 9, 15, 0, 0);
+    static Instant now = Instant.now();
 
     Graph graph = getDefaultGraph();
 
@@ -99,20 +102,14 @@ public class CarParkRoutingTest {
         return carPark;
     }
 
-    private static String calculatePolyline(Graph graph, GenericLocation from, GenericLocation to) {
-        var plan = getTripPlan(graph, from, to);
-
-        return firstTripToPolyline(plan);
-    }
-
     private static String firstTripToPolyline(TripPlan plan) {
         Stream<List<Coordinate>> points = plan.itinerary.get(0).legs.stream().map(l -> PolylineEncoder.decode(l.legGeometry));
         return PolylineEncoder.createEncodings(points.flatMap(List::stream).collect(Collectors.toList())).getPoints();
     }
 
-    private static TripPlan getTripPlan(Graph graph, GenericLocation from, GenericLocation to) {
+    private static TripPlan getTripPlan(Graph graph, Instant startTime, GenericLocation from, GenericLocation to) {
         RoutingRequest request = new RoutingRequest();
-        request.dateTime = dateTime;
+        request.dateTime = startTime.getEpochSecond();
         request.from = from;
         request.to = to;
 
@@ -140,7 +137,7 @@ public class CarParkRoutingTest {
         var zwickauerStr = new GenericLocation(48.59473, 8.84661);
         var walterKnollStr = new GenericLocation(48.59308, 8.86327);
 
-        var tripPlan = getTripPlan(graph, zwickauerStr, walterKnollStr);
+        var tripPlan = getTripPlan(graph, now, zwickauerStr, walterKnollStr);
         var polyline = firstTripToPolyline(tripPlan);
         assertThatPolylinesAreEqual(polyline, "adrgHez~t@gAW_AO]KKEDcCDkCD{ABw@@_@FwC@S?[F}EK{DMoCEiB@_CLmEBaBFiDCuBGiAK_BYyEQoCEs@GuA?gA?]?_@FAbA]DElA_AJKRs@DQ?O\\ENDDJJ^DNPMTQDWC@AGCGl@e@LIXSVS@A?ONw@DI?CEg@LQ~@o@FKBGLNPv@");
     }
@@ -150,7 +147,7 @@ public class CarParkRoutingTest {
         var zwickauerStr = new GenericLocation(48.59473, 8.84661);
         var hölderlinStr = new GenericLocation(48.59140, 8.86790);
 
-        var tripPlan = getTripPlan(graph, zwickauerStr, hölderlinStr);
+        var tripPlan = getTripPlan(graph, now, zwickauerStr, hölderlinStr);
         var polyline = firstTripToPolyline(tripPlan);
 
         assertThatPolylinesAreEqual(polyline, "adrgHez~t@gAW_AO]KKEDcCDkCD{ABw@@_@FwC@S?[F}EK{DMoCEiB@_CLmEBaBFiDCuBGiAK_BYyEQoCEs@GuA?gA?]?_@BuABaAb@uGBe@D_A?_AAaBAyA@m@?s@@cF@g@?k@@M@MBIBIHAF?D@FDB@HDFJHJLPHHJJj@n@PLLJNLPNp@p@NNNPJN`Au@^Sn@W`@Kj@Q`Cq@dBg@j@Il@Ed@?z@?A?{@?e@?[kD");
@@ -162,10 +159,24 @@ public class CarParkRoutingTest {
         var nufringen = new GenericLocation(48.6225, 8.8884);
         var benzStr = new GenericLocation(48.59878, 8.87175);
 
-        var tripPlan = getTripPlan(graph, nufringen, benzStr);
+        var tripPlan = getTripPlan(graph, now, nufringen, benzStr);
         var polyline = firstTripToPolyline(tripPlan);
         assertThatPolylinesAreEqual(polyline, "arwgHg_gu@Hl@NRPL\\Rf@Lf@T`@Ln@NdBVd@VRHjAh@BBtE~BXLjClAj@XjAz@LLPR`BpCrF~Hv@bAd@n@f@r@l@hA`@bAJLJLFFHBN@JAJAAe@AY?U?S?a@@]@U@[BYBMFi@Fc@PgABSJo@DYrAf@hAb@j@^bBbArAxAjCrDhCpDDJvAbB~CvCTRNNVV`HfHxD|DrDtEx@bAzBpBh@b@NLzAp@`A\\n@RhA\\dAXLDzFrALDn@RVJtAf@~Av@hAz@Pv@l@n@K\\M\\KKEEAC??@BDDJJ`BpBVi@Tg@RQXg@b@{@WYYZA@");
 
         assertEquals(tripPlan.itinerary.get(0).legs.get(0).alerts.get(0).getAlertUrl(), "alert:carpark:few-spaces-available");
+    }
+
+    @Test
+    public void shouldNotAddAlertIfRequestInTheFuture() {
+        var nufringen = new GenericLocation(48.6225, 8.8884);
+        var benzStr = new GenericLocation(48.59878, 8.87175);
+
+        var tomorrow = OffsetDateTime.ofInstant(now, ZoneOffset.UTC).plusDays(1).toInstant();
+
+        var tripPlan = getTripPlan(graph, tomorrow, nufringen, benzStr);
+        var polyline = firstTripToPolyline(tripPlan);
+        assertThatPolylinesAreEqual(polyline, "arwgHg_gu@Hl@NRPL\\Rf@Lf@T`@Ln@NdBVd@VRHjAh@BBtE~BXLjClAj@XjAz@LLPR`BpCrF~Hv@bAd@n@f@r@l@hA`@bAJLJLFFHBN@JAJAAe@AY?U?S?a@@]@U@[BYBMFi@Fc@PgABSJo@DYrAf@hAb@j@^bBbArAxAjCrDhCpDDJvAbB~CvCTRNNVV`HfHxD|DrDtEx@bAzBpBh@b@NLzAp@`A\\n@RhA\\dAXLDzFrALDn@RVJtAf@~Av@hAz@Pv@l@n@K\\M\\KKEEAC??@BDDJJ`BpBVi@Tg@RQXg@b@{@WYYZA@");
+
+        assertNull(tripPlan.itinerary.get(0).legs.get(0).alerts);
     }
 }

@@ -1672,4 +1672,8 @@ public class RoutingRequest implements Cloneable, Serializable {
         return allowedFares == null ? "All zones allowed" : "Allowed zones: " + allowedFares.toString();
     }
 
+    public boolean isTripPlannedForNow() {
+        final long NOW_THRESHOLD_MILLIS = 15 * 60 * 60 * 1000;
+        return Math.abs(getDateTime().getTime() - new Date().getTime()) < NOW_THRESHOLD_MILLIS;
+    }
 }
