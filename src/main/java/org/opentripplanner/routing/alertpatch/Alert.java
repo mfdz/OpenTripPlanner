@@ -1,6 +1,7 @@
 package org.opentripplanner.routing.alertpatch;
 
 import com.google.transit.realtime.GtfsRealtime;
+import org.opentripplanner.api.model.alertpatch.LocalizedAlert;
 import org.opentripplanner.util.I18NString;
 import org.opentripplanner.util.NonLocalizedString;
 
@@ -41,6 +42,13 @@ public class Alert implements Serializable {
         Alert note = new Alert();
         note.alertHeaderText = new NonLocalizedString(text);
         return note;
+    }
+
+    public static Alert createLowCarParkSpacesAlert() {
+        var alert = createSimpleAlerts("Car park with few spaces available selected.");
+        alert.alertDescriptionText = new NonLocalizedString("A car park on your journey has few parking spaces available. Please expect additional waiting time on your trip.");
+        alert.alertUrl = new NonLocalizedString("alert:carpark:few-spaces-available");
+        return alert;
     }
 
     public boolean equals(Object o) {

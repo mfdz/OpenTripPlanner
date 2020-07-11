@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.opentripplanner.routing.core.PolylineAssert.assertThatPolylinesAreEqual;
 
 public class CarParkRoutingTest {
@@ -51,8 +52,8 @@ public class CarParkRoutingTest {
 
     private static Graph addCarParksToGraph(Graph graph) {
         var carParks = ImmutableSet.of(
-                makeCarPark("1", "Goethestr.", 100, 48.59077, 8.86707),
-                makeCarPark("2", "Affstädter Tal", 0, 48.59978, 8.87140)
+                makeCarPark("1", "Goethestr.", 100, 100, 48.59077, 8.86707),
+                makeCarPark("2", "Affstädter Tal", 0, 100, 48.59978, 8.87140)
 
         );
 
@@ -85,13 +86,13 @@ public class CarParkRoutingTest {
         return graph;
     }
 
-    private static CarPark makeCarPark(String id, String name, int freeSpaces, double lat, double lon) {
+    private static CarPark makeCarPark(String id, String name, int freeSpaces, int maxCapacity, double lat, double lon) {
         var carPark = new CarPark();
         carPark.y = lat;
         carPark.x = lon;
         carPark.geometry = gf.createPoint(new Coordinate(carPark.x, carPark.y));
         carPark.spacesAvailable = freeSpaces;
-        carPark.maxCapacity = freeSpaces;
+        carPark.maxCapacity = maxCapacity;
         carPark.realTimeData = true;
         carPark.id = id;
         carPark.name = new NonLocalizedString(name);
@@ -139,7 +140,8 @@ public class CarParkRoutingTest {
         var zwickauerStr = new GenericLocation(48.59473, 8.84661);
         var walterKnollStr = new GenericLocation(48.59308, 8.86327);
 
-        var polyline = calculatePolyline(graph, zwickauerStr, walterKnollStr);
+        var tripPlan = getTripPlan(graph, zwickauerStr, walterKnollStr);
+        var polyline = firstTripToPolyline(tripPlan);
         assertThatPolylinesAreEqual(polyline, "adrgHez~t@gAW_AO]KKEDcCDkCD{ABw@@_@FwC@S?[F}EK{DMoCEiB@_CLmEBaBFiDCuBGiAK_BYyEQoCEs@GuA?gA?]?_@FAbA]DElA_AJKRs@DQ?O\\ENDDJJ^DNPMTQDWC@AGCGl@e@LIXSVS@A?ONw@DI?CEg@LQ~@o@FKBGLNPv@");
     }
 
@@ -148,8 +150,11 @@ public class CarParkRoutingTest {
         var zwickauerStr = new GenericLocation(48.59473, 8.84661);
         var hölderlinStr = new GenericLocation(48.59140, 8.86790);
 
-        var polyline = calculatePolyline(graph, zwickauerStr, hölderlinStr);
+        var tripPlan = getTripPlan(graph, zwickauerStr, hölderlinStr);
+        var polyline = firstTripToPolyline(tripPlan);
+
         assertThatPolylinesAreEqual(polyline, "adrgHez~t@gAW_AO]KKEDcCDkCD{ABw@@_@FwC@S?[F}EK{DMoCEiB@_CLmEBaBFiDCuBGiAK_BYyEQoCEs@GuA?gA?]?_@BuABaAb@uGBe@D_A?_AAaBAyA@m@?s@@cF@g@?k@@M@MBIBIHAF?D@FDB@HDFJHJLPHHJJj@n@PLLJNLPNp@p@NNNPJN`Au@^Sn@W`@Kj@Q`Cq@dBg@j@Il@Ed@?z@?A?{@?e@?[kD");
+        assertNull(tripPlan.itinerary.get(0).legs.get(0).alerts);
     }
 
     @Test
@@ -157,7 +162,10 @@ public class CarParkRoutingTest {
         var nufringen = new GenericLocation(48.6225, 8.8884);
         var benzStr = new GenericLocation(48.59878, 8.87175);
 
-        var polyline = calculatePolyline(graph, nufringen, benzStr);
+        var tripPlan = getTripPlan(graph, nufringen, benzStr);
+        var polyline = firstTripToPolyline(tripPlan);
         assertThatPolylinesAreEqual(polyline, "arwgHg_gu@Hl@NRPL\\Rf@Lf@T`@Ln@NdBVd@VRHjAh@BBtE~BXLjClAj@XjAz@LLPR`BpCrF~Hv@bAd@n@f@r@l@hA`@bAJLJLFFHBN@JAJAAe@AY?U?S?a@@]@U@[BYBMFi@Fc@PgABSJo@DYrAf@hAb@j@^bBbArAxAjCrDhCpDDJvAbB~CvCTRNNVV`HfHxD|DrDtEx@bAzBpBh@b@NLzAp@`A\\n@RhA\\dAXLDzFrALDn@RVJtAf@~Av@hAz@Pv@l@n@K\\M\\KKEEAC??@BDDJJ`BpBVi@Tg@RQXg@b@{@WYYZA@");
+
+        assertEquals(tripPlan.itinerary.get(0).legs.get(0).alerts.get(0).getAlertUrl(), "alert:carpark:few-spaces-available");
     }
 }

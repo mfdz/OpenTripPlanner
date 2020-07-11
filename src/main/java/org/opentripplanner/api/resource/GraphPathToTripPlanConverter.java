@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * A library class with only static methods used in converting internal GraphPaths to TripPlans, which are
@@ -598,6 +599,19 @@ public abstract class GraphPathToTripPlanConverter {
                     }
                 }
             }
+        }
+
+        addCarParkAlerts(leg, states);
+    }
+
+    private static void addCarParkAlerts(Leg leg, State[] state) {
+        var containsCarParkWithFewSpaces = Arrays.stream(state)
+                .filter(s -> s.getVertex() instanceof ParkAndRideVertex)
+                .map(s -> (ParkAndRideVertex) s.getVertex())
+                .anyMatch(ParkAndRideVertex::hasFewSpacesAvailable);
+
+        if(containsCarParkWithFewSpaces){
+            leg.addAlert(Alert.createLowCarParkSpacesAlert(), Locale.ENGLISH);
         }
     }
 

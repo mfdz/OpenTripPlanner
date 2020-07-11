@@ -34,6 +34,7 @@ public class ParkAndRideVertex extends Vertex {
         super(graph, carPark.id, carPark.x, carPark.y, carPark.name);
         this.carPark = carPark;
         this.spacesAvailable = carPark.spacesAvailable;
+        this.capacity = carPark.maxCapacity;
         setId(carPark.id);
     }
 
@@ -51,6 +52,6 @@ public class ParkAndRideVertex extends Vertex {
 
     public boolean hasFewSpacesAvailable() {
         var percentFree = ((float) spacesAvailable / capacity);
-        return percentFree < 0.1;
+        return !(Double.isNaN(percentFree)) && percentFree < 0.1;
     }
 }
