@@ -19,6 +19,11 @@ public class ParkApiDataSourceTest {
 
         carParks.forEach(lot -> assertNotNull(lot.geometry));
 
+        carParks.forEach(lot -> {
+            assertNotNull(lot.id);
+            assertNotEquals("", lot.id);
+        });
+
         var first = carParks.get(0);
         assertEquals(Integer.MAX_VALUE, first.spacesAvailable);
         assertEquals(Integer.MAX_VALUE, first.maxCapacity);

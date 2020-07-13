@@ -28,11 +28,13 @@ public class ParkApiDataSource extends GenericJsonCarParkDataSource{
 
         var carPark = new CarPark();
         carPark.name = new NonLocalizedString(node.path("name").asText());
-        carPark.id = node.path("id").asText();
 
         var coords = node.path("coords");
         carPark.x = coords.path("lng").asDouble();
         carPark.y = coords.path("lat").asDouble();
+
+        var fallbackId = url + ":" + carPark.x + "," + carPark.y;
+        carPark.id = node.path("id").asText(fallbackId);
 
         carPark.spacesAvailable = node.path("/free").asInt(Integer.MAX_VALUE);
         carPark.maxCapacity = node.path("/total").asInt(Integer.MAX_VALUE);
