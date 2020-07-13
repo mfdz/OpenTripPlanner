@@ -2556,6 +2556,18 @@ public class IndexGraphQLSchema {
                         .type(Scalars.GraphQLFloat)
                         .dataFetcher(environment -> ((CarPark) environment.getSource()).y)
                         .build())
+                .field(GraphQLFieldDefinition.newFieldDefinition()
+                        .name("url")
+                        .description("URL of additional information of this car park.")
+                        .type(Scalars.GraphQLString)
+                        .dataFetcher(environment -> ((CarPark) environment.getSource()).url)
+                        .build())
+                .field(GraphQLFieldDefinition.newFieldDefinition()
+                        .name("openingHours")
+                        .description("Opening hours in OSM format (https://wiki.openstreetmap.org/wiki/Key:opening_hours).")
+                        .type(Scalars.GraphQLString)
+                        .dataFetcher(environment -> ((CarPark) environment.getSource()).openingHours)
+                        .build())
                 .build();
 
         GraphQLInputObjectType filterInputType = GraphQLInputObjectType.newInputObject()
