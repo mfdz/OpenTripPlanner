@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -358,6 +357,16 @@ public class RoutingRequest implements Cloneable, Serializable {
      * Whether or not bike rental availability information will be used to plan bike rental trips
      */
     public boolean useBikeRentalAvailabilityInformation = false;
+
+    /**
+     * By default only an alert is added when a car park on a route is close to being full.
+     *
+     * However, if you want to exclude those car parks, then set this parameter to true.
+     *
+     * Please note that these parameters only work when searching for the current time. When searching in the future
+     * they have no effect as the availability is not considered at all.
+     */
+    public boolean useCarParkAvailabilityInformation = false;
 
     /**
      * The maximum wait time in seconds the user is willing to delay trip start. Only effective in Analyst.
@@ -1248,7 +1257,8 @@ public class RoutingRequest implements Cloneable, Serializable {
                 && flexIgnoreDrtAdvanceBookMin == other.flexIgnoreDrtAdvanceBookMin
                 && flexMinPartialHopLength == other.flexMinPartialHopLength
                 && clockTimeSec == other.clockTimeSec
-                && serviceDayLookout == other.serviceDayLookout;
+                && serviceDayLookout == other.serviceDayLookout
+                && useCarParkAvailabilityInformation == other.useCarParkAvailabilityInformation;
     }
 
     /**

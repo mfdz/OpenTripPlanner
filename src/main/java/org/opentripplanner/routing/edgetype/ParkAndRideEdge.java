@@ -63,6 +63,11 @@ public class ParkAndRideEdge extends Edge {
             if (s0.isCarParked()) {
                 throw new IllegalStateException("Can't drive 2 cars");
             }
+            if(request.useCarParkAvailabilityInformation
+                    && request.isTripPlannedForNow()
+                    && ((ParkAndRideVertex) tov).hasFewSpacesAvailable()){
+                return null;
+            }
             StateEditor s1 = s0.edit(this);
                  
             int time = request.carDropoffTime;
