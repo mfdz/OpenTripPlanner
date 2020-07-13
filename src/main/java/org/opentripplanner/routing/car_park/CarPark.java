@@ -83,4 +83,9 @@ public class CarPark implements Serializable {
     public String toString () {
         return String.format(Locale.US, "Car park %s at %.6f, %.6f", name, y, x);
     }
+
+    public boolean hasFewSpacesAvailable() {
+        var percentFree = ((float) spacesAvailable / maxCapacity);
+        return !(Double.isNaN(percentFree)) && percentFree < 0.1;
+    }
 }

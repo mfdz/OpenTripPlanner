@@ -20,9 +20,6 @@ public class ParkAndRideVertex extends Vertex {
 
     private String id;
 
-    public int spacesAvailable = Integer.MAX_VALUE;
-    public int capacity = Integer.MAX_VALUE;
-
     private CarPark carPark;
 
     public ParkAndRideVertex(Graph g, String label, String id, double x, double y, I18NString name) {
@@ -33,8 +30,6 @@ public class ParkAndRideVertex extends Vertex {
     public ParkAndRideVertex(Graph graph, CarPark carPark) {
         super(graph, carPark.id, carPark.x, carPark.y, carPark.name);
         this.carPark = carPark;
-        this.spacesAvailable = carPark.spacesAvailable;
-        this.capacity = carPark.maxCapacity;
         setId(carPark.id);
     }
 
@@ -50,8 +45,12 @@ public class ParkAndRideVertex extends Vertex {
         return carPark;
     }
 
+    public void updateCapacity(int maxCapacity, int spacesAvailable) {
+        carPark.maxCapacity = maxCapacity;
+        carPark.spacesAvailable = spacesAvailable;
+    }
+
     public boolean hasFewSpacesAvailable() {
-        var percentFree = ((float) spacesAvailable / capacity);
-        return !(Double.isNaN(percentFree)) && percentFree < 0.1;
+        return carPark.hasFewSpacesAvailable();
     }
 }

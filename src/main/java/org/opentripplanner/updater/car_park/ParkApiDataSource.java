@@ -36,8 +36,8 @@ public class ParkApiDataSource extends GenericJsonCarParkDataSource{
         var fallbackId = url + ":" + carPark.x + "," + carPark.y;
         carPark.id = node.path("id").asText(fallbackId);
 
-        carPark.spacesAvailable = node.path("/free").asInt(Integer.MAX_VALUE);
-        carPark.maxCapacity = node.path("/total").asInt(Integer.MAX_VALUE);
+        carPark.spacesAvailable = node.path("free").asInt(Integer.MAX_VALUE);
+        carPark.maxCapacity = node.path("total").asInt(Integer.MAX_VALUE);
         carPark.realTimeData = true;
 
         carPark.geometry = gf.createPoint(new Coordinate(carPark.x, carPark.y));

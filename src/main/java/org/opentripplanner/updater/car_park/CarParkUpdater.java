@@ -175,8 +175,7 @@ public class CarParkUpdater extends PollingGraphUpdater {
                     }
                     verticesByPark.put(carPark, carParkVertex);
                 } else {
-                    verticesByPark.get(carPark).spacesAvailable = carPark.spacesAvailable;
-                    verticesByPark.get(carPark).capacity = carPark.maxCapacity;
+                    verticesByPark.get(carPark).updateCapacity(carPark.maxCapacity, carPark.spacesAvailable);
                 }
             }
             /* Remove existing parks that were not present in the update */

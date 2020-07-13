@@ -26,7 +26,19 @@ public class ParkApiDataSourceTest {
 
         var first = carParks.get(0);
         assertEquals(Integer.MAX_VALUE, first.spacesAvailable);
-        assertEquals(Integer.MAX_VALUE, first.maxCapacity);
+        assertEquals(58, first.maxCapacity);
+
+        var obererGraben = carParks.get(2);
+        assertEquals("Oberer Graben", obererGraben.name.toString());
+        assertEquals(6, obererGraben.spacesAvailable);
+        assertEquals(24, obererGraben.maxCapacity);
+        assertFalse(obererGraben.hasFewSpacesAvailable());
+
+        var cattleAuctionHall = carParks.get(16);
+        assertEquals("Viehversteigerungshalle", cattleAuctionHall.name.toString());
+        assertEquals(8, cattleAuctionHall.spacesAvailable);
+        assertEquals(95, cattleAuctionHall.maxCapacity);
+        assertTrue(cattleAuctionHall.hasFewSpacesAvailable());
 
         var epsilon = 0.02;
         assertEquals(8.865461, first.x, epsilon);
