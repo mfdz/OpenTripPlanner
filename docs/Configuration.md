@@ -665,6 +665,14 @@ connect to a network resource is the `url` field.
         // Streaming differential GTFS-RT TripUpdates over websockets
         {
             "type": "websocket-gtfs-rt-updater"
+        },
+        // Polling for car park information including the number of available spaces
+        {
+            "id": "park-api",
+            "type": "car-park",
+            "frequencySec": 120,
+            "sourceType": "park-api",
+            "url": "https://api.stadtnavi.de/parkapi.json"
         }
     ]
 }
