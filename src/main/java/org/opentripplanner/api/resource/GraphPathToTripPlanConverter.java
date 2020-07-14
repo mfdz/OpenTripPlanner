@@ -599,17 +599,17 @@ public abstract class GraphPathToTripPlanConverter {
             }
         }
 
-        addCarParkAlerts(leg, states);
+        addCarParkAlerts(leg, states, requestedLocale);
     }
 
-    private static void addCarParkAlerts(Leg leg, State[] state) {
+    private static void addCarParkAlerts(Leg leg, State[] state, Locale locale) {
         var isTripPlannedForNow = Arrays.stream(state)
                 .findFirst()
                 .map(s -> s.getOptions().isTripPlannedForNow())
                 .orElse(false);
 
         if(isTripPlannedForNow && containsCarParkWithFewSpaces(state)){
-            leg.addAlert(Alert.createLowCarParkSpacesAlert(), Locale.ENGLISH);
+            leg.addAlert(Alert.createLowCarParkSpacesAlert(), locale);
         }
     }
 
