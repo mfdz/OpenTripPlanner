@@ -85,7 +85,20 @@ public class CarPark implements Serializable {
     }
 
     public boolean hasFewSpacesAvailable() {
-        var percentFree = ((float) spacesAvailable / maxCapacity);
-        return !(Double.isNaN(percentFree)) && percentFree < 0.1;
+        return hasFewSpacesAvailable(spacesAvailable, maxCapacity);
+    }
+
+    public static boolean hasFewSpacesAvailable(int spacesAvailable, int maxCapacity) {
+        // special handling if it is a very small car park
+        if(maxCapacity < 10) {
+            return spacesAvailable <= 1;
+        // special handling if it is a large one: 20 parking spaces is enough
+        } else if(maxCapacity > 200){
+            return spacesAvailable < 20;
+        // for everything in the middle the cutoff is 10 percent
+        } else {
+            var percentFree = ((float) spacesAvailable / maxCapacity);
+            return !(Double.isNaN(percentFree)) && percentFree <= 0.1f;
+        }
     }
 }

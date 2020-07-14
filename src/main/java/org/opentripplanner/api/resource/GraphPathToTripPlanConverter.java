@@ -600,7 +600,7 @@ public abstract class GraphPathToTripPlanConverter {
         }
 
         addFreeFloatingBicycleDropOffAlerts(leg, states[states.length - 1], requestedLocale, graph);
-        addCarParkAlerts(leg, states);
+        addCarParkAlerts(leg, states, requestedLocale);
     }
 
     /**
@@ -614,14 +614,14 @@ public abstract class GraphPathToTripPlanConverter {
 
     }
 
-    private static void addCarParkAlerts(Leg leg, State[] state) {
+    private static void addCarParkAlerts(Leg leg, State[] state, Locale locale) {
         var isTripPlannedForNow = Arrays.stream(state)
                 .findFirst()
                 .map(s -> s.getOptions().isTripPlannedForNow())
                 .orElse(false);
 
         if(isTripPlannedForNow && containsCarParkWithFewSpaces(state)){
-            leg.addAlert(Alert.createLowCarParkSpacesAlert(), Locale.ENGLISH);
+            leg.addAlert(Alert.createLowCarParkSpacesAlert(), locale);
         }
     }
 

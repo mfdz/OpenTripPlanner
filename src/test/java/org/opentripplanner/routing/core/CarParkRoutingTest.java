@@ -166,7 +166,9 @@ public class CarParkRoutingTest {
         var polyline = firstTripToPolyline(tripPlan);
         assertThatPolylinesAreEqual(polyline, "arwgHg_gu@Hl@NRPL\\Rf@Lf@T`@Ln@NdBVd@VRHjAh@BBtE~BXLjClAj@XjAz@LLPR`BpCrF~Hv@bAd@n@f@r@l@hA`@bAJLJLFFHBN@JAJAAe@AY?U?S?a@@]@U@[BYBMFi@Fc@PgABSJo@DYrAf@hAb@j@^bBbArAxAjCrDhCpDDJvAbB~CvCTRNNVV`HfHxD|DrDtEx@bAzBpBh@b@NLzAp@`A\\n@RhA\\dAXLDzFrALDn@RVJtAf@~Av@hAz@Pv@l@n@K\\M\\KKEEAC??@BDDJJ`BpBVi@Tg@RQXg@b@{@WYYZA@");
 
-        assertEquals(tripPlan.itinerary.get(0).legs.get(0).alerts.get(0).getAlertUrl(), "alert:carpark:few-spaces-available");
+        var alert = tripPlan.itinerary.get(0).legs.get(0).alerts.get(0);
+        assertEquals("Few parking spaces available", alert.getAlertHeaderText());
+        assertEquals("The selected car park has only few spaces available. Please add extra time to your trip.", alert.getAlertDescriptionText());
     }
 
     @Test
