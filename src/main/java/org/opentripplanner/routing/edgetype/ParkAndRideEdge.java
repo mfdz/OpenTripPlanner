@@ -36,6 +36,11 @@ public class ParkAndRideEdge extends Edge {
         if (!request.parkAndRide) {
             return null;
         }
+        if(request.useCarParkAvailabilityInformation
+                && request.isTripPlannedForNow()
+                && ((ParkAndRideVertex) tov).hasFewSpacesAvailable()){
+            return null;
+        }
         if (request.arriveBy) {
             /*
              * To get back a car, we need to walk and have car mode enabled.
@@ -62,11 +67,6 @@ public class ParkAndRideEdge extends Edge {
             }
             if (s0.isCarParked()) {
                 throw new IllegalStateException("Can't drive 2 cars");
-            }
-            if(request.useCarParkAvailabilityInformation
-                    && request.isTripPlannedForNow()
-                    && ((ParkAndRideVertex) tov).hasFewSpacesAvailable()){
-                return null;
             }
             StateEditor s1 = s0.edit(this);
                  
