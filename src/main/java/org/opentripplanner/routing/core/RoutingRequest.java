@@ -228,6 +228,12 @@ public class RoutingRequest implements Cloneable, Serializable {
     /** Cost of parking a bike. */
     public int bikeParkCost = 120;
 
+    /** Cost of dropping off a bike in "free-floating" mode
+     *  This is necessary so that at train stations that are near a bike rental station the algorithm doesn't
+     *  route to the nearest point to the tracks but to the bike rental station in the vicinity.
+     */
+    public int bikeRentalFreeFloatDropoffCost = 200;
+
     /**
      * Time to park a car in a park and ride, w/o taking into account driving and walking cost
      * (time to park, switch off, pick your stuff, lock the car, etc...)

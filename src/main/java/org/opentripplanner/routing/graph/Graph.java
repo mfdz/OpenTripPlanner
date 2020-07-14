@@ -9,7 +9,6 @@ import com.esotericsoftware.kryo.serializers.ExternalizableSerializer;
 import com.esotericsoftware.kryo.serializers.JavaSerializer;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.*;
-import de.javakaffee.kryoserializers.guava.HashMultimapSerializer;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -42,6 +41,7 @@ import org.opentripplanner.kryo.HashBiMapSerializer;
 import org.opentripplanner.model.GraphBundle;
 import org.opentripplanner.profile.StopClusterMode;
 import org.opentripplanner.routing.alertpatch.AlertPatch;
+import org.opentripplanner.routing.bike_rental.BikeRentalStationService;
 import org.opentripplanner.routing.core.MortonVertexComparatorFactory;
 import org.opentripplanner.routing.core.TransferTable;
 import org.opentripplanner.routing.core.TraverseMode;
@@ -1108,5 +1108,17 @@ public class Graph implements Serializable {
             flexIndex.init(this);
         }
         this.useFlexService = useFlexService;
+    }
+
+    public boolean networkAllowsFreeFloatingDropOff(Set<String> networks) {
+            return  Optional.ofNullable(this.getService(BikeRentalStationService.class))
+                    .map(s -> s.networksAllowsFreeFloatingDropOff(networks))
+                    .orElse(true);
+    }
+
+    public boolean shouldAddAltertForFreeFloatingDropOff(Set<String> networks) {
+        return  Optional.ofNullable(this.getService(BikeRentalStationService.class))
+                .map(s -> s.shouldAddFreeFloatingAlertForNetworks(networks))
+                .orElse(false);
     }
 }

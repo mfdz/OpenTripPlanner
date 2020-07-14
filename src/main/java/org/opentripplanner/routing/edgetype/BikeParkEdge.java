@@ -49,16 +49,19 @@ public class BikeParkEdge extends Edge {
         /*
          * To unpark a bike, we need to be walking, and be allowed to bike.
          */
-        if (s0.getNonTransitMode() != TraverseMode.WALK || !options.modes.getBicycle())
-            return null;
-
-        StateEditor s0e = s0.edit(this);
-        s0e.incrementWeight(options.bikeParkCost);
-        s0e.incrementTimeInSeconds(options.bikeParkTime);
-        s0e.setBackMode(TraverseMode.LEG_SWITCH);
-        s0e.setBikeParked(false);
-        State s1 = s0e.makeState();
-        return s1;
+        if (s0.getNonTransitMode() == TraverseMode.WALK || options.modes.getBicycle()) {
+            if(options.allowBikeRental) {
+                return RentABikeAbstractEdge.startRental(this, s0, options, options.allowedBikeRentalNetworks, TraverseMode.BICYCLE);
+            } else {
+                StateEditor s0e = s0.edit(this);
+                s0e.incrementWeight(options.bikeParkCost);
+                s0e.incrementTimeInSeconds(options.bikeParkTime);
+                s0e.setBackMode(TraverseMode.LEG_SWITCH);
+                s0e.setBikeParked(false);
+                return s0e.makeState();
+            }
+        }
+        else return null;
     }
 
     protected State traversePark(State s0) {
@@ -67,12 +70,20 @@ public class BikeParkEdge extends Edge {
          * To park a bike, we need to be riding one, (not rented) and be allowed to walk and to park
          * it.
          */
-        if (s0.getNonTransitMode() != TraverseMode.BICYCLE || !options.modes.getWalk()
-                || s0.isBikeRenting() || s0.isBikeParked())
+        if (s0.getNonTransitMode() != TraverseMode.BICYCLE || !options.modes.getWalk() || s0.isBikeParked()) {
             return null;
+        }
+
         BikeParkVertex bikeParkVertex = (BikeParkVertex) tov;
         if (bikeParkVertex.getSpacesAvailable() == 0) {
             return null;
+        }
+
+        // we are dropping of a free-floating rented bike at a bike parking lot
+        // why not just anywhere? we tried this and it would make the search space explode as there are too many states
+        // to traverse
+        if(s0.isBikeRenting() && s0.getContext().graph.networkAllowsFreeFloatingDropOff(s0.stateData.bikeRentalNetworks)) {
+            return RentABikeAbstractEdge.dropOffBike(this, s0, options, true);
         }
 
         StateEditor s0e = s0.edit(this);

@@ -105,6 +105,14 @@ public class GbfsBikeRentalDataSource implements BikeRentalDataSource, JsonConfi
         }
     }
 
+    @Override
+    public String toString() {
+        return "GbfsBikeRentalDataSource{" +
+                "baseUrl='" + baseUrl + '\'' +
+                ", routeAsCar=" + routeAsCar +
+                '}';
+    }
+
     class GbfsStationDataSource extends GenericJsonBikeRentalDataSource {
 
         public GbfsStationDataSource () {

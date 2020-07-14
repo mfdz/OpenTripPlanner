@@ -44,13 +44,23 @@ graphs/default/vvs-with-shapes.gtfs.zip:
 
 graphs/default/stuttgart.pbf:
 	mkdir -p graphs/default
-	wget http://download.geofabrik.de/europe/germany/baden-wuerttemberg/stuttgart-regbez-latest.osm.pbf -O graphs/default/stuttgart.pbf
+	wget http://download.geofabrik.de/europe/germany/baden-wuerttemberg/stuttgart-regbez-latest.osm.pbf -O $@
+
+graphs/ulm/tuebingen.osm.pbf:
+	mkdir -p graphs/ulm
+	wget http://download.geofabrik.de/europe/germany/baden-wuerttemberg/tuebingen-regbez-latest.osm.pbf -O $@
 
 build-herrenberg: graphs/default/vvs-with-shapes.gtfs.zip graphs/default/stuttgart.pbf
-	java -Xmx4G -jar otp.jar --build ./graphs/default
+	java -jar otp.jar --build ./graphs/default
+
+build-ulm: graphs/ulm/tuebingen.osm.pbf
+	java -jar otp.jar --build ./graphs/ulm
 
 run:
-	java -Xmx5G -server -Dmaven.javadoc.skip=true -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=127.0.0.1:8000 -jar otp.jar --server --basePath ./ --router default --insecure
+	java -server -Dmaven.javadoc.skip=true -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=127.0.0.1:8000 -jar otp.jar --server --basePath ./ --router default --insecure
+
+run-ulm:
+	java -server -Dmaven.javadoc.skip=true -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=127.0.0.1:8000 -jar otp.jar --server --basePath ./ --router ulm --insecure
 
 rebuild:
 	mvn package -DskipTests -Dmaven.javadoc.skip=true

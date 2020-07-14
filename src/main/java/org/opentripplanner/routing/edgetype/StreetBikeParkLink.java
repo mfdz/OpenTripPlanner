@@ -63,22 +63,23 @@ public class StreetBikeParkLink extends Edge {
     }
 
     public State traverse(State s0) {
-        // Do not even consider bike park vertices unless bike P+R is enabled.
-        if (!s0.getOptions().bikeParkAndRide) {
-            return null;
-        }
+        RoutingRequest options = s0.getOptions();
         // Disallow traversing two StreetBikeParkLinks in a row.
         // Prevents router using bike rental stations as shortcuts to get around
         // turn restrictions.
-        if (s0.getBackEdge() instanceof StreetBikeParkLink)
+        if (s0.getBackEdge() instanceof StreetBikeParkLink) {
             return null;
-
-        StateEditor s1 = s0.edit(this);
-        // Assume bike park are more-or-less on-street
-        s1.incrementTimeInSeconds(1);
-        s1.incrementWeight(1);
-        // Do not force any mode, will use the latest one (walking bike or bike)
-        return s1.makeState();
+        }
+        // Do not even consider bike park vertices unless bike P+R or bike rental is enabled.
+        else if (options.bikeParkAndRide || options.allowBikeRental) {
+            StateEditor s1 = s0.edit(this);
+            // Assume bike park are more-or-less on-street
+            s1.incrementTimeInSeconds(1);
+            s1.incrementWeight(1);
+            // Do not force any mode, will use the latest one (walking bike or bike)
+            return s1.makeState();
+        }
+        else return null;
     }
 
     @Override

@@ -599,7 +599,19 @@ public abstract class GraphPathToTripPlanConverter {
             }
         }
 
+        addFreeFloatingBicycleDropOffAlerts(leg, states[states.length - 1], requestedLocale, graph);
         addCarParkAlerts(leg, states);
+    }
+
+    /**
+     * When it is a bike rental leg but the last state is not a bike rental station, then send an alert that
+     * it is a free floating drop off which may incur extra costs.
+     */
+    private static void addFreeFloatingBicycleDropOffAlerts(Leg leg, State lastStateInLeg, Locale requestedLocale, Graph graph) {
+        if (lastStateInLeg.isBikeRenting() && !(lastStateInLeg.getBackEdge() instanceof StreetBikeRentalLink) && graph.shouldAddAltertForFreeFloatingDropOff(lastStateInLeg.stateData.bikeRentalNetworks)) {
+            leg.addAlert(Alert.createFloatingDropOffAlert(), requestedLocale);
+        }
+
     }
 
     private static void addCarParkAlerts(Leg leg, State[] state) {

@@ -1,8 +1,5 @@
 package org.opentripplanner.routing.core;
 
-import java.util.Date;
-import java.util.Set;
-
 import org.opentripplanner.model.FeedScopedId;
 import org.opentripplanner.model.Stop;
 import org.opentripplanner.model.Trip;
@@ -15,6 +12,10 @@ import org.opentripplanner.routing.vertextype.BikeRentalStationVertex;
 import org.opentripplanner.routing.vertextype.ElevatorOffboardVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Date;
+import java.util.Optional;
+import java.util.Set;
 
 public class State implements Cloneable {
     /* Data which is likely to change at most traversals */
@@ -288,22 +289,27 @@ public class State implements Cloneable {
         boolean parkAndRide = stateData.opt.parkAndRide || stateData.opt.kissAndRide;
         boolean rideAndPark = stateData.opt.rideAndKiss;
         boolean bikeParkAndRide = stateData.opt.bikeParkAndRide;
-        boolean bikeRentingOk = false;
         boolean bikeParkAndRideOk = false;
+        boolean bikeRentingOk = true;
+        if(isBikeRenting()) {
+            bikeRentingOk = bikeRentalFreeFloatingDropOffAllowed();
+        };
         boolean carParkAndRideOk = false;
         boolean carRideAndParkOk = false;
         if (stateData.opt.arriveBy) {
-            bikeRentingOk = !isBikeRenting();
             bikeParkAndRideOk = !bikeParkAndRide || !isBikeParked();
             carParkAndRideOk = !parkAndRide || !isCarParked();
             carRideAndParkOk = !rideAndPark || isCarParked();
         } else {
-            bikeRentingOk = !isBikeRenting();
             bikeParkAndRideOk = !bikeParkAndRide || isBikeParked();
             carParkAndRideOk = !parkAndRide || isCarParked();
             carRideAndParkOk = !rideAndPark || !isCarParked();
         }
         return bikeRentingOk && bikeParkAndRideOk && carParkAndRideOk && carRideAndParkOk;
+    }
+
+    public boolean bikeRentalFreeFloatingDropOffAllowed() {
+        return this.getContext().graph.networkAllowsFreeFloatingDropOff(this.stateData.bikeRentalNetworks);
     }
 
     public Stop getPreviousStop() {
@@ -502,6 +508,10 @@ public class State implements Cloneable {
         newState.stateData.usingRentedBike = stateData.usingRentedBike;
         newState.stateData.carParked = stateData.carParked;
         newState.stateData.bikeParked = stateData.bikeParked;
+        // begin with the same non-transit mode that the end state had
+        // copied from IBI group and required for reverse optimization of free-floating bike rentals
+        // https://github.com/ibi-group/OpenTripPlanner/blob/5452d2c2a674bdda0807c614e5deaab4b051ca5f/src/main/java/org/opentripplanner/routing/core/State.java#L643-L645
+        newState.stateData.nonTransitMode = stateData.nonTransitMode;
         return newState;
     }
 
@@ -726,7 +736,7 @@ public class State implements Cloneable {
                     ret.getBackMode() != TraverseMode.LEG_SWITCH &&
                     // Ignore switching between walking and biking in elevators
                     !(edge.getFromVertex() instanceof ElevatorOffboardVertex ||
-                        edge.getToVertex() instanceof ElevatorOffboardVertex )
+                        edge.getToVertex() instanceof ElevatorOffboardVertex)
                     ) {
                     ret = ret.next; // Keep the mode the same as on the original graph path (in K+R)
                 }
@@ -763,7 +773,11 @@ public class State implements Cloneable {
                 if (orig.isBikeRenting() && !orig.getBackState().isBikeRenting()) {
                     editor.doneVehicleRenting();
                 } else if (!orig.isBikeRenting() && orig.getBackState().isBikeRenting()) {
-                    editor.beginVehicleRenting(((BikeRentalStationVertex)orig.vertex).getVehicleMode());
+                    var vehicleMode = Optional.ofNullable(orig.vertex)
+                            .filter(v -> v instanceof BikeRentalStationVertex)
+                            .map(v -> ((BikeRentalStationVertex) v).getVehicleMode())
+                            .orElse(orig.getBackMode());
+                    editor.beginVehicleRenting(vehicleMode);
                 }
                 if (orig.isCarParked() != orig.getBackState().isCarParked())
                     editor.setCarParked(!orig.isCarParked());

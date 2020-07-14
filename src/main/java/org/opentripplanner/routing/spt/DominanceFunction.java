@@ -2,6 +2,7 @@ package org.opentripplanner.routing.spt;
 
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.State;
+import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.edgetype.SimpleTransfer;
 import org.opentripplanner.routing.edgetype.StreetEdge;
 import org.opentripplanner.routing.edgetype.TimedTransferEdge;
@@ -111,7 +112,7 @@ public abstract class DominanceFunction implements Serializable {
                 /**
                  * {@link DominanceFunction.MAX_METERS_ROUTE_LOOPS}
                  */
-                || isCloseToStartOrEnd(a.getVertex(), a.getOptions())) {
+                || (a.getBackMode() != TraverseMode.WALK && isCloseToStartOrEnd(a.getVertex(), a.getOptions()))) {
                 return false;
             }
         }

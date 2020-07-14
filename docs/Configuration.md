@@ -688,18 +688,22 @@ Steps to add a GBFS feed to a router:
      "type": "bike-rental",
      "frequencySec": 60,
      "sourceType": "gbfs",
-     "url": "http://coast.socialbicycles.com/opendata/"
+     "url": "http://coast.socialbicycles.com/opendata/",
+     "rentalType": "free-floating" 
 }
 ```
 
 - Follow these instructions to fill these fields:
-
-```
-type: "bike-rental"
-frequencySec: frequency in seconds in which the GBFS service will be polled
-sourceType: "gbfs"
-url: the URL of the GBFS feed (do not include the gbfs.json at the end) *
-```
+    - `type`: `bike-rental`
+    - `frequencySec`: frequency in seconds in which the GBFS service will be polled
+    - `sourceType`: `gbfs`
+    - `url`: the URL of the GBFS feed (do not include the gbfs.json at the end) *
+    - `rentalType`: the ruleset to apply for returning the bike. Possible values are:
+      - `station-based`: bikes must be returned to a designated drop-off area.
+      - `free-floating`: bikes can be dropped off anywhere. Please note that business zones are not implemented.
+      - `station-based-with-temporary-drop-off`: bikes can be (temporarily) left anywhere but an alert is added notifying 
+        the user that extra charges may occur and the bike may have to be eventually returned.
+       
 \* For a list of known GBFS feeds see the [list of known GBFS feeds](https://github.com/NABSA/gbfs/blob/master/systems.csv)
 
 # Configure using command-line arguments

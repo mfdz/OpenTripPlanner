@@ -44,6 +44,13 @@ public class Alert implements Serializable {
         return note;
     }
 
+    public static Alert createFloatingDropOffAlert() {
+        var alert = createSimpleAlerts("Free-floating bicycle drop off");
+        alert.alertDescriptionText = new NonLocalizedString("You are returning the bike outside a designated drop-off area. Please check the terms for additional fees.");
+        alert.alertUrl = new NonLocalizedString("alert:bikerental:free-floating-drop-off");
+        return alert;
+    }
+
     public static Alert createLowCarParkSpacesAlert() {
         var alert = createSimpleAlerts("Car park with few spaces available selected.");
         alert.alertDescriptionText = new NonLocalizedString("A car park on your journey has few parking spaces available. Please expect additional waiting time on your trip.");
