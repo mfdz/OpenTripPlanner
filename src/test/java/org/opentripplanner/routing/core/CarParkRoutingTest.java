@@ -4,6 +4,7 @@ package org.opentripplanner.routing.core;
 import com.google.common.collect.ImmutableSet;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.opentripplanner.ConstantsForTests;
 import org.opentripplanner.api.model.TripPlan;
@@ -61,27 +62,26 @@ public class CarParkRoutingTest {
         var service = new CarParkService();
         graph.putService(CarParkService.class, service);
 
+        var linker = new SimpleStreetSplitter(graph);
+
         carParks.forEach((CarPark carPark) -> {
-
-            var linker = new SimpleStreetSplitter(graph);
-            service.addCarPark(carPark);
-
-            var carParkVertex = new ParkAndRideVertex(graph, carPark);
+            ParkAndRideVertex carParkVertex = new ParkAndRideVertex(graph, carPark);
             new ParkAndRideEdge(carParkVertex);
-            var envelope = carPark.geometry.getEnvelopeInternal();
-            graph.streetIndex
+            Envelope envelope = carPark.geometry.getEnvelopeInternal();
+            long numberOfVertices = graph.streetIndex
                     .getVerticesForEnvelope(envelope)
                     .stream()
                     .filter(vertex -> vertex instanceof StreetVertex)
                     .filter(vertex -> gf.createPoint(vertex.getCoordinate()).within(carPark.geometry))
                     .peek(vertex -> new ParkAndRideLinkEdge(vertex, carParkVertex))
-                    .forEach(vertex -> new ParkAndRideLinkEdge(carParkVertex, vertex));
-
-            if (!(linker.link(carParkVertex, TraverseMode.CAR, null) &&
-                    linker.link(carParkVertex, TraverseMode.WALK, null))) {
-                LOG.error("{} not near any streets; it will not be usable.", carPark);
+                    .peek(vertex -> new ParkAndRideLinkEdge(carParkVertex, vertex))
+                    .count();
+            if (numberOfVertices == 0) {
+                if (!(linker.link(carParkVertex, TraverseMode.CAR, null) &&
+                        linker.link(carParkVertex, TraverseMode.WALK, null))) {
+                    LOG.warn("{} not near any streets; it will not be usable.", carPark);
+                }
             }
-
         });
 
         return graph;
