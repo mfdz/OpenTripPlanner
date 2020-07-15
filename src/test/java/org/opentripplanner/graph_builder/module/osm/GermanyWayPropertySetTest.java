@@ -82,12 +82,42 @@ public class GermanyWayPropertySetTest {
         way.addTag("traffic_sign", "DE:260,1026-36");
         way.addTag("width", "2.5");
         assertEquals(1.0, wps.getDataForWay(way).getSafetyFeatures().first, epsilon);
+    }
 
+
+    @Test
+    public void testPermissions() {
         // https://www.openstreetmap.org/way/124263424
-        way = new OSMWithTags();
+        var way = new OSMWithTags();
         way.addTag("highway", "track");
         way.addTag("tracktype", "grade1");
         assertEquals(wps.getDataForWay(way).getPermission(), StreetTraversalPermission.PEDESTRIAN_AND_BICYCLE);
+
+        // https://www.openstreetmap.org/way/5155805
+        way = new OSMWithTags();
+        way.addTag("access:lanes:forward", "yes|no");
+        way.addTag("bicycle:lanes:forward","|designated");
+        way.addTag("change:lanes:forward", "not_right|no");
+        way.addTag("cycleway:right", "lane");
+        way.addTag("cycleway:right:lane", "exclusive");
+        way.addTag("cycleway:right:traffic_sign", "DE:237");
+        way.addTag("highway", "unclassified");
+        way.addTag("lanes", "3");
+        way.addTag("lanes:backward","2");
+        way.addTag("lanes:forward","1");
+        way.addTag("lit", "yes");
+        way.addTag("maxspeed","50");
+        way.addTag("name", 	"Krailenshaldenstraße");
+        way.addTag("parking:lane:both", "no_stopping");
+        way.addTag("sidewalk", 	"left");
+        way.addTag("smoothness", "good");
+        way.addTag("source:maxspeed", "DE:urban");
+        way.addTag("surface", "asphalt");
+        way.addTag("turn:lanes:backward", "left|through;right");
+        way.addTag("width:lanes:forward", "|1.4");
+        way.addTag("zone:traffic", "DE:urban");
+
+        assertEquals(wps.getDataForWay(way).getPermission(), StreetTraversalPermission.ALL);
     }
 
     @Test
