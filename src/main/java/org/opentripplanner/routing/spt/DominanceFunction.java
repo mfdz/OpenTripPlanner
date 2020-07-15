@@ -112,7 +112,9 @@ public abstract class DominanceFunction implements Serializable {
                 /**
                  * {@link DominanceFunction.MAX_METERS_ROUTE_LOOPS}
                  */
-                || (a.getBackMode() != TraverseMode.WALK && isCloseToStartOrEnd(a.getVertex(), a.getOptions()))) {
+                // when A* loops are allowed for bike rental searches then OTP runs into timeouts in areas with lots of cycling stations
+                // it's not quite clear why that is
+                || !(a.getOptions().allowBikeRental && a.getBackMode() == TraverseMode.WALK) && isCloseToStartOrEnd(a.getVertex(), a.getOptions())) {
                 return false;
             }
         }
