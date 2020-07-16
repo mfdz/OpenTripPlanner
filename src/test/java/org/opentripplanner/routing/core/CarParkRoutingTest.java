@@ -12,6 +12,7 @@ import org.opentripplanner.api.parameter.QualifiedMode;
 import org.opentripplanner.api.resource.GraphPathToTripPlanConverter;
 import org.opentripplanner.common.model.GenericLocation;
 import org.opentripplanner.graph_builder.linking.SimpleStreetSplitter;
+import org.opentripplanner.routing.alertpatch.Alert;
 import org.opentripplanner.routing.car_park.CarPark;
 import org.opentripplanner.routing.car_park.CarParkService;
 import org.opentripplanner.routing.edgetype.ParkAndRideEdge;
@@ -168,6 +169,7 @@ public class CarParkRoutingTest {
         var alert = tripPlan.itinerary.get(0).legs.get(0).alerts.get(0);
         assertEquals("Few parking spaces available", alert.getAlertHeaderText());
         assertEquals("The selected car park has only few spaces available. Please add extra time to your trip.", alert.getAlertDescriptionText());
+        assertEquals(Alert.AlertId.CAR_PARK_FULL, alert.alert.alertId);
     }
 
     @Test

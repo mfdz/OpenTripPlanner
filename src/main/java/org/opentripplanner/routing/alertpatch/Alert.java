@@ -16,7 +16,13 @@ public class Alert implements Serializable {
     private static final long serialVersionUID = 8305126586053909836L;
 
     public enum AlertId {
-        CAR_PARK_FULL
+        CAR_PARK_FULL("car_park_full");
+
+        public String value;
+
+        AlertId(String value) {
+            this.value = value;
+        }
     }
 
     public I18NString alertHeaderText;

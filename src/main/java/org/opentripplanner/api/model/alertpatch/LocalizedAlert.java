@@ -32,6 +32,14 @@ public class LocalizedAlert {
     }
 
     @JsonSerialize
+    public String getAlertId() {
+        if (alert.alertId == null) {
+            return null;
+        }
+        return alert.alertId.value;
+    }
+
+    @JsonSerialize
     public String getAlertDescriptionText() {
         if (alert.alertDescriptionText == null) {
             return null;

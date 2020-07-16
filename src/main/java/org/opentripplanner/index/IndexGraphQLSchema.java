@@ -3717,6 +3717,12 @@ public class IndexGraphQLSchema {
                         .description("Url with more information")
                         .dataFetcher(environment -> ((LocalizedAlert) environment.getSource()).alert.alertUrl)
                         .build())
+                .field(GraphQLFieldDefinition.newFieldDefinition()
+                        .name("alertId")
+                        .type(Scalars.GraphQLString)
+                        .description("Machine readable ID of the alert.")
+                        .dataFetcher(environment -> ((LocalizedAlert) environment.getSource()).alert.alertId)
+                        .build())
                 .build();
 
 
