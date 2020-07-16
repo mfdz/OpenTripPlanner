@@ -247,7 +247,8 @@ public class BikeRentalRoutingTest {
         assertEquals(leg.mode, "BICYCLE");
         assertTrue(leg.rentedBike);
         assertFalse(leg.alerts.isEmpty());
-        assertEquals(leg.alerts.get(0).getAlertHeaderText(), "Free-floating bicycle drop off");
+        assertEquals("Destination is not a designated drop-off area.", leg.alerts.get(0).getAlertHeaderText());
+        assertEquals("Rental cannot be completed here. Please check terms & conditions for additional fees.", leg.alerts.get(0).getAlertDescriptionText());
     }
 
     @Test

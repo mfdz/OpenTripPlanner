@@ -15,11 +15,17 @@ import java.util.Objects;
 public class Alert implements Serializable {
     private static final long serialVersionUID = 8305126586053909836L;
 
+    public enum AlertId {
+        CAR_PARK_FULL
+    }
+
     public I18NString alertHeaderText;
 
     public I18NString alertDescriptionText;
 
     public I18NString alertUrl;
+
+    public AlertId alertId;
 
     //null means unknown
     public Date effectiveStartDate;
@@ -47,17 +53,20 @@ public class Alert implements Serializable {
     }
 
     public static Alert createFloatingDropOffAlert() {
-        var alert = createSimpleAlerts("Free-floating bicycle drop off");
-        alert.alertDescriptionText = new NonLocalizedString("You are returning the bike outside a designated drop-off area. Please check the terms for additional fees.");
-        alert.alertUrl = new NonLocalizedString("alert:bikerental:free-floating-drop-off");
-        return alert;
+        return createTranslatedAlert("bicycle_rental.free_floating_dropoff");
     }
 
     public static Alert createLowCarParkSpacesAlert() {
+        Alert alert = createTranslatedAlert("car_park.full");
+        alert.alertId = AlertId.CAR_PARK_FULL;
+        return alert;
+    }
+
+    private static Alert createTranslatedAlert(String translationKey) {
         var emptyArray = new String[]{};
         var alert = new Alert();
-        alert.alertHeaderText= new LocalizedString("alert.car_park.full.header", emptyArray);
-        alert.alertDescriptionText = new LocalizedString("alert.car_park.full.description", emptyArray);
+        alert.alertHeaderText= new LocalizedString("alert." + translationKey + ".header", emptyArray);
+        alert.alertDescriptionText = new LocalizedString("alert." + translationKey + ".description", emptyArray);
         return alert;
     }
 
