@@ -3721,7 +3721,7 @@ public class IndexGraphQLSchema {
                         .name("alertId")
                         .type(Scalars.GraphQLString)
                         .description("Machine readable ID of the alert.")
-                        .dataFetcher(environment -> ((LocalizedAlert) environment.getSource()).alert.alertId)
+                        .dataFetcher(environment -> ((LocalizedAlert) environment.getSource()).getAlertId())
                         .build())
                 .build();
 
