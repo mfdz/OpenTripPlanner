@@ -11,6 +11,7 @@ import org.opentripplanner.api.parameter.QualifiedMode;
 import org.opentripplanner.api.resource.GraphPathToTripPlanConverter;
 import org.opentripplanner.common.model.GenericLocation;
 import org.opentripplanner.graph_builder.linking.SimpleStreetSplitter;
+import org.opentripplanner.routing.alertpatch.Alert;
 import org.opentripplanner.routing.bike_rental.BikeRentalStation;
 import org.opentripplanner.routing.bike_rental.BikeRentalStationService;
 import org.opentripplanner.routing.edgetype.RentABikeOffEdge;
@@ -20,7 +21,6 @@ import org.opentripplanner.routing.impl.GraphPathFinder;
 import org.opentripplanner.routing.spt.GraphPath;
 import org.opentripplanner.routing.vertextype.BikeRentalStationVertex;
 import org.opentripplanner.standalone.Router;
-import org.opentripplanner.updater.bike_rental.BikeRentalUpdater;
 import org.opentripplanner.util.NonLocalizedString;
 import org.opentripplanner.util.PolylineEncoder;
 import org.opentripplanner.util.TestUtils;
@@ -249,6 +249,7 @@ public class BikeRentalRoutingTest {
         assertFalse(leg.alerts.isEmpty());
         assertEquals("Destination is not a designated drop-off area.", leg.alerts.get(0).getAlertHeaderText());
         assertEquals("Rental cannot be completed here. Please check terms & conditions for additional fees.", leg.alerts.get(0).getAlertDescriptionText());
+        assertEquals(Alert.AlertId.BIKE_RENTAL_FREE_FLOATING_DROP_OFF, leg.alerts.get(0).alert.alertId);
     }
 
     @Test

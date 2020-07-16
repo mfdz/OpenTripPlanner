@@ -16,7 +16,8 @@ public class Alert implements Serializable {
     private static final long serialVersionUID = 8305126586053909836L;
 
     public enum AlertId {
-        CAR_PARK_FULL("car_park_full");
+        CAR_PARK_FULL("car_park_full"),
+        BIKE_RENTAL_FREE_FLOATING_DROP_OFF("bike_rental_free_floating_drop_off");
 
         public String value;
 
@@ -59,7 +60,9 @@ public class Alert implements Serializable {
     }
 
     public static Alert createFloatingDropOffAlert() {
-        return createTranslatedAlert("bicycle_rental.free_floating_dropoff");
+        var alert = createTranslatedAlert("bicycle_rental.free_floating_dropoff");
+        alert.alertId = AlertId.BIKE_RENTAL_FREE_FLOATING_DROP_OFF;
+        return alert;
     }
 
     public static Alert createLowCarParkSpacesAlert() {
