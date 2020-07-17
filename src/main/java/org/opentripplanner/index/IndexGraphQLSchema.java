@@ -836,6 +836,11 @@ public class IndexGraphQLSchema {
                         .description("Which bike rental networks can be used. By default, all networks are allowed.")
                         .type(new GraphQLList(Scalars.GraphQLString))
                         .build())
+                .argument(GraphQLArgument.newArgument()
+                        .name("useCarParkAvailabilityInformation")
+                        .description("If full car park should be excluded from the search.")
+                        .type(Scalars.GraphQLBoolean)
+                        .build())
                 .dataFetcher(environment -> new GraphQlPlanner(index).plan(environment))
                 .build();
 
