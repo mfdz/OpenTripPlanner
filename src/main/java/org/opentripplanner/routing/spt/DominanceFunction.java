@@ -42,7 +42,7 @@ public abstract class DominanceFunction implements Serializable {
      * The following variable determines how close you have to be to the start or the end point for it to be
      * considered "close enough for a loop".
      */
-    private static final int MAX_METERS_ROUTE_LOOPS = 1000;
+    private static final int MAX_METERS_ROUTE_LOOPS = 500;
 
     /**
      * Return true if the first state "defeats" the second state or at least ties with it in terms of suitability. 
@@ -112,9 +112,7 @@ public abstract class DominanceFunction implements Serializable {
                 /**
                  * {@link DominanceFunction.MAX_METERS_ROUTE_LOOPS}
                  */
-                // when A* loops are allowed for bike rental searches then OTP runs into timeouts in areas with lots of cycling stations
-                // it's not quite clear why that is
-                || !(a.getOptions().allowBikeRental && a.getBackMode() == TraverseMode.WALK) && isCloseToStartOrEnd(a.getVertex(), a.getOptions())) {
+                || a.getBackMode() != TraverseMode.WALK && isCloseToStartOrEnd(a.getVertex(), a.getOptions())) {
                 return false;
             }
         }

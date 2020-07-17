@@ -96,7 +96,7 @@ public class BicycleAndWalkRoutingTest {
         assertThatPolylinesAreEqual(polyline2, "}uqgHs`cu@AK?Am@kEIo@?eD]UFc@c@iD]mB_@sAAACIKScAuCc@_AUi@GMQJODGm@QsCGi@");
 
         var polyline3 = calculatePolyline(graph, herrenbergErhardtstBismarckstr, brahmsStr);
-        assertThatPolylinesAreEqual(polyline3, "}uqgHs`cu@AK?Am@kEIo@?eD]UFc@c@iD]mB_@sAAACIKScAuCc@_AUi@GMQJODC@I@Ei@GiAIoAEg@HEGk@MaAn@g@d@i@PWTi@b@u@j@yAF{@");
+        assertThatPolylinesAreEqual(polyline3, "}uqgHs`cu@AK?Am@kEIo@?eD]UFc@c@iD]mB_@sAAACIKScAuCc@_AUi@|A}BZc@GMUe@AUa@uAOs@EAAAYgATi@b@u@j@yAF{@");
 
         // here we make sure that we don't take Schulstraße (https://www.openstreetmap.org/way/26403221) just because it is part of several cycle networks
         var polyline4 = calculatePolyline(graph, schillerStr, hildrizhauserStr);

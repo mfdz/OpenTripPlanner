@@ -56,7 +56,7 @@ public class CarParkRoutingTest {
     private static Graph addCarParksToGraph(Graph graph) {
         var carParks = ImmutableSet.of(
                 makeCarPark("1", "Goethestr.", 100, 100, 48.59077, 8.86707),
-                makeCarPark("2", "Affstädter Tal", 0, 100, 48.59978, 8.87140)
+                makeCarPark("2", "Affstädter Tal", 0, 100, 48.60091, 8.87195)
         );
 
         var service = new CarParkService();
@@ -160,11 +160,11 @@ public class CarParkRoutingTest {
     @Test
     public void driveToDynamicallyAddedCarParkEvenIfItHasZeroFreeSpaces() {
         var nufringen = new GenericLocation(48.6225, 8.8884);
-        var benzStr = new GenericLocation(48.59878, 8.87175);
+        var affstädterTal = new GenericLocation(48.60143, 8.87084);
 
-        var tripPlan = getTripPlan(graph, now, nufringen, benzStr);
+        var tripPlan = getTripPlan(graph, now, nufringen, affstädterTal);
         var polyline = firstTripToPolyline(tripPlan);
-        assertThatPolylinesAreEqual(polyline, "arwgHg_gu@Hl@NRPL\\Rf@Lf@T`@Ln@NdBVd@VRHjAh@BBtE~BXLjClAj@XjAz@LLPR`BpCrF~Hv@bAd@n@f@r@l@hA`@bAJLJLFFHBN@JAJAAe@AY?U?S?a@@]@U@[BYBMFi@Fc@PgABSJo@DYrAf@hAb@j@^bBbArAxAjCrDhCpDDJvAbB~CvCTRNNVV`HfHxD|DrDtEx@bAzBpBh@b@NLzAp@`A\\n@RhA\\dAXLDzFrALDn@RVJtAf@~Av@hAz@Pv@l@n@K\\M\\KKEEAC??@BDDJJ`BpBVi@Tg@RQXg@b@{@WYYZA@");
+        assertThatPolylinesAreEqual(polyline, "arwgHg_gu@Hl@NRPL\\Rf@Lf@T`@Ln@NdBVd@VRHjAh@BBtE~BXLjClAj@XjAz@LLPR`BpCrF~Hv@bAd@n@f@r@l@hA`@bAJLJLFFHBN@JAJAAe@AY?U?S?a@@]@U@[BYBMFi@Fc@PgABSJo@DYrAf@hAb@j@^bBbArAxAjCrDhCpDDJvAbB~CvCTRNNVV`HfHxD|DrDtEx@bAzBpBh@b@NLzAp@`A\\n@RhA\\dAXLDzFrALDn@RVJtAf@~Av@hAz@Pv@l@n@K\\M\\KKEEq@q@US]W}@m@w@YWv@UnAc@YQtAQxA");
 
         var alert = tripPlan.itinerary.get(0).legs.get(0).alerts.get(0);
         assertEquals("Few parking spaces available", alert.getAlertHeaderText());
@@ -175,13 +175,13 @@ public class CarParkRoutingTest {
     @Test
     public void shouldNotAddAlertIfRequestInTheFuture() {
         var nufringen = new GenericLocation(48.6225, 8.8884);
-        var benzStr = new GenericLocation(48.59878, 8.87175);
+        var affstädterTal = new GenericLocation(48.60143, 8.87084);
 
         var tomorrow = OffsetDateTime.now().plusDays(1).toInstant();
 
-        var tripPlan = getTripPlan(graph, tomorrow, nufringen, benzStr);
+        var tripPlan = getTripPlan(graph, tomorrow, nufringen, affstädterTal);
         var polyline = firstTripToPolyline(tripPlan);
-        assertThatPolylinesAreEqual(polyline, "arwgHg_gu@Hl@NRPL\\Rf@Lf@T`@Ln@NdBVd@VRHjAh@BBtE~BXLjClAj@XjAz@LLPR`BpCrF~Hv@bAd@n@f@r@l@hA`@bAJLJLFFHBN@JAJAAe@AY?U?S?a@@]@U@[BYBMFi@Fc@PgABSJo@DYrAf@hAb@j@^bBbArAxAjCrDhCpDDJvAbB~CvCTRNNVV`HfHxD|DrDtEx@bAzBpBh@b@NLzAp@`A\\n@RhA\\dAXLDzFrALDn@RVJtAf@~Av@hAz@Pv@l@n@K\\M\\KKEEAC??@BDDJJ`BpBVi@Tg@RQXg@b@{@WYYZA@");
+        assertThatPolylinesAreEqual(polyline, "arwgHg_gu@Hl@NRPL\\Rf@Lf@T`@Ln@NdBVd@VRHjAh@BBtE~BXLjClAj@XjAz@LLPR`BpCrF~Hv@bAd@n@f@r@l@hA`@bAJLJLFFHBN@JAJAAe@AY?U?S?a@@]@U@[BYBMFi@Fc@PgABSJo@DYrAf@hAb@j@^bBbArAxAjCrDhCpDDJvAbB~CvCTRNNVV`HfHxD|DrDtEx@bAzBpBh@b@NLzAp@`A\\n@RhA\\dAXLDzFrALDn@RVJtAf@~Av@hAz@Pv@l@n@K\\M\\KKEEq@q@US]W}@m@w@YWv@UnAc@YQtAQxA");
 
         assertNull(tripPlan.itinerary.get(0).legs.get(0).alerts);
     }
@@ -189,11 +189,11 @@ public class CarParkRoutingTest {
     @Test
     public void shouldExcludeFullCarParksWhenParamSet() {
         var nufringen = new GenericLocation(48.6225, 8.8884);
-        var benzStr = new GenericLocation(48.59878, 8.87175);
+        var affstädterTal = new GenericLocation(48.60143, 8.87084);
 
-        var tripPlan = getTripPlan(graph, now, true, nufringen, benzStr);
+        var tripPlan = getTripPlan(graph, now, true, nufringen, affstädterTal);
         var polyline = firstTripToPolyline(tripPlan);
-        assertThatPolylinesAreEqual(polyline, "arwgHg_gu@Hl@NRPL\\Rf@Lf@T`@Ln@NdBVd@VRHjAh@BBtE~BXLjClAj@XjAz@LLPR`BpCrF~Hv@bAd@n@f@r@l@hA`@bAJLJLFFHBN@JAJABv@HxBB`@Bn@@l@?^?ZAp@An@Cn@Ej@E`@In@G^E^GXMh@Mh@M`@IXKVKZMXMVUb@U^OTQTORa@f@YZYZu@v@YZWZSTMPKNOTQVMVOZMTKXK\\IVIZI\\I^EZE\\Ed@Gv@Cf@?r@?d@@`@@b@D`@B`@B\\LzAH~@H~@Bp@Dn@D|@Bz@DlABnABlABjA@t@@v@@t@?t@@h@?h@?`AA~@?`AAh@@h@?h@?d@@~@B|@B`AD~@F`AH~AH~AHlAFlAFrADpAH|ABx@Dt@Dv@Dr@Fv@Ft@Db@DXD\\Hd@FXBNNn@J`@H\\^vAPl@Pn@Lj@Nl@Pn@Nn@Ll@Ll@Np@Nt@BLBZDZB\\@HEFCHCH?D?F?JBLDJDHHDF?@?HADCBC@ABGBG@I@IHEFCLGXOf@IXGXI~@Qd@KXGf@MRGVIPGRKRITKNKVOd@WRMTMRIRITINGVGRERCTATCV?T@T@P@TBRDTFPFTHNHNHLFNPNPDDDFBF?F?H@F@F@FBDDFDBD@D@F?DCDCHDHDNLRPJRHLHPJRJVRh@Vp@Rh@Rb@LXNVPZNRNPPRRPRPRLNJTJXLRFTFRBVBTBV?RARAPAXGREXKRGNIXORQPONMRSRWb@i@PU\\e@f@u@^m@`@g@NSPSVWNKLKTQVMVMRIPGVGd@Kn@KVGRG\\MRKXQZUPQRQRURSNQNORKJGHGFCDBFBH?B?BAFEDK@ABI@M?OCMEKEE?M?K?O?S@[BUDQDQDOHUHSLUTa@V]LUJQJSHQFQHUFUHUFWFYDWB]Dq@Bi@@m@B}B?cA?_D?o@h@?n@Cd@G\\ILAj@WdAo@v@e@^Ql@Y\\GXEX?F@r@B|@Jf@BdAGT?PIFAbA]DElA_AJKRs@DQ?Q\\ENDDJJ^DNPMTQDWC@AGCG?ECCEGm@TEDOE]DAQESSq@?CSo@GSI]O]]aAUe@A?GE?_AAaBAyA@m@?u@O@@aE?i@@_@?WIQGMGGGASGSIQEMEOKMIKGKIMKOOGIKMU[m@kA{@gBiAyBe@y@MSOWEGYe@[i@i@{@Wc@DSIUACGKGSGIXg@b@{@WYYZA@");
+        assertThatPolylinesAreEqual(polyline, "arwgHg_gu@Hl@NRPL\\Rf@Lf@T`@Ln@NdBVd@VRHjAh@BBtE~BXLjClAj@XjAz@LLPR`BpCrF~Hv@bAd@n@f@r@l@hA`@bAJLJLFFHBN@JAJABv@HxBB`@Bn@@l@?^?ZAp@An@Cn@Ej@E`@In@G^E^GXMh@Mh@M`@IXKVKZMXMVUb@U^OTQTORa@f@YZYZu@v@YZWZSTMPKNOTQVMVOZMTKXK\\IVIZI\\I^EZE\\Ed@Gv@Cf@?r@?d@@`@@b@D`@B`@B\\LzAH~@H~@Bp@Dn@D|@Bz@DlABnABlABjA@t@@v@@t@?t@@h@?h@?`AA~@?`AAh@@h@?h@?d@@~@B|@B`AD~@F`AH~AH~AHlAFlAFrADpAH|ABx@Dt@Dv@Dr@Fv@Ft@Db@DXD\\Hd@FXBNNn@J`@H\\^vAPl@Pn@Lj@Nl@Pn@Nn@Ll@Ll@Np@Nt@BLBZDZB\\@HEFCHCH?D?F?JBLDJDHHDF?@?HADCBC@ABGBG@I@IHEFCLGXOf@IXGXI~@Qd@KXGf@MRGVIPGRKRITKNKVOd@WRMTMRIRITINGVGRERCTATCV?T@T@P@TBRDTFPFTHNHNHLFNPNPDDDFBF?F?H@F@F@FBDDFDBD@D@F?DCDCHDHDNLRPJRHLHPJRJVRh@Vp@Rh@Rb@LXNVPZNRNPPRRPRPRLNJTJXLRFTFRBVBTBV?RARAPAXGREXKRGNIXORQPONMRSRWb@i@PU\\e@f@u@^m@`@g@NSPSVWNKLKTQVMVMRIPGVGd@Kn@KVGRG\\MRKXQZUPQRQRURSNQNORKJGHGFCDBFBH?B?BAFEDK@ABI@M?OCMEKEE?M?K?O?S@[BUDQDQDOHUHSLUTa@V]LUJQJSHQFQHUFUHUFWFYDWB]Dq@Bi@@m@B}B?cA?_D?o@h@?n@Cd@G\\ILAj@WdAo@v@e@^Ql@Y\\GXEX?F@r@B|@Jf@BdAGT?PIFAbA]DElA_AJKRs@DQ?Q\\ENDDJJ^DNPMTQA?UPQLEOK_@EKOE]DAQESSq@?CSo@GSI]O]]aAUe@A?GE?_AAaBAyA@m@?u@O@@aE?i@@_@?WIQGMGGGASGSIQEMEOKMIKGKIMKOOGIKMU[m@kA{@gBiAyBe@y@MSOWEGYe@[i@i@{@Wc@OWCAQYKQUd@Wh@EJ]h@SZ[d@EDa@f@QPWXeBiBm@YUK]KUKa@Y_@[");
 
         assertNull(tripPlan.itinerary.get(0).legs.get(0).alerts);
     }
