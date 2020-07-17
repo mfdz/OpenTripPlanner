@@ -3707,7 +3707,7 @@ public class IndexGraphQLSchema {
                         .build())
                 .field(GraphQLFieldDefinition.newFieldDefinition()
                         .name("alertDescriptionText")
-                        .type(new GraphQLNonNull(Scalars.GraphQLString))
+                        .type(Scalars.GraphQLString)
                         .description("Long description of the alert")
                         .dataFetcher(environment -> ((LocalizedAlert) environment.getSource()).alert.alertDescriptionText)
                         .build())
