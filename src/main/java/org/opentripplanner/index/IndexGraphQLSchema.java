@@ -3717,6 +3717,34 @@ public class IndexGraphQLSchema {
                         .dataFetcher(environment -> ((LocalizedAlert) environment.getSource()).alert.alertDescriptionText)
                         .build())
                 .field(GraphQLFieldDefinition.newFieldDefinition()
+                    .name("alertHeaderTextTranslations")
+                    .type(new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(translatedStringType))))
+                    .description("Header of the alert in all different available languages")
+                    .dataFetcher(environment -> {
+                        AlertPatch alertPatch = environment.getSource();
+                        Alert alert = alertPatch.getAlert();
+                        if (alert.alertHeaderText instanceof TranslatedString) {
+                            return ((TranslatedString) alert.alertHeaderText).getTranslations();
+                        } else {
+                            return emptyList();
+                        }
+                    })
+                    .build())
+                .field(GraphQLFieldDefinition.newFieldDefinition()
+                    .name("alertDescriptionTextTranslations")
+                    .type(new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(translatedStringType))))
+                    .description("Long descriptions of the alert in all different available languages")
+                    .dataFetcher(environment -> {
+                         AlertPatch alertPatch = environment.getSource();
+                         Alert alert = alertPatch.getAlert();
+                         if (alert.alertDescriptionText instanceof TranslatedString) {
+                            return ((TranslatedString) alert.alertDescriptionText).getTranslations();
+                         } else {
+                            return emptyList();
+                         }
+                    })
+                    .build())
+                .field(GraphQLFieldDefinition.newFieldDefinition()
                         .name("alertUrl")
                         .type(Scalars.GraphQLString)
                         .description("Url with more information")
