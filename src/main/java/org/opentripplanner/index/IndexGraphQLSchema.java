@@ -3721,10 +3721,10 @@ public class IndexGraphQLSchema {
                     .type(new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(translatedStringType))))
                     .description("Header of the alert in all different available languages")
                     .dataFetcher(environment -> {
-                        AlertPatch alertPatch = environment.getSource();
-                        Alert alert = alertPatch.getAlert();
-                        if (alert.alertHeaderText instanceof TranslatedString) {
-                            return ((TranslatedString) alert.alertHeaderText).getTranslations();
+                        LocalizedAlert alert = environment.getSource();
+
+                        if (alert.alert.alertHeaderText instanceof TranslatedString) {
+                            return ((TranslatedString) alert.alert.alertHeaderText).getTranslations();
                         } else {
                             return emptyList();
                         }
@@ -3735,10 +3735,9 @@ public class IndexGraphQLSchema {
                     .type(new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(translatedStringType))))
                     .description("Long descriptions of the alert in all different available languages")
                     .dataFetcher(environment -> {
-                         AlertPatch alertPatch = environment.getSource();
-                         Alert alert = alertPatch.getAlert();
-                         if (alert.alertDescriptionText instanceof TranslatedString) {
-                            return ((TranslatedString) alert.alertDescriptionText).getTranslations();
+                         LocalizedAlert alert = environment.getSource();
+                         if (alert.alert.alertDescriptionText instanceof TranslatedString) {
+                            return ((TranslatedString) alert.alert.alertDescriptionText).getTranslations();
                          } else {
                             return emptyList();
                          }

@@ -1,16 +1,13 @@
 package org.opentripplanner.routing.alertpatch;
 
+import com.google.common.collect.ImmutableList;
 import com.google.transit.realtime.GtfsRealtime;
 import org.opentripplanner.api.model.alertpatch.LocalizedAlert;
-import org.opentripplanner.util.I18NString;
-import org.opentripplanner.util.LocalizedString;
-import org.opentripplanner.util.NonLocalizedString;
+import org.opentripplanner.util.*;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class Alert implements Serializable {
     private static final long serialVersionUID = 8305126586053909836L;
@@ -71,12 +68,19 @@ public class Alert implements Serializable {
         return alert;
     }
 
+    private static List<Locale> locales = ImmutableList.of(Locale.ENGLISH, Locale.GERMAN);
+
     private static Alert createTranslatedAlert(String translationKey) {
-        var emptyArray = new String[]{};
         var alert = new Alert();
-        alert.alertHeaderText= new LocalizedString("alert." + translationKey + ".header", emptyArray);
-        alert.alertDescriptionText = new LocalizedString("alert." + translationKey + ".description", emptyArray);
+        alert.alertHeaderText = getTranslatedString("alert." + translationKey + ".header");
+        alert.alertDescriptionText = getTranslatedString("alert." + translationKey + ".description");
         return alert;
+    }
+
+    private static I18NString getTranslatedString(String key) {
+        var translations = new HashMap<String, String >();
+        locales.forEach(l -> translations.put(l.toLanguageTag().toLowerCase(), ResourceBundleSingleton.INSTANCE.localize(key, l)));
+        return TranslatedString.getI18NString(translations);
     }
 
     public boolean equals(Object o) {
