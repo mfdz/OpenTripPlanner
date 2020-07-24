@@ -1,5 +1,6 @@
 package org.opentripplanner.api.resource;
 
+import com.google.common.collect.Iterables;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
@@ -158,6 +159,8 @@ public abstract class GraphPathToTripPlanConverter {
         fixupLegs(itinerary.legs, legsStates);
 
         itinerary.legs = filterLegs(itinerary.legs);
+
+        itinerary.legs = addFreeFloatingBicycleDropOffAlerts(itinerary.legs, legsStates[legsStates.length -1], requestedLocale, graph);
 
         itinerary.duration = lastState.getElapsedTimeSeconds();
         itinerary.startTime = makeCalendar(states[0]);
@@ -599,7 +602,6 @@ public abstract class GraphPathToTripPlanConverter {
             }
         }
 
-        addFreeFloatingBicycleDropOffAlerts(leg, states[states.length - 1], requestedLocale, graph);
         addCarParkAlerts(leg, states, requestedLocale);
     }
 
@@ -607,11 +609,14 @@ public abstract class GraphPathToTripPlanConverter {
      * When it is a bike rental leg but the last state is not a bike rental station, then send an alert that
      * it is a free floating drop off which may incur extra costs.
      */
-    private static void addFreeFloatingBicycleDropOffAlerts(Leg leg, State lastStateInLeg, Locale requestedLocale, Graph graph) {
-        if (lastStateInLeg.isBikeRenting() && !(lastStateInLeg.getBackEdge() instanceof StreetBikeRentalLink) && graph.shouldAddAltertForFreeFloatingDropOff(lastStateInLeg.stateData.bikeRentalNetworks)) {
-            leg.addAlert(Alert.createFloatingDropOffAlert(), requestedLocale);
+    private static List<Leg> addFreeFloatingBicycleDropOffAlerts(List<Leg> legs, State[] states, Locale requestedLocale, Graph graph) {
+        var last = Iterables.getLast(legs);
+
+        if (last != null && graph.shouldAddAlertForFreeFloatingDropOff(states[states.length - 1].stateData.bikeRentalNetworks)) {
+            last.addAlert(Alert.createFloatingDropOffAlert(), requestedLocale);
         }
 
+        return legs;
     }
 
     private static void addCarParkAlerts(Leg leg, State[] state, Locale locale) {

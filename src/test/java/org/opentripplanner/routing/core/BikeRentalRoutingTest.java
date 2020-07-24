@@ -231,13 +231,11 @@ public class BikeRentalRoutingTest {
     }
 
     @Test
-    public void addAlertDroppingOffNearTrainStation() {
+    public void dropOffNearStation() {
         var böblingenBeethovenstr = new GenericLocation(48.6865, 9.0345);
         var herrenberg = new GenericLocation(48.5934, 8.8629);
 
         var plan = getTripPlan(graph, böblingenBeethovenstr, herrenberg);
-
-        assertThatBikeLegHasDropOffAlert(plan.itinerary.get(0).legs.get(1));
 
         var polyline = firstTripToPolyline(plan);
         assertThatPolylinesAreEqual(polyline, "uadhHspcv@iAhS@JL`Cx@|IEZOV??GHv@bBNZTT^BlACD~@LfBJrADrACfC@~CWpDMzCIrCEx@QhIGx@Gx@Sp@QVMNNpAVrC?J@pA@bA?@Bf@Df@DX\\hDB\\?P?n@Af@e@xB[nAM`@Wv@Qh@CNCX?p@AXD~AFhAJjAFb@Ht@DXTnAVv@h@xA@?BJED?JCD@N@R@RJbA}@bCKVm@~AOj@Sj@u@vBGPa@lA[|@_@fAKXSf@ADKTELIJA@Yk@Y^EKo@uAKNBD?ACEOPt@`BABUZSXFNNZF@?AfOtZrGzLnBhE~ArEx@fDv@zDlRfgAdKtk@dBvHrCtJpE|Lxy@vwBnPrd@vEhMjAjE`ApF|CnVfAzGjBjGhCdHhBfE|AbCnBzB~PfNhIlGrCdC~DhF~CjGtP`c@pAlCtAbClBxCrAdBvMdPtLrNfFfGbAdArFtEdEtBtL~E~DnBhHhE~H|Ffb@r_@bIvHnB`ChD~ErDnGfFvJdQl\\nB~CpAbBjBrBbCtBtK~GbBrAvAzAt@`AhBzC~@xB|@dCh@zBf@fCh@fEzC|Zx@vFj@hCn@zBjBrEnB`DvAdBjBdBnAx@xB`AfCx@lCXxABtAE`BQ|DeAlKoEvGaCpBSrAAvAPfBf@rBtAt@t@nBnC`AjCrBnI??OgA?Eb@]TOLKRv@LS\\xA");

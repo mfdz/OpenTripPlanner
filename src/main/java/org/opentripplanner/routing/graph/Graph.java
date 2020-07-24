@@ -1116,8 +1116,9 @@ public class Graph implements Serializable {
                     .orElse(true);
     }
 
-    public boolean shouldAddAltertForFreeFloatingDropOff(Set<String> networks) {
-        return  Optional.ofNullable(this.getService(BikeRentalStationService.class))
+    public boolean shouldAddAlertForFreeFloatingDropOff(Set<String> networks) {
+        return  Objects.nonNull(networks) &&
+                Optional.ofNullable(this.getService(BikeRentalStationService.class))
                 .map(s -> s.shouldAddFreeFloatingAlertForNetworks(networks))
                 .orElse(false);
     }
