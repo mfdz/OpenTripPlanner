@@ -79,6 +79,7 @@ public class GraphPathFinder {
 
         // Reuse one instance of AStar for all N requests, which are carried out sequentially
         AStar aStar = new AStar();
+        var traverseVisitor = new CountingTraverseVisitor();
         if (options.rctx == null) {
             options.setRoutingContext(router.graph);
             // The special long-distance heuristic should be sufficient to constrain the search to the right area.
@@ -87,6 +88,8 @@ public class GraphPathFinder {
         if (router.graphVisualizer != null) {
             aStar.setTraverseVisitor(router.graphVisualizer.traverseVisitor);
             // options.disableRemainingWeightHeuristic = true; // DEBUG
+        } else if(options.aStarStatistics) {
+            aStar.setTraverseVisitor(traverseVisitor);
         }
 
         // Without transit, we'd just just return multiple copies of the same on-street itinerary.
@@ -229,6 +232,9 @@ public class GraphPathFinder {
             LOG.debug("we have {} paths", paths.size());
         }
         LOG.debug("END SEARCH ({} msec)", System.currentTimeMillis() - searchBeginTime);
+
+        options.rctx.debugOutput.visitedVertices = traverseVisitor.visitedVertices();
+
         Collections.sort(paths, options.getPathComparator(options.arriveBy));
         return paths;
     }

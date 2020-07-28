@@ -14,4 +14,5 @@ public interface TraverseVisitor {
     /** Called when A* enqueues a vertex */
     void visitEnqueue(State state);
 
+    default long visitedVertices() { return -1; }
 }

@@ -57,7 +57,7 @@ build-ulm: graphs/ulm/tuebingen.osm.pbf
 	java -jar otp.jar --build ./graphs/ulm
 
 run:
-	java -server -Dmaven.javadoc.skip=true -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=127.0.0.1:8000 -jar otp.jar --server --basePath ./ --router default --insecure
+	ASTAR_STATISTICS=true java -server -Dmaven.javadoc.skip=true -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=127.0.0.1:8000 -jar otp.jar --server --basePath ./ --router default --insecure
 
 run-ulm:
 	java -server -Dmaven.javadoc.skip=true -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=127.0.0.1:8000 -jar otp.jar --server --basePath ./ --router ulm --insecure

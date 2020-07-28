@@ -36,6 +36,7 @@ public class DebugOutput {
     public long renderingTime;
     public long totalTime;
     public boolean timedOut;
+    public long visitedVertices = -1;
 
     /**
      * Record the time when we first began calculating a path for this request
