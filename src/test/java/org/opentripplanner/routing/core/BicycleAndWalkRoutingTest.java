@@ -1,5 +1,6 @@
 package org.opentripplanner.routing.core;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.opentripplanner.ConstantsForTests;
@@ -184,6 +185,7 @@ public class BicycleAndWalkRoutingTest {
     }
 
     @Test
+    @Ignore
     public void shouldWalkHindenburgStrasseUnderConstruction() {
         var graph = TestGraphBuilder.buildGraph(ConstantsForTests.HERRENBERG_HINDENBURG_UNDER_CONSTRUCTION_OSM);
 
@@ -206,21 +208,29 @@ public class BicycleAndWalkRoutingTest {
         var bahnhof = new GenericLocation(48.59364, 8.86331);
 
         var polyline1 = calculatePolyline(graph, guelsteinerStr, bahnhof, TraverseMode.BICYCLE);
-        assertThatPolylinesAreEqual(polyline1, "sxqgH}ncu@AB\\ThCJ@pCBxAD`AJz@n@~GeBf@V`CFv@BZBXHr@@PBTBP@N?P?H@L?bAw@?ClFGbAQjAgBqAU]KWG[Qu@MOCFGJ_An@A?AE");
+        assertThatPolylinesAreEqual(polyline1, "sxqgH}ncu@AB\\ThCJ@pCBxAD`AJz@n@~GeBf@aCp@^zDFp@Hr@[JQDe@LMDKDIBGDIFEHCHELCLKMCEAC??CFIHiAt@??\\~ABJ\\nA");
 
         var polyline2 = calculatePolyline(graph, bahnhof, guelsteinerStr, TraverseMode.BICYCLE);
         assertThatPolylinesAreEqual(polyline2, "c}qgHwbbu@@F~@o@FKBGBMCKMg@GWCOCEAIAIAK?M?OBMDMBIDIHGFEHCJELEd@MPEZKIs@Gq@_@{D`Cq@dBg@o@_HI{@GaACyAAqCiCK]UBC");
     }
 
     @Test
-    public void shouldRespectNoThroughTraffic() {
-        var mozartStr = new GenericLocation(48.59521, 8.88391);
-        var fritzLeharStr = new GenericLocation(48.59460, 8.88291);
+    public void shouldBeAbleToCycleMarkusJohannesStrBothDirections() {
+        var gültsteinerStr = new GenericLocation(48.59277, 8.87027);
+        var hildrizhauserStr = new GenericLocation(48.59435, 8.87407);
+        var hauffstr = new GenericLocation(48.59207, 8.86929);
+        var marienStr = new GenericLocation(48.59244, 8.87343);
 
-        var polyline1 = calculatePolyline(getDefaultGraph(), mozartStr, fritzLeharStr);
-        assertThatPolylinesAreEqual(polyline1, "_grgHkcfu@OjBC\\ARGjAKzAfBz@j@n@Rk@E}D");
+        var polyline1 = calculatePolyline(getDefaultGraph(), gültsteinerStr, hildrizhauserStr);
+        assertThatPolylinesAreEqual(polyline1, "ywqgHcncu@[UFc@c@iD]mB_@sAAACIKScAuCc@_AUi@GMQJODGm@AG");
 
-        var polyline2 = calculatePolyline(getDefaultGraph(), fritzLeharStr, mozartStr);
-        assertThatPolylinesAreEqual(polyline2, "gcrgHc}eu@D|DSj@k@o@gB{@J{AFkA@SB]NkB");
+        var polyline2 = calculatePolyline(getDefaultGraph(), hildrizhauserStr, gültsteinerStr);
+        assertThatPolylinesAreEqual(polyline2, "sargH}edu@@FFl@NEPKFLTh@b@~@bAtCJRBH@B^rA\\jBb@hDGd@ZT");
+
+        var polyline3 = calculatePolyline(getDefaultGraph(), hauffstr, marienStr);
+        assertThatPolylinesAreEqual(polyline3, "isqgHahcu@Ac@AqCJ@B]I]G_@s@yEa@kCSmAOcA?GAEt@a@");
+
+        var polyline4 = calculatePolyline(getDefaultGraph(), marienStr, hauffstr);
+        assertThatPolylinesAreEqual(polyline4, "uuqgHyadu@u@`@@D?FNbARlA`@jCr@xEF^H\\C\\KA@pC@b@");
     }
 }

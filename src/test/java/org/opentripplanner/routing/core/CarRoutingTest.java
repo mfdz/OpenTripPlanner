@@ -1,5 +1,6 @@
 package org.opentripplanner.routing.core;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opentripplanner.ConstantsForTests;
 import org.opentripplanner.api.model.TripPlan;
@@ -125,5 +126,30 @@ public class CarRoutingTest {
 
         var polyline2 = computePolyline(ordinaryHerrenbergGraph(), fritzLeharStr, mozartStr);
         assertThatPolylinesAreEqual(polyline2, "gcrgHc}eu@D|DSj@k@o@gB{@J{AFkA@SB]NkB");
+    }
+
+    @Test
+    public void shouldGoToNorthernMarienstr() {
+        var eichendorfStr = new GenericLocation(48.59081, 8.87372);
+        var marienStr = new GenericLocation(48.59447, 8.87208);
+
+        var polyline1 = computePolyline(hindenburgStrUnderConstruction(), eichendorfStr, marienStr);
+        assertThatPolylinesAreEqual(polyline1, "okqgHwcdu@WyAAGCIKFIFKDQHUJe@Rk@XmAh@sBfAi@~@c@j@{@r@c@Re@JC@o@LyAT");
+
+        var polyline2 = computePolyline(hindenburgStrUnderConstruction(), marienStr, eichendorfStr);
+        assertThatPolylinesAreEqual(polyline2, "mbrgHqycu@xAUn@MBAd@Kb@Sz@s@b@k@h@_ArBgAlAi@j@Yd@STKPIJEHGJGBH@FVxA");
+    }
+
+    @Test
+    @Ignore
+    public void shouldRespectTurnRestrictionAtPaulGerhardtJohannesStr() {
+        var hauffstr = new GenericLocation(48.59204, 8.86903);
+        var brentanoStr = new GenericLocation(48.59177, 8.87214);
+
+        var polyline1 = computePolyline(hindenburgStrUnderConstruction(), hauffstr, brentanoStr);
+        assertThatPolylinesAreEqual(polyline1, "okqgHwcdu@WyAAGCIKFIFKDQHUJe@Rk@XmAh@sBfAi@~@c@j@{@r@c@Re@JC@o@LyAT");
+
+        var polyline2 = computePolyline(hindenburgStrUnderConstruction(), brentanoStr, hauffstr);
+        assertThatPolylinesAreEqual(polyline2, "mbrgHqycu@xAUn@MBAd@Kb@Sz@s@b@k@h@_ArBgAlAi@j@Yd@STKPIJEHGJGBH@FVxA");
     }
 }
