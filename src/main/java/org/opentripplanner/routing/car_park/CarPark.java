@@ -99,7 +99,7 @@ public class CarPark implements Serializable {
         return hasFewSpacesAvailable(spacesAvailable, maxCapacity);
     }
 
-    public boolean isOpenAt(LocalDateTime time) {
+    public boolean isClosedAt(LocalDateTime time) {
         if(parsedOpeningHours == null && ! Strings.isNullOrEmpty(openingHours)) {
             var parser = new OpeningHoursParser(new ByteArrayInputStream(openingHours.getBytes()));
             try {
@@ -108,8 +108,8 @@ public class CarPark implements Serializable {
                 parsedOpeningHours = Collections.emptyList();
             }
         }
-
-        return parsedOpeningHours == null || OpeningHoursEvaluator.isOpenAt(time, parsedOpeningHours);
+        if(parsedOpeningHours == null) return false;
+        else return !OpeningHoursEvaluator.isOpenAt(time, parsedOpeningHours);
     }
 
 

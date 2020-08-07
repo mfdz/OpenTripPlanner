@@ -9,6 +9,8 @@ import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.vertextype.ParkAndRideVertex;
 
 import org.locationtech.jts.geom.LineString;
+
+import java.time.Instant;
 import java.util.Locale;
 
 /**
@@ -38,7 +40,10 @@ public class ParkAndRideEdge extends Edge {
         }
         if(request.useCarParkAvailabilityInformation
                 && request.isTripPlannedForNow()
-                && ((ParkAndRideVertex) tov).hasFewSpacesAvailable()){
+                && ((ParkAndRideVertex) tov).hasFewSpacesAvailable() ) {
+            return null;
+        }
+        if (isClosedAt(s0)) {
             return null;
         }
         if (request.arriveBy) {
@@ -79,6 +84,12 @@ public class ParkAndRideEdge extends Edge {
             s1.setBackMode(TraverseMode.LEG_SWITCH);
             return s1.makeState();
         }
+    }
+
+    private boolean isClosedAt(State state) {
+        var zoneId = state.getOptions().rctx.graph.getTimeZone().toZoneId();
+        var localTime = Instant.ofEpochSecond(state.getTimeSeconds()).atZone(zoneId).toLocalDateTime();
+        return ((ParkAndRideVertex) tov).isClosedAt(localTime);
     }
 
     @Override
