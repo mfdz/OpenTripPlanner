@@ -1,10 +1,15 @@
 package org.opentripplanner.routing.vertextype;
 
+import ch.poole.openinghoursparser.OpeningHoursParseException;
+import ch.poole.openinghoursparser.OpeningHoursParser;
 import org.opentripplanner.common.MavenVersion;
 import org.opentripplanner.routing.car_park.CarPark;
+import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.util.I18NString;
+
+import java.io.ByteArrayInputStream;
 
 /**
  * A vertex for a park and ride area.
@@ -51,6 +56,10 @@ public class ParkAndRideVertex extends Vertex {
     }
 
     public boolean hasFewSpacesAvailable() {
+        return carPark.hasFewSpacesAvailable();
+    }
+
+    public boolean isClosed(RoutingRequest request) throws OpeningHoursParseException {
         return carPark.hasFewSpacesAvailable();
     }
 }
