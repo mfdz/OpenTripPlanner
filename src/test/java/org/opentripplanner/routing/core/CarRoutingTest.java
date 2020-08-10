@@ -86,7 +86,7 @@ public class CarRoutingTest {
         var aufDemGraben = new GenericLocation(48.59487, 8.87133);
 
         var polyline1 = computePolyline(hindenburgStrUnderConstruction(), nagolderStr, aufDemGraben);
-        assertThatPolylinesAreEqual(polyline1, "mirgHmkbu@Au@@m@?s@@cF@g@?k@@M@MBKBIHAF?D@FDB@HDFJHJLPHJJJj@n@PLLJNLPNp@p@NNNPJNDHFLHTTdA^zADNDLFH@BBDJLDBDBDBH@B@F?X@X@p@BfB@v@?lA@D?xA@b@?Z@h@?d@?[}D[cD[uD]qDYcDEWg@{FkAEmAIKAiCK]U}BaA]Q}@]uAs@[SAm@Ee@AUEi@XEQkBQ?Bz@Dt@Dh@@TGBC@KBSHGx@");
+        assertThatPolylinesAreEqual(polyline1, "mirgHmkbu@Au@@m@?s@@cF@g@?k@@M@MBKBIHAF?D@FDB@HDFJHJLPHJJJj@n@PLLJNLPNp@p@NNNPJNDHFLHTTdA^zADNDLFH@BBDJLDBDBDBH@B@F?X@X@p@BfB@v@?lA@D?xA@b@?Z@h@?d@?[}D[cD[uD]qDYcDEWg@{FkAEmAIB]I]G_@s@yEa@kCSmAOcA?GAEi@~@c@j@{@r@c@Re@JC@o@LcBXQkBQ?Bz@Dt@Dh@@TGBC@KBSHGx@");
 
         var polyline2 = computePolyline(hindenburgStrUnderConstruction(), aufDemGraben, nagolderStr);
         assertThatPolylinesAreEqual(polyline2, "}drgHytcu@Fy@RIJCBAFCDd@@l@ZRtAr@|@\\\\P|B`A\\T?dDHn@l@hE?BZlCVjCV`CFv@BZBXHr@@PBTBP@N?N?J@L?bAw@?gBAq@CYAYAG?CAIAECECECKMCEACGIEMEO_@{AUeAIUGMEIKOOQOOq@q@QOOMMKQMk@o@KKIKMQIKGKKMIGCEGCGAA?EAG@EJA@CHALAJ?R?T?VA^?h@A`E?zB@XBnCInB]jFGrAGdAC|APIBuABaAb@uGBe@D_A?_AAaB?c@");
