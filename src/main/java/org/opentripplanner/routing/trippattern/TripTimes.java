@@ -1,14 +1,12 @@
 package org.opentripplanner.routing.trippattern;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.List;
-
-import org.opentripplanner.model.StopTime;
-import org.opentripplanner.model.Trip;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hasher;
 import org.opentripplanner.common.MavenVersion;
 import org.opentripplanner.gtfs.BikeAccess;
+import org.opentripplanner.model.StopTime;
+import org.opentripplanner.model.Trip;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.ServiceDay;
 import org.opentripplanner.routing.core.State;
@@ -17,9 +15,10 @@ import org.opentripplanner.routing.request.BannedStopSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.hash.HashCode;
-import com.google.common.hash.HashFunction;
-import com.google.common.hash.Hasher;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.List;
 
 /**
  * A TripTimes represents the arrival and departure times for a single trip in an Timetable. It is carried
@@ -90,6 +89,11 @@ public class TripTimes implements Serializable, Comparable<TripTimes>, Cloneable
     BitSet canceledDepartureTimes;
 
     /**
+     * Stops that had schedule relationship NO_DATA in the trip update
+     */
+    BitSet stopsWithNoData;
+
+    /**
      * These are the GTFS stop sequence numbers, which show the order in which the vehicle visits
      * the stops. Despite the face that the StopPattern or TripPattern enclosing this TripTimes
      * provides an ordered list of Stops, the original stop sequence numbers may still be needed for
@@ -148,6 +152,7 @@ public class TripTimes implements Serializable, Comparable<TripTimes>, Cloneable
 
         canceledArrivalTimes = new BitSet(nStops);
         canceledDepartureTimes = new BitSet(nStops);
+        stopsWithNoData = new BitSet(nStops);
 
         // Times are always shifted to zero. This is essential for frequencies and deduplication.
         timeShift = stopTimes.get(0).getArrivalTime();
@@ -227,6 +232,7 @@ public class TripTimes implements Serializable, Comparable<TripTimes>, Cloneable
         this.timepoints = object.timepoints;
         canceledArrivalTimes = new BitSet(object.scheduledDepartureTimes.length);
         canceledDepartureTimes = new BitSet(object.scheduledDepartureTimes.length);
+        stopsWithNoData = new BitSet(object.scheduledDepartureTimes.length);
         this.continuousPickup = object.continuousPickup;
         this.continuousDropOff = object.continuousDropOff;
         this.serviceAreaRadius = object.serviceAreaRadius;
@@ -591,6 +597,10 @@ public class TripTimes implements Serializable, Comparable<TripTimes>, Cloneable
         return canceledDepartureTimes.get(stopIndex);
     }
 
+    public boolean isNoDataStop(final int stopIndex) {
+        return stopsWithNoData.get(stopIndex);
+    }
+
     /**
      * Hash the scheduled arrival/departure times. Used in creating stable IDs for trips across GTFS feed versions.
      * Use hops rather than stops because:
@@ -619,6 +629,10 @@ public class TripTimes implements Serializable, Comparable<TripTimes>, Cloneable
 
     public void unCancelDepartureTime(int i) {
         canceledDepartureTimes.clear(i);
+    }
+
+    public void setStopWithNoData(int stopIndex) {
+        stopsWithNoData.set(stopIndex);
     }
 
     public boolean isTimeCanceled(int i) {
