@@ -49,14 +49,18 @@ public class CarParkRoutingTest {
     static GeometryFactory gf = new GeometryFactory();
 
     public static Graph getDefaultGraph() {
-        var graph = TestGraphBuilder.buildGraph(ConstantsForTests.HERRENBERG_OSM);
+        var graph = TestGraphBuilder.buildGtfsGraph(ConstantsForTests.HERRENBERG_OSM, ConstantsForTests.HERRENBERG_ONLY_BRONNTOR_BUS_STOP);
         return addCarParksToGraph(graph);
     }
 
     private static Graph addCarParksToGraph(Graph graph) {
+        var danzigerStr  = makeCarPark("danziger-str", "Danziger Str.", 30, 100, 48.59382, 8.85469);
+        danzigerStr.openingHours = "Mo-Fr 10:00-12:00";
+
         var carParks = ImmutableSet.of(
                 makeCarPark("1", "Goethestr.", 100, 100, 48.59077, 8.86707),
-                makeCarPark("2", "Affstädter Tal", 0, 100, 48.60091, 8.87195)
+                makeCarPark("2", "Affstädter Tal", 0, 100, 48.60091, 8.87195),
+                danzigerStr
         );
 
         var service = new CarParkService();
@@ -193,8 +197,28 @@ public class CarParkRoutingTest {
 
         var tripPlan = getTripPlan(graph, now, true, nufringen, affstädterTal);
         var polyline = firstTripToPolyline(tripPlan);
-        assertThatPolylinesAreEqual(polyline, "arwgHg_gu@Hl@NRPL\\Rf@Lf@T`@Ln@NdBVd@VRHjAh@BBtE~BXLjClAj@XjAz@LLPR`BpCrF~Hv@bAd@n@f@r@l@hA`@bAJLJLFFHBN@JAJABv@HxBB`@Bn@@l@?^?ZAp@An@Cn@Ej@E`@In@G^E^GXMh@Mh@M`@IXKVKZMXMVUb@U^OTQTORa@f@YZYZu@v@YZWZSTMPKNOTQVMVOZMTKXK\\IVIZI\\I^EZE\\Ed@Gv@Cf@?r@?d@@`@@b@D`@B`@B\\LzAH~@H~@Bp@Dn@D|@Bz@DlABnABlABjA@t@@v@@t@?t@@h@?h@?`AA~@?`AAh@@h@?h@?d@@~@B|@B`AD~@F`AH~AH~AHlAFlAFrADpAH|ABx@Dt@Dv@Dr@Fv@Ft@Db@DXD\\Hd@FXBNNn@J`@H\\^vAPl@Pn@Lj@Nl@Pn@Nn@Ll@Ll@Np@Nt@BLBZDZB\\@HEFCHCH?D?F?JBLDJDHHDF?@?HADCBC@ABGBG@I@IHEFCLGXOf@IXGXI~@Qd@KXGf@MRGVIPGRKRITKNKVOd@WRMTMRIRITINGVGRERCTATCV?T@T@P@TBRDTFPFTHNHNHLFNPNPDDDFBF?F?H@F@F@FBDDFDBD@D@F?DCDCHDHDNLRPJRHLHPJRJVRh@Vp@Rh@Rb@LXNVPZNRNPPRRPRPRLNJTJXLRFTFRBVBTBV?RARAPAXGREXKRGNIXORQPONMRSRWb@i@PU\\e@f@u@^m@`@g@NSPSVWNKLKTQVMVMRIPGVGd@Kn@KVGRG\\MRKXQZUPQRQRURSNQNORKJGHGFCDBFBH?B?BAFEDK@ABI@M?OCMEKEE?M?K?O?S@[BUDQDQDOHUHSLUTa@V]LUJQJSHQFQHUFUHUFWFYDWB]Dq@Bi@@m@B}B?cA?_D?o@h@?n@Cd@G\\ILAj@WdAo@v@e@^Ql@Y\\GXEX?F@r@B|@Jf@BdAGT?PIFAbA]DElA_AJKRs@DQ?Q\\ENDDJJ^DNPMTQA?UPQLEOK_@EKOE]DAQESSq@?CSo@GSI]O]]aAUe@A?GE?_AAaBAyA@m@?u@O@@aE?i@@_@?WIQGMGGGASGSIQEMEOKMIKGKIMKOOGIKMU[m@kA{@gBiAyBe@y@MSOWEGYe@[i@i@{@Wc@OWCAQYKQUd@Wh@EJ]h@SZ[d@EDa@f@QPWXeBiBm@YUK]KUKa@Y_@[");
+        assertThatPolylinesAreEqual(polyline, "arwgHg_gu@Hl@NRPL\\Rf@Lf@T`@Ln@NdBVd@VRHjAh@BBtE~BXLjClAj@XjAz@LLPR`BpCrF~Hv@bAd@n@f@r@l@hA`@bAJLJLFFHBN@JAJABv@HxBB`@Bn@@l@?^?ZAp@An@Cn@Ej@E`@In@G^E^GXMh@Mh@M`@IXKVKZMXMVUb@U^OTQTORa@f@YZYZu@v@YZWZSTMPKNOTQVMVOZMTKXK\\IVIZI\\I^EZE\\Ed@Gv@Cf@?r@?d@@`@@b@D`@B`@B\\LzAH~@H~@Bp@Dn@D|@Bz@DlABnABlABjA@t@@v@@t@?t@@h@?h@?`AA~@?`AAh@@h@?h@?d@@~@B|@B`AD~@F`AH~AH~AHlAFlAFrADpAH|ABx@Dt@Dv@Dr@Fv@Ft@Db@DXD\\Hd@FXBNNn@J`@H\\^vAPl@Pn@Lj@Nl@Pn@Nn@Ll@Ll@Np@Nt@BLBZDZB\\@HEFCHCH?D?F?JBLDJDHHDF?@?HADCBC@ABGBG@I@IHEFCLGXOf@IXGXI~@Qd@KXGf@MRGVIPGRKRITKNKVOd@WRMTMRIRITINGVGRERCTATCV?T@T@P@TBRDTFPFTHNHNHLFNPNPDDDFBF?F?H@F@F@FBDDFDBD@D@F?DCDCHDHDNLRPJRHLHPJRJVRh@Vp@Rh@Rb@LXNVPZNRNPPRRPRPRLNJTJXLRFTFRBVBTBV?RARAPAXGREXKRGNIXORQPONMRSRWb@i@PU\\e@f@u@^m@`@g@NSPSVWNKLKTQVMVMRIPGVGd@Kn@KVGRG\\MRKXQZUPQRQRURSNQNORKJGHGFCDBFBH?B?BAFEDK@ABI@M?OCMEKEE?M?K?O?S@[BUDQDQDOHUHSLUTa@V]LUJQJSHQFQHUFUHUFWFYDWB]Dq@Bi@@m@B}B?cA?_D?o@h@?n@Cd@G\\ILAj@WdAo@v@e@^Ql@Y\\GXEX?F@r@B|@Jf@BdAGT?PIFAbA]DElA_AJKRs@DQ?Q\\ENDDJJ^DNPMTQA?UPQLEOK_@EKOE]DAQESSq@?CSo@GSI]O]]aAUe@A?GE?_AAaBAyA@m@?u@O@@aE?i@@_@?WIQGMGGGASGSIC?MCMEOKMIKGKIMKOOGIKMU]m@kA{@gBiAyBe@y@MSOWEGYe@S[GMi@{@Wc@OWCAQYKQUf@Wh@EJ]f@SZ[d@EFa@d@QPWZeBiBm@YUK]KUMa@Y_@Y");
 
         assertNull(tripPlan.itinerary.get(0).legs.get(0).alerts);
+    }
+
+    @Test
+    public void shouldExcludeCarParkWhenClosed() {
+        var berlinerStr = new GenericLocation(48.59418, 8.85091);
+        var schwerinerStr = new GenericLocation(48.59539, 8.85296);
+
+        var elevenOclock= OffsetDateTime.parse("2020-08-10T11:00:00+02:00"); // before car park closes
+        var oneOclock= elevenOclock.plusHours(2); // after car park closes
+
+        var tripPlan = getTripPlan(graph, elevenOclock.toInstant(), true, berlinerStr, schwerinerStr);
+        var polyline1 = firstTripToPolyline(tripPlan);
+        assertThatPolylinesAreEqual(polyline1, "s`rgHeu_u@FQj@wA\\uAJo@Hs@FkA?aBCe@Gm@Iw@Oo@Sk@OYPOPM??QLQNOWGIKP[_@EZKPMHICCQGHO?}BIO?CdCEZCvBFn@");
+
+        assertNull(tripPlan.itinerary.get(0).legs.get(0).alerts);
+
+        var tripPlan2 = getTripPlan(graph, oneOclock.toInstant(), true, berlinerStr, schwerinerStr);
+        var polyline2 = firstTripToPolyline(tripPlan2);
+        assertThatPolylinesAreEqual(polyline2, "s`rgHeu_u@FQj@wA\\uAJo@Hs@FkA?aBCe@Gm@Iw@Oo@Sk@OYOWGIGIKIQQMIc@]i@Y_@ScAc@k@SFiDCuBGiAK_BYyEQoCEs@GuA?gA?]?_@FAbA]DEnA_AHKTs@DQ?O\\ENDDJJ^DNPMTQA?UPQLEOK_@EKKFKDCFa@xAAHGHKFO?IHi@\\e@Ra@XGb@@p@Bz@D~@DdAFz@Dn@JCd@jHFHDvC@~@CvALv@?^?T?LCx@Al@Ad@O@CdCEZAvBFn@");
+
     }
 }
