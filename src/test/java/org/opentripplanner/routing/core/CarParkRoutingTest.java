@@ -34,8 +34,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 import static org.opentripplanner.routing.core.PolylineAssert.assertThatPolylinesAreEqual;
 
 public class CarParkRoutingTest {
@@ -220,5 +219,20 @@ public class CarParkRoutingTest {
         var polyline2 = firstTripToPolyline(tripPlan2);
         assertThatPolylinesAreEqual(polyline2, "s`rgHeu_u@FQj@wA\\uAJo@Hs@FkA?aBCe@Gm@Iw@Oo@Sk@OYOWGIGIKIQQMIc@]i@Y_@ScAc@k@SFiDCuBGiAK_BYyEQoCEs@GuA?gA?]?_@FAbA]DEnA_AHKTs@DQ?O\\ENDDJJ^DNPMTQA?UPQLEOK_@EKKFKDCFa@xAAHGHKFO?IHi@\\e@Ra@XGb@@p@Bz@D~@DdAFz@Dn@JCd@jHFHDvC@~@CvALv@?^?T?LCx@Al@Ad@O@CdCEZAvBFn@");
 
+    }
+
+    @Test
+    public void shouldAddAlertWhenCarParkClosesSoon() {
+        var berlinerStr = new GenericLocation(48.59418, 8.85091);
+        var schwerinerStr = new GenericLocation(48.59539, 8.85296);
+
+        var quarterToTwelve = OffsetDateTime.parse("2020-08-10T11:45:00+02:00");
+
+        var tripPlan = getTripPlan(graph, quarterToTwelve.toInstant(), true, berlinerStr, schwerinerStr);
+        var polyline = firstTripToPolyline(tripPlan);
+        assertThatPolylinesAreEqual(polyline, "s`rgHeu_u@FQj@wA\\uAJo@Hs@FkA?aBCe@Gm@Iw@Oo@Sk@OYPOPM??QLQNOWGIKP[_@EZKPMHICCQGHO?}BIO?CdCEZCvBFn@");
+
+        var alert = tripPlan.itinerary.get(0).legs.get(0).alerts.get(0);
+        assertEquals(alert.alert.alertId, Alert.AlertId.CAR_PARK_CLOSING_SOON);
     }
 }

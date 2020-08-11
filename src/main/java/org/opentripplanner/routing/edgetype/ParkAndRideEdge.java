@@ -11,6 +11,7 @@ import org.opentripplanner.routing.vertextype.ParkAndRideVertex;
 import org.locationtech.jts.geom.LineString;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Locale;
 
 /**
@@ -87,9 +88,7 @@ public class ParkAndRideEdge extends Edge {
     }
 
     private boolean isClosedAt(State state) {
-        var zoneId = state.getOptions().rctx.graph.getTimeZone().toZoneId();
-        var localTime = Instant.ofEpochSecond(state.getTimeSeconds()).atZone(zoneId).toLocalDateTime();
-        return ((ParkAndRideVertex) tov).isClosedAt(localTime);
+        return ((ParkAndRideVertex) tov).isClosedAt(state.getLocalDateTime());
     }
 
     @Override

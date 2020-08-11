@@ -13,6 +13,8 @@ import org.opentripplanner.routing.vertextype.ElevatorOffboardVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
@@ -193,6 +195,12 @@ public class State implements Cloneable {
     /** Returns time in seconds since epoch */
     public long getTimeSeconds() {
         return time / 1000;
+    }
+
+    /** Returns the time of the state in the graph's timezone **/
+    public LocalDateTime getLocalDateTime() {
+        var zoneId = getOptions().rctx.graph.getTimeZone().toZoneId();
+        return Instant.ofEpochSecond(getTimeSeconds()).atZone(zoneId).toLocalDateTime();
     }
 
     /** returns the length of the trip in seconds up to this state */
