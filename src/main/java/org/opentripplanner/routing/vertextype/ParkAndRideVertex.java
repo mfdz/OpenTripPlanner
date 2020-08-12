@@ -6,6 +6,9 @@ import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.util.I18NString;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 /**
  * A vertex for a park and ride area.
  * Connected to streets by ParkAndRideLinkEdge.
@@ -52,5 +55,13 @@ public class ParkAndRideVertex extends Vertex {
 
     public boolean hasFewSpacesAvailable() {
         return carPark.hasFewSpacesAvailable();
+    }
+
+    public boolean isClosedAt(LocalDateTime time) {
+        return Optional.ofNullable(carPark).map(c -> c.isClosedAt(time)).orElse(false);
+    }
+
+    public LocalDateTime opensNext(LocalDateTime time) {
+        return Optional.ofNullable(carPark).map(c -> c.opensNext(time)).orElse(LocalDateTime.MIN);
     }
 }

@@ -14,6 +14,7 @@ public class Alert implements Serializable {
 
     public enum AlertId {
         CAR_PARK_FULL("car_park_full"),
+        CAR_PARK_CLOSING_SOON("car_closing_soone"),
         BIKE_RENTAL_FREE_FLOATING_DROP_OFF("bike_rental_free_floating_drop_off");
 
         public String value;
@@ -65,6 +66,12 @@ public class Alert implements Serializable {
     public static Alert createLowCarParkSpacesAlert() {
         Alert alert = createTranslatedAlert("car_park.full");
         alert.alertId = AlertId.CAR_PARK_FULL;
+        return alert;
+    }
+
+    public static Alert createCarParkClosingSoonAlert() {
+        Alert alert = createTranslatedAlert("car_park.closing_soon");
+        alert.alertId = AlertId.CAR_PARK_CLOSING_SOON;
         return alert;
     }
 

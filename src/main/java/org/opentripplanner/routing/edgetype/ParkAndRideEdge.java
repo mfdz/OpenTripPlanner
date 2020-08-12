@@ -1,5 +1,6 @@
 package org.opentripplanner.routing.edgetype;
 
+import io.leonard.OpeningHoursEvaluator;
 import org.opentripplanner.common.MavenVersion;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.State;
@@ -9,6 +10,9 @@ import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.vertextype.ParkAndRideVertex;
 
 import org.locationtech.jts.geom.LineString;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Locale;
 
 /**
@@ -38,7 +42,10 @@ public class ParkAndRideEdge extends Edge {
         }
         if(request.useCarParkAvailabilityInformation
                 && request.isTripPlannedForNow()
-                && ((ParkAndRideVertex) tov).hasFewSpacesAvailable()){
+                && ((ParkAndRideVertex) tov).hasFewSpacesAvailable() ) {
+            return null;
+        }
+        if (isClosedAt(s0.getLocalDateTime()) && isClosedAt(s0.getLocalDateTime().plusSeconds(request.maxCarParkOpeningWaitTime))) {
             return null;
         }
         if (request.arriveBy) {
@@ -69,8 +76,17 @@ public class ParkAndRideEdge extends Edge {
                 throw new IllegalStateException("Can't drive 2 cars");
             }
             StateEditor s1 = s0.edit(this);
-                 
-            int time = request.carDropoffTime;
+
+            // if the car park is opening soon (ie. withing maxCarParkOpeningWaitTime) then wait outside for it to open
+            int waitingTime = 0;
+
+            if(isClosedAt(s0.getLocalDateTime())) {
+                var openNext = opensNext(s0.getLocalDateTime());
+                var seconds = (int) Duration.between(s0.getLocalDateTime(), openNext).toSeconds();
+                waitingTime = Math.max(0, seconds); // a little bit of defensive coding against.
+            }
+
+            int time = request.carDropoffTime + waitingTime;
             s1.incrementWeight(time);
             final double multiplier = (request.carParkCarLegWeight - 1);
             s1.incrementWeight(s0.getWeight() * multiplier);
@@ -79,6 +95,14 @@ public class ParkAndRideEdge extends Edge {
             s1.setBackMode(TraverseMode.LEG_SWITCH);
             return s1.makeState();
         }
+    }
+
+    private boolean isClosedAt(LocalDateTime time) {
+        return ((ParkAndRideVertex) tov).isClosedAt(time);
+    }
+
+    private LocalDateTime opensNext(LocalDateTime time) {
+        return ((ParkAndRideVertex) tov).opensNext(time);
     }
 
     @Override

@@ -229,6 +229,12 @@ public class RoutingRequest implements Cloneable, Serializable {
     public int carDropoffTime = 120;
 
     /**
+     * The maximum number of seconds to wait for a car park to open if it is closed at the time when the car
+     * is arriving at it.
+     */
+    public int maxCarParkOpeningWaitTime = 300;
+
+    /**
      * How much worse is waiting for a transit vehicle than being on a transit vehicle, as a multiplier. The default value treats wait and on-vehicle
      * time as the same.
      *

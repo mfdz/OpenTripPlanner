@@ -13,12 +13,21 @@
 
 package org.opentripplanner.routing.car_park;
 
+import ch.poole.openinghoursparser.OpeningHoursParseException;
+import ch.poole.openinghoursparser.OpeningHoursParser;
+import ch.poole.openinghoursparser.Rule;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.common.base.Strings;
+import io.leonard.OpeningHoursEvaluator;
 import org.locationtech.jts.geom.Geometry;
 import org.opentripplanner.util.I18NString;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import java.io.ByteArrayInputStream;
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 
@@ -68,6 +77,8 @@ public class CarPark implements Serializable {
 
     public Geometry geometry;
 
+    private List<Rule> parsedOpeningHours = null;
+
     public boolean equals(Object o) {
         if (!(o instanceof CarPark)) {
             return false;
@@ -88,6 +99,31 @@ public class CarPark implements Serializable {
         return hasFewSpacesAvailable(spacesAvailable, maxCapacity);
     }
 
+    public boolean isClosedAt(LocalDateTime time) {
+        parseOpeningHours();
+        if(parsedOpeningHours == null) return false;
+        else return !OpeningHoursEvaluator.isOpenAt(time, parsedOpeningHours);
+    }
+
+    private void parseOpeningHours() {
+        if(parsedOpeningHours == null && ! Strings.isNullOrEmpty(openingHours)) {
+            var parser = new OpeningHoursParser(new ByteArrayInputStream(openingHours.getBytes()));
+            try {
+                parsedOpeningHours = parser.rules(true);
+            } catch (OpeningHoursParseException e) {
+                parsedOpeningHours = Collections.emptyList();
+            }
+        }
+    }
+
+    public LocalDateTime opensNext(LocalDateTime time) {
+        parseOpeningHours();
+        if(parsedOpeningHours == null) {
+            return LocalDateTime.MIN;
+        }
+        else return OpeningHoursEvaluator.isOpenNext(time, parsedOpeningHours).orElse(LocalDateTime.MIN);
+    }
+
     public static boolean hasFewSpacesAvailable(int spacesAvailable, int maxCapacity) {
         // special handling if it is a very small car park
         if(maxCapacity < 10) {
@@ -101,4 +137,5 @@ public class CarPark implements Serializable {
             return !(Double.isNaN(percentFree)) && percentFree <= 0.1f;
         }
     }
+
 }

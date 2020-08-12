@@ -619,14 +619,17 @@ public abstract class GraphPathToTripPlanConverter {
         return legs;
     }
 
-    private static void addCarParkAlerts(Leg leg, State[] state, Locale locale) {
-        var isTripPlannedForNow = Arrays.stream(state)
+    private static void addCarParkAlerts(Leg leg, State[] states, Locale locale) {
+        var isTripPlannedForNow = Arrays.stream(states)
                 .findFirst()
                 .map(s -> s.getOptions().isTripPlannedForNow())
                 .orElse(false);
 
-        if(isTripPlannedForNow && containsCarParkWithFewSpaces(state)){
+        if(isTripPlannedForNow && containsCarParkWithFewSpaces(states)){
             leg.addAlert(Alert.createLowCarParkSpacesAlert(), locale);
+        }
+        if(containsCarParkWhichIsClosingSoon(states)){
+            leg.addAlert(Alert.createCarParkClosingSoonAlert(), locale);
         }
     }
 
@@ -635,6 +638,16 @@ public abstract class GraphPathToTripPlanConverter {
                     .filter(s -> s.getVertex() instanceof ParkAndRideVertex)
                     .map(s -> (ParkAndRideVertex) s.getVertex())
                     .anyMatch(ParkAndRideVertex::hasFewSpacesAvailable);
+    }
+
+    private static boolean containsCarParkWhichIsClosingSoon(State[] states) {
+        return Arrays.stream(states).anyMatch(state -> {
+            if(state.getVertex() instanceof ParkAndRideVertex && state.getBackMode().isDriving()) {
+                ParkAndRideVertex vertex = (ParkAndRideVertex) state.getVertex();
+                return vertex.isClosedAt(state.getLocalDateTime().plusMinutes(30));
+            }
+            else return false;
+        } );
     }
 
     /**
