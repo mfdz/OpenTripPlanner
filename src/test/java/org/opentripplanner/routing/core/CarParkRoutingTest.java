@@ -232,7 +232,27 @@ public class CarParkRoutingTest {
         var polyline = firstTripToPolyline(tripPlan);
         assertThatPolylinesAreEqual(polyline, "s`rgHeu_u@FQj@wA\\uAJo@Hs@FkA?aBCe@Gm@Iw@Oo@Sk@OYPOPM??QLQNOWGIKP[_@EZKPMHICCQGHO?}BIO?CdCEZCvBFn@");
 
+        assertEquals(tripPlan.itinerary.get(0).duration.intValue(), 474);
+
         var alert = tripPlan.itinerary.get(0).legs.get(0).alerts.get(0);
         assertEquals(alert.alert.alertId, Alert.AlertId.CAR_PARK_CLOSING_SOON);
+    }
+
+    @Test
+    public void shouldWaitInFrontOfCarParkWhenOpeningSoon() {
+        var berlinerStr = new GenericLocation(48.59418, 8.85091);
+        var schwerinerStr = new GenericLocation(48.59539, 8.85296);
+
+        var shortlyBeforeOpening = OffsetDateTime.parse("2020-08-10T09:54:00+02:00");
+
+        var tripPlan = getTripPlan(graph, shortlyBeforeOpening.toInstant(), true, berlinerStr, schwerinerStr);
+        var polyline = firstTripToPolyline(tripPlan);
+
+
+        assertThatPolylinesAreEqual(polyline, "s`rgHeu_u@FQj@wA\\uAJo@Hs@FkA?aBCe@Gm@Iw@Oo@Sk@OYPOPM??QLQNOWGIKP[_@EZKPMHICCQGHO?}BIO?CdCEZCvBFn@");
+
+        assertEquals(tripPlan.itinerary.get(0).duration.intValue(), 756);
+
+        assertNull(tripPlan.itinerary.get(0).legs.get(0).alerts);
     }
 }

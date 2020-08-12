@@ -60,4 +60,8 @@ public class ParkAndRideVertex extends Vertex {
     public boolean isClosedAt(LocalDateTime time) {
         return Optional.ofNullable(carPark).map(c -> c.isClosedAt(time)).orElse(false);
     }
+
+    public LocalDateTime opensNext(LocalDateTime time) {
+        return Optional.ofNullable(carPark).map(c -> c.opensNext(time)).orElse(LocalDateTime.MIN);
+    }
 }

@@ -100,6 +100,12 @@ public class CarPark implements Serializable {
     }
 
     public boolean isClosedAt(LocalDateTime time) {
+        parseOpeningHours();
+        if(parsedOpeningHours == null) return false;
+        else return !OpeningHoursEvaluator.isOpenAt(time, parsedOpeningHours);
+    }
+
+    private void parseOpeningHours() {
         if(parsedOpeningHours == null && ! Strings.isNullOrEmpty(openingHours)) {
             var parser = new OpeningHoursParser(new ByteArrayInputStream(openingHours.getBytes()));
             try {
@@ -108,10 +114,15 @@ public class CarPark implements Serializable {
                 parsedOpeningHours = Collections.emptyList();
             }
         }
-        if(parsedOpeningHours == null) return false;
-        else return !OpeningHoursEvaluator.isOpenAt(time, parsedOpeningHours);
     }
 
+    public LocalDateTime opensNext(LocalDateTime time) {
+        parseOpeningHours();
+        if(parsedOpeningHours == null) {
+            return LocalDateTime.MIN;
+        }
+        else return OpeningHoursEvaluator.isOpenNext(time, parsedOpeningHours).orElse(LocalDateTime.MIN);
+    }
 
     public static boolean hasFewSpacesAvailable(int spacesAvailable, int maxCapacity) {
         // special handling if it is a very small car park
