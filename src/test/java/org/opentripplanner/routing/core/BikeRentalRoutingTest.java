@@ -112,12 +112,17 @@ public class BikeRentalRoutingTest {
     }
 
     private static TripPlan getTripPlan(Graph graph, GenericLocation from, GenericLocation to) {
+        return getTripPlan(graph, from, to, Optional.empty(), new TraverseModeSet(TraverseMode.BICYCLE, TraverseMode.TRANSIT, TraverseMode.WALK));
+    }
+
+    private static TripPlan getTripPlan(Graph graph, GenericLocation from, GenericLocation to, Optional<GenericLocation> via, TraverseModeSet modes) {
         RoutingRequest request = new RoutingRequest();
         request.dateTime = dateTime;
         request.from = from;
         request.to = to;
+        request.intermediatePlaces = via.stream().collect(Collectors.toList());
 
-        request.modes = new TraverseModeSet(TraverseMode.BICYCLE, TraverseMode.TRANSIT, TraverseMode.WALK);
+        request.modes = modes;
         new QualifiedMode(TraverseMode.BICYCLE, QualifiedMode.Qualifier.RENT).applyToRoutingRequest(request, false);
 
         request.setNumItineraries(5);
@@ -261,6 +266,19 @@ public class BikeRentalRoutingTest {
         var secondLeg = firstTrip.legs.get(1);
         assertEquals(secondLeg.mode, "BICYCLE");
         assertNull(secondLeg.alerts);
+    }
+
+    @Test
+    public void allowViaPoints() {
+        var herrenbergImVogelsang = new GenericLocation(48.5867, 8.8549);
+        var gärtringen = new GenericLocation(48.64100, 8.90832);
+        var herrenbergWilhelmstr = new GenericLocation(48.59586, 8.87710);
+
+        var tripPlan = getTripPlan(graph, herrenbergImVogelsang, gärtringen, Optional.of(herrenbergWilhelmstr), new TraverseModeSet(TraverseMode.WALK));
+
+        var polyline = firstTripToPolyline(tripPlan);
+
+        assertThatPolylinesAreEqual(polyline, "yqpgHan`u@BGTu@XmAg@]Yc@a@iBCIEUKg@Oo@s@oDqAyGq@qCq@kCEQq@eCQc@Qq@G]Gc@E]UgCIeAIiAkAJq@Fe@D_@BQBOa@Ec@K_A[}D[aD[uD]qDYcDEWg@{FkAEmAIKAiCK]U}BaA]Q}@]uAs@[SAm@Ee@AUEi@Eu@C{@YBu@NEOS}@Y}ESsCMcBUyCi@oEAE?A@Dh@nETxCLbBTrCX|ER~@DNt@OXCBz@Dt@Dh@@RDd@@l@Ev@UpDE`AEx@Eh@Cn@AZKv@CPERKn@K^GTO`@INMROTEHGJEHEFCHCJALAL?j@Af@AbF?r@Cl@BxA@`B?~@FD@?Td@\\`AN\\H\\FRRp@?BRp@DR@P\\ENDDEl@UDF??A???EGm@TEDOE]DAQESSq@?CSo@GSI]O]]aAUe@A?GE?_AAaBAyA@m@?u@@cF@e@?m@@K?GAI?ICGAAACCECCG?I@I@M@O@UAK?KAQCMEKGKIMKOOGIKMU]m@kA{@gBPY]q@y@_B?[KYIUU\\Sa@o@mAw@kAWUIUACGKGSGI?ASP??EGkA}AQUSS}@s@iA{@_Bw@uAg@WIo@SMG{FsAMEeAYiA]o@SaA]{Ao@OMi@c@{BqBy@cAsDuEyD}D_HgHYYILmAmAq@o@s@o@_@c@_@e@OO]OMKMWOc@e@m@QSY[cAw@qAeAgBcBq@u@kAmAISW[OOMIUKUGKAKAG?OIWKEBKKKGEAQK}@g@sAc@i@Qe@YUKSY{@]g@SiBu@{@_@c@UKIoAeCEI{@cBS[_CmEeCsFMWgA_CKSSe@_BaDm@gAGSU]i@_A]a@EI{AcCoAoBu@q@m@q@IIc@T_Bv@GSMe@IOa@eA@A?C?CACAAAAC@A@?B?@?BU?QCg@YsAo@u@_@YIAUKIYIm@u@q@w@{@mBo@eB_@}AQYKIi@_@[EMIMWGS}A{Ac@McAAC}@ASKO}@aAoDeDoD{CwBgBCCk@e@KMOAIK{@u@i@_@QMMBEWaA{@aAs@wA_A}@m@KE_Ai@mAk@eBi@[I??a@S]_@QKOKGCSIcAB]GKWII_DgBiAi@qAa@g@W[G?MkAeAo@k@sAeA_B{Ag@m@QMYUQSU[Y[{@aASTIIEEI?]?Ch@?AQk@CI");
     }
 
     @Test

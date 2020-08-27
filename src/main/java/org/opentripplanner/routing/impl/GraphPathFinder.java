@@ -531,7 +531,7 @@ public class GraphPathFinder {
 
         for (int i = 1; i < paths.size(); i++) {
             GraphPath path = paths.get(i);
-            lastState = newPath.states.getLast();
+            lastState = newPath.states.getLast().finalizeState();
             // add a leg-switching state
             if (addLegsSwitchingEdges) {
                 LegSwitchingEdge legSwitchingEdge =

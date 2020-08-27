@@ -308,6 +308,25 @@ public class State implements Cloneable {
         return bikeRentingOk && bikeParkAndRideOk && carParkAndRideOk && carRideAndParkOk;
     }
 
+    /**
+     * When doing a search with intermediate stops, n routes are being calculated and then stitched together.
+     *
+     * This fails when a route finishes with a free-floating left on a street. In such a case the state machine would not allow
+     * picking up another bike leading to exceptions during the search.
+     *
+     * For this reason we modify the current state and simulate the bike being dropped off properly, so that the algorithm
+     * can then search for a new bike to use.
+     */
+    public State finalizeState() {
+        if(isBikeRenting()) {
+            this.stateData.bikeParked = true;
+            this.stateData.usingRentedBike = false;
+            this.stateData.nonTransitMode = TraverseMode.WALK;
+            this.stateData.backMode = TraverseMode.WALK;
+        }
+        return this;
+    }
+
     public boolean bikeRentalFreeFloatingDropOffAllowed() {
         return this.getContext().graph.networkAllowsFreeFloatingDropOff(this.stateData.bikeRentalNetworks);
     }
