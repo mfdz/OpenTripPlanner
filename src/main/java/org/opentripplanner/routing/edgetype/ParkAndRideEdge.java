@@ -62,7 +62,7 @@ public class ParkAndRideEdge extends Edge {
             /*
              * To park a car, we need to be in one and have allowed walk modes.
              */
-            if (s0.getNonTransitMode() != TraverseMode.CAR) {
+            if (s0.isBikeRenting() || s0.getNonTransitMode() != TraverseMode.CAR) {
                 return null;
             }
             if (s0.isCarParked()) {
