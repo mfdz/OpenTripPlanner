@@ -3463,10 +3463,28 @@ public class IndexGraphQLSchema {
                         .name("bikeRentalStations")
                         .description("Get all bike rental stations")
                         .type(new GraphQLList(bikeRentalStationType))
-                        .dataFetcher(dataFetchingEnvironment -> new ArrayList<>(
-                                index.graph.getService(BikeRentalStationService.class) != null
+                        .argument(GraphQLArgument.newArgument()
+                                .name("ids")
+                                .description("Return bike rental stations with these ids.  \n **Note:** if an id is invalid (or the bike rental station service is unavailable) the returned list will contain `null` values.")
+                                .type(new GraphQLList(Scalars.GraphQLString))
+                                .build())
+                        .dataFetcher(environment -> {
+                                if ((environment.getArgument("ids") instanceof List)) {
+                                        Map<String, BikeRentalStation> rentalStations =
+                                                index.graph.getService(BikeRentalStationService.class) != null
+                                                ? index.graph.getService(BikeRentalStationService.class).getBikeRentalStations()
+                                                        .stream()
+                                                        .collect(Collectors.toMap(station -> station.id, station ->  station))
+                                                : Collections.EMPTY_MAP;
+                                        return ((List<String>) environment.getArgument("ids"))
+                                                .stream()
+                                                .map(rentalStations::get)
+                                                .collect(Collectors.toList());
+                                }
+                                return new ArrayList<>(index.graph.getService(BikeRentalStationService.class) != null
                                         ? index.graph.getService(BikeRentalStationService.class).getBikeRentalStations()
-                                        : Collections.EMPTY_LIST))
+                                        : Collections.EMPTY_LIST);
+                        })
                         .build())
                 .field(GraphQLFieldDefinition.newFieldDefinition()
                         .name("bikeRentalStation")
