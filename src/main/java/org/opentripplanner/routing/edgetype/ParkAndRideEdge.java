@@ -41,6 +41,9 @@ public class ParkAndRideEdge extends Edge {
                 && ((ParkAndRideVertex) tov).hasFewSpacesAvailable()){
             return null;
         }
+        if(!request.wheelchairAccessible && ((ParkAndRideVertex) tov).hasOnlyDisabledSpaces()){
+            return null;
+        }
         if (request.arriveBy) {
             /*
              * To get back a car, we need to walk and have car mode enabled.

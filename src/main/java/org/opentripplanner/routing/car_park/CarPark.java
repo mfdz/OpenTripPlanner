@@ -90,6 +90,9 @@ public class CarPark implements Serializable {
     public boolean hasFewSpacesAvailable() {
         return hasFewSpacesAvailable(spacesAvailable, maxCapacity);
     }
+    public boolean hasOnlyDisabledSpaces() {
+        return maxCapacity == Integer.MAX_VALUE && maxDisabledCapacity != Integer.MAX_VALUE;
+    }
 
     public static boolean hasFewSpacesAvailable(int spacesAvailable, int maxCapacity) {
         // special handling if it is a very small car park
