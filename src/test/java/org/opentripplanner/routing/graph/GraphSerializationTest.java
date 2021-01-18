@@ -24,6 +24,7 @@ import java.util.TreeMap;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
+import java.util.zip.Inflater;
 
 import static org.junit.Assert.assertFalse;
 
@@ -87,17 +88,20 @@ public class GraphSerializationTest {
         // We do skip edge lists - otherwise we trigger a depth-first search of the graph causing a stack overflow.
         // We also skip some deeply buried weak-value hash maps, which refuse to tell you what their keys are.
         ObjectDiffer objectDiffer = new ObjectDiffer();
-        objectDiffer.ignoreFields("incoming", "outgoing");
+        objectDiffer.ignoreFields("incoming", "outgoing", "LOG");
         objectDiffer.useEquals(BitSet.class, LineString.class, Polygon.class);
         // ThreadPoolExecutor contains a weak reference to a very deep chain of Finalizer instances.
         // Method instances usually are part of a proxy which are totally un-reflectable in Java 11
         objectDiffer.ignoreClasses(
                 WeakValueHashMap.class,
                 ThreadPoolExecutor.class,
-                Method.class, JarFile.class,
+                Method.class,
                 SoftReference.class,
                 TreeMap.class,
-                LuceneIndex.class
+                LuceneIndex.class,
+                JarFile.class,
+                Inflater.class,
+                ch.qos.logback.classic.Logger.class
         );
         // This setting is critical to perform a deep test of an object against itself.
         objectDiffer.enableComparingIdenticalObjects();
@@ -142,8 +146,6 @@ public class GraphSerializationTest {
                 FileAppender.class,
                 SiftingAppender.class,
                 ch.qos.logback.core.sift.AppenderTracker.class,
-                java.util.zip.Inflater.class,
-                ch.qos.logback.classic.Logger.class,
                 org.slf4j.Logger.class,
                 java.lang.invoke.MethodType.class,
                 WeakValueHashMap.class,
