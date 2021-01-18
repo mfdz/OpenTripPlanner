@@ -141,6 +141,7 @@ public class GraphSerializationTest {
                 graphql.schema.GraphQLSchema.class,
                 FileAppender.class,
                 SiftingAppender.class,
+                ch.qos.logback.core.sift.AppenderTracker.class,
                 java.util.zip.Inflater.class,
                 ch.qos.logback.classic.Logger.class,
                 org.slf4j.Logger.class,
