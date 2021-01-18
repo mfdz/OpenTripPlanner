@@ -128,7 +128,7 @@ public class GraphSerializationTest {
         // FIXME Maps differ in size: 48148 vs 47923 for ...graph.Graph.vertexById
         // FIXME Maps differ in size: 48148 vs 47923 for ...graph.Graph.vertices
         objectDiffer.ignoreFields("incoming", "outgoing", "buildTime", "streetNotesService", "graphBuilderAnnotations",
-                "vertices", "vertexById");
+                "vertices", "vertexById", "LOG");
         objectDiffer.useEquals(BitSet.class, LineString.class, Polygon.class);
         // HashGridSpatialIndex contains unordered lists in its bins. This is rebuilt after deserialization anyway.
         // The deduplicator in the loaded graph will be empty, because it is transient and only fills up when items
