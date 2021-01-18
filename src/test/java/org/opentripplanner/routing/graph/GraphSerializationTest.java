@@ -1,5 +1,6 @@
 package org.opentripplanner.routing.graph;
 
+import ch.qos.logback.classic.sift.SiftingAppender;
 import ch.qos.logback.core.FileAppender;
 import com.conveyal.object_differ.ObjectDiffer;
 import org.geotools.util.WeakValueHashMap;
@@ -134,7 +135,7 @@ public class GraphSerializationTest {
         // are deduplicated.
         objectDiffer.ignoreClasses(HashGridSpatialIndex.class, ThreadPoolExecutor.class, Deduplicator.class, TreeMap.class,
                 LuceneIndex.class, graphql.schema.GraphQLSchema.class, FileAppender.class, java.util.zip.Inflater.class,
-                ch.qos.logback.classic.Logger.class);
+                ch.qos.logback.classic.Logger.class, java.lang.invoke.MethodType.class, SiftingAppender.class);
         objectDiffer.compareTwoObjects(g1, g2);
         // Print differences before assertion so we can see what went wrong.
         assertFalse(objectDiffer.hasDifferences());
