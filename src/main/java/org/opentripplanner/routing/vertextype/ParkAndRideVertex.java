@@ -55,6 +55,6 @@ public class ParkAndRideVertex extends Vertex {
     }
 
     public boolean hasOnlyDisabledSpaces() {
-        return carPark.hasOnlyDisabledSpaces();
+        return carPark != null && carPark.hasOnlyDisabledSpaces();
     }
 }
