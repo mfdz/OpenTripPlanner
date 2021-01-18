@@ -2,7 +2,6 @@ package org.opentripplanner.routing.core;
 
 
 import com.google.common.collect.ImmutableSet;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
@@ -58,7 +57,7 @@ public class CarParkRoutingTest {
         var carParks = ImmutableSet.of(
                 makeRegularCarPark("1", "Goethestr.", 100, 100, 48.59077, 8.86707),
                 makeRegularCarPark("2", "Affstädter Tal", 0, 100, 48.60091, 8.87195),
-                makeDisabledCarPark("3", "Marktplatz", 1, 1, 48.59635, 8.87022)
+                makeDisabledCarPark("3", "Barrierefreier Parkplatz Stuttgarter Str.", 1, 1, 48.59818, 8.87157)
         );
 
         var service = new CarParkService();
@@ -221,25 +220,24 @@ public class CarParkRoutingTest {
 
     @Test
     public void shouldNotRouteToDisabledParking() {
-        var nagolderStr = new GenericLocation(48.5957, 8.8461);
-        var kirchgasse = new GenericLocation(48.59637, 8.87077);
+        var nufringen = new GenericLocation(48.6225, 8.8884);
+        var marktplatz = new GenericLocation(48.59637, 8.87020);
 
-        var tripPlan = getTripPlan(graph, now, true, nagolderStr, kirchgasse);
+        var tripPlan = getTripPlan(graph, now, true, nufringen, marktplatz);
         var polyline = firstTripToPolyline(tripPlan);
-        assertThatPolylinesAreEqual(polyline, "yirgHaw~t@@QBkCDcCDkCD{ABw@@_@FwC@S?[F}EK{DMoCEgB@aCLmEB_BFiDCwBGiAK}AYyEQoCEs@GuA?iA?[?_@FAbA]DElA_AJKRs@DQ?Q\\ENDDJJ^DNPMTQA?UPQLEOK_@EKOE]DAQESSq@?CSo@GSI]O]]aAUe@A?GE?_AAaBAyA@m@?u@@cF@e@?m@@K@MBKBIDGCE?E?C@IBE@KFIFISEK[KYQ{@AGUgBFQIq@CSGWYy@WgA_@eBG@IJAICK@GDO?S");
+        assertThatPolylinesAreEqual(polyline, "arwgHg_gu@Hl@NRPL\\Rf@Lf@T`@Ln@NdBVd@VRHjAh@BBtE~BXLjClAj@XjAz@LLPR`BpCrF~Hv@bAd@n@f@r@l@hA`@bAJLJLFFHBN@JAJABv@HxBB`@Bn@@l@?^?ZAp@An@Cn@Ej@E`@In@G^E^GXMh@Mh@M`@IXKVKZMXMVUb@U^OTQTORa@f@YZYZu@v@YZWZSTMPKNOTQVMVOZMTKXK\\IVIZI\\I^EZE\\Ed@Gv@Cf@?r@?d@@`@@b@D`@B`@B\\LzAH~@H~@Bp@Dn@D|@Bz@DlABnABlABjA@t@@v@@t@?t@@h@?h@?`AA~@?`AAh@@h@?h@?d@@~@B|@B`AD~@F`AH~AH~AHlAFlAFrADpAH|ABx@Dt@Dv@Dr@Fv@Ft@Db@DXD\\Hd@FXBNNn@J`@H\\^vAPl@Pn@Lj@Nl@Pn@Nn@Ll@Ll@Np@Nt@BLBZDZB\\@HEFCHCH?D?F?JBLDJDHHDF?@?HADCBC@ABGBG@I@IHEFCLGXOf@IXGXI~@Qd@KXGf@MRGVIPGRKRITKNKVOd@WRMTMRIRITINGVGRERCTATCV?T@T@P@TBRDTFPFTHNHNHLFNPNPDDDFBF?F?H@F@F@FBDDFDBD@D@F?DCDCHDHDNLRPJRHLHPJRJVRh@Vp@Rh@Rb@LXNVPZNRNPPRRPRPRLNJTJXLRFTFRBVBTBV?RARAPAXGREXKRGNIXORQPONMRSRWb@i@PU\\e@f@u@^m@`@g@NSPSVWNKLKTQVMVMRIPGVGd@Kn@KVGRG\\MRKXQZUPQRQRURSNQNORKJGHGFCDBFBH?B?BAFEDK@ABI@M?OCMEKEE?M?K?O?S@[BUDQDQDOHUHSLUTa@V]LUJQJSHQFQHUFUHUFWFYDWB]Dq@Bi@@m@B}B?cA?_D?o@h@?n@Cd@G\\ILAj@WdAo@v@e@^Ql@Y\\GXEX?F@r@B|@Jf@BdAGT?PIFAbA]DElA_AJKRs@DQ?Q\\ENDDJJ^DNPMTQA?UPQLEOK_@EKOE]DAQESSq@?CSo@GSI]O]]aAUe@A?GE?_AAaBAyA@m@?u@@cF@e@?m@@K@MBKBIDGCE?E?C@IBE@KFIFISEK[KYQ{@AGUgBFQIq@CSGWYy@WgA_@eBG@IJEDQJ?H");
 
         assertNull(tripPlan.itinerary.get(0).legs.get(0).alerts);
     }
 
     @Test
-    @Ignore
     public void shouldRouteToDisabledParkingWhenWheelchairAccessible() {
-        var nagolderStr = new GenericLocation(48.5957, 8.8461);
-        var kirchgasse = new GenericLocation(48.59637, 8.87077);
+        var nufringen = new GenericLocation(48.6225, 8.8884);
+        var marktplatz = new GenericLocation(48.59637, 8.87020);
 
-        var tripPlan = getAccessibleTripPlan(graph, now, nagolderStr, kirchgasse);
+        var tripPlan = getAccessibleTripPlan(graph, now, nufringen, marktplatz);
         var polyline = firstTripToPolyline(tripPlan);
-        assertThatPolylinesAreEqual(polyline, "yirgHaw~t@@QBkCDcCDkCD{ABw@@_@FwC@S?[F}EK{DMoCEgB@aCLmEB_BFiDCwBGiAK}AYyEQoCEs@GuA?iA?[?_@FAbA]DElA_AJKRs@DQ?Q\\ENDDJJ^DNPMTQA?UPQLEOK_@EKOE]DAQESSq@?CSo@GSI]O]]aAUe@A?GE?_AAaBAyA@m@?u@@cF@e@?m@@K@MBKBIDGCE?E?C@IBE@KFIFISEK[KYQ{@AGUgBFQIq@CSGWYy@WgA_@eBG@IJAICK@GDO?S");
+        assertThatPolylinesAreEqual(polyline, "arwgHg_gu@Hl@NRPL\\Rf@Lf@T`@Ln@NdBVd@VRHjAh@BBtE~BXLjClAj@XjAz@LLPR`BpCrF~Hv@bAd@n@f@r@l@hA`@bAJLJLFFHBN@JAJAAe@AY?U?S?a@@]@U@[BYBMFi@Fc@PgABSJo@DYrAf@hAb@j@^bBbArAxAjCrDhCpDDJvAbB~CvCTRNNVV`HfHxD|DrDtEx@bAzBpBh@b@NLT_APH^f@h@TjDrArCND?xAFxEv@NNpAp@x@\\b@RrAr@p@^v@f@Zb@DH`@`@VXtC`DJKCQMAOUm@iACE??BDl@hANTL@BPKJDDNNFHx@dANL\\\\Pe@l@LLA?OXTND");
 
         assertNull(tripPlan.itinerary.get(0).legs.get(0).alerts);
     }
