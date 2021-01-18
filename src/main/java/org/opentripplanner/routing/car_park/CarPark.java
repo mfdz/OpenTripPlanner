@@ -50,6 +50,9 @@ public class CarPark implements Serializable {
     @JsonSerialize
     public int maxCapacity = Integer.MAX_VALUE;
 
+    public int disabledSpacesAvailable = Integer.MAX_VALUE;
+    public int maxDisabledCapacity = Integer.MAX_VALUE;
+
     @XmlAttribute
     @JsonSerialize
     public String openingHours;

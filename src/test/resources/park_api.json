@@ -1,7 +1,7 @@
 {
   "data_source": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze",
-  "last_downloaded": "2020-07-08T11:58:24.466582",
-  "last_updated": "2020-07-08T11:58:24.466582",
+  "last_downloaded": "2021-01-18T12:38:31.669811",
+  "last_updated": "2021-01-18T12:38:31.669811",
   "lots": [
     {
       "lot_type": "Parkplatz",
@@ -14,20 +14,25 @@
         "lng": 8.865461
       },
       "total": 58,
-      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1016"
+      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1016",
+      "notes": {}
     },
     {
+      "id": "ac230e00-2cea-11eb-93e4-7f8bf428cc7a",
       "lot_type": "Parkhaus",
       "address": "Altstadtgarage",
       "name": "Altstadtgarage",
       "forecast": false,
-      "state": "nodata",
+      "state": "many",
       "coords": {
         "lat": 48.593768,
         "lng": 8.872705
       },
       "total": 97,
-      "url": "https://stadtwerke.herrenberg.de/oepnv-parken/parken/sicher-und-zentral-parken/parkhaeuser-und-parkgebuehren/altstadtgarage/"
+      "url": "https://stadtwerke.herrenberg.de/oepnv-parken/parken/sicher-und-zentral-parken/parkhaeuser-und-parkgebuehren/altstadtgarage/",
+      "fee_hours": "Mo-Fr 08:00-20:00; Sa 08:00-14:00; PH off",
+      "notes": {},
+      "free": 68
     },
     {
       "id": "946955a0-a5bb-11ea-8d72-81c79f744047",
@@ -35,7 +40,7 @@
       "address": "Oberer Graben",
       "name": "Oberer Graben",
       "forecast": false,
-      "state": "nodata",
+      "state": "many",
       "coords": {
         "lat": 48.59502,
         "lng": 8.87029
@@ -43,7 +48,8 @@
       "total": 24,
       "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1002",
       "opening_hours": "Mo - Su 00:00-24:00; PH 00:00-24:00",
-      "free": 6
+      "notes": {},
+      "free": 8
     },
     {
       "id": "5c4224c0-0a0e-11ea-9bc9-896973774264",
@@ -51,7 +57,7 @@
       "address": "Unterer Graben",
       "name": "Unterer Graben",
       "forecast": false,
-      "state": "nodata",
+      "state": "many",
       "coords": {
         "lat": 48.59518,
         "lng": 8.86898
@@ -59,7 +65,8 @@
       "total": 39,
       "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1002",
       "opening_hours": "Mo,We,Th,Fr,Su 00:00-24:00; Tu,Sa 00:00-02:00, 14:30-24:00; PH 00:00-24:00",
-      "free": 24
+      "notes": {},
+      "free": 21
     },
     {
       "lot_type": "Parkplatz",
@@ -72,7 +79,9 @@
         "lng": 8.863247
       },
       "total": 47,
-      "url": "https://stadtwerke.herrenberg.de/oepnv-parken/parken/sicher-und-zentral-parken/parkhaeuser-und-parkgebuehren/kurzzeitparkplaetze-bahnhofstrasse/"
+      "url": "https://stadtwerke.herrenberg.de/oepnv-parken/parken/sicher-und-zentral-parken/parkhaeuser-und-parkgebuehren/kurzzeitparkplaetze-bahnhofstrasse/",
+      "fee_hours": "Mo-Fr 08:00-20:00; Sa 08:00-14:00; PH off",
+      "notes": {}
     },
     {
       "lot_type": "Park-Ride",
@@ -85,21 +94,26 @@
         "lng": 8.86126
       },
       "total": 122,
-      "url": "https://www.dbbahnpark.de/standorte/karte/parkplatz-bahnhof-herrenberg/"
+      "url": "https://www.dbbahnpark.de/standorte/karte/parkplatz-bahnhof-herrenberg/",
+      "notes": {}
     },
     {
+      "id": "8f6e3300-2cec-11eb-93e4-7f8bf428cc7a",
       "lot_type": "Tiefgarage",
       "address": "Bronntor",
       "name": "Bronntor",
       "forecast": false,
-      "state": "nodata",
+      "state": "many",
       "coords": {
         "lat": 48.596636,
         "lng": 8.867949
       },
       "total": 90,
       "url": "https://stadtwerke.herrenberg.de/oepnv-parken/parken/sicher-und-zentral-parken/parkhaeuser-und-parkgebuehren/bronntor-tiefgarage/",
-      "opening_hours": "Mo-Fr 07:30-22:00; Sa 07:30-18:00; PH off"
+      "fee_hours": "Mo-Fr 08:00-20:00; Sa 08:00-14:00; PH off",
+      "opening_hours": "Mo-Fr 07:30-22:00; Sa 07:30-18:00; PH off",
+      "notes": {},
+      "free": 63
     },
     {
       "lot_type": "Parkplatz",
@@ -112,7 +126,8 @@
         "lng": 8.871189
       },
       "total": 69,
-      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1022"
+      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1022",
+      "notes": {}
     },
     {
       "lot_type": "Parkplatz",
@@ -125,7 +140,8 @@
         "lng": 8.872216
       },
       "total": 20,
-      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1021"
+      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1021",
+      "notes": {}
     },
     {
       "lot_type": "Parkplatz",
@@ -138,20 +154,24 @@
         "lng": 8.866325
       },
       "total": 36,
-      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1017"
+      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1017",
+      "notes": {}
     },
     {
+      "id": "ff4bb360-2ceb-11eb-93e4-7f8bf428cc7a",
       "lot_type": "Parkhaus",
       "address": "Nufringer Tor",
       "name": "Nufringer Tor",
       "forecast": false,
-      "state": "nodata",
+      "state": "many",
       "coords": {
         "lat": 48.597865,
         "lng": 8.870266
       },
       "total": 242,
-      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1012"
+      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1012",
+      "notes": {},
+      "free": 142
     },
     {
       "lot_type": "Park-Ride",
@@ -164,7 +184,9 @@
         "lng": 8.8615
       },
       "total": 398,
-      "url": "https://stadtwerke.herrenberg.de/oepnv-parken/parken/sicher-und-zentral-parken/parkhaeuser-und-parkgebuehren/p-r-parkhaus/"
+      "url": "https://stadtwerke.herrenberg.de/oepnv-parken/parken/sicher-und-zentral-parken/parkhaeuser-und-parkgebuehren/p-r-parkhaus/",
+      "fee_hours": "Mo-Fr 08:00-20:00; Sa 08:00-14:00; PH off",
+      "notes": {}
     },
     {
       "lot_type": "Parkplatz",
@@ -177,7 +199,8 @@
         "lng": 8.86927
       },
       "total": 27,
-      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1014"
+      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1014",
+      "notes": {}
     },
     {
       "lot_type": "Parkplatz",
@@ -189,8 +212,9 @@
         "lat": 48.599227,
         "lng": 8.869871
       },
-      "total": 211,
-      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1006"
+      "total": 325,
+      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1006",
+      "notes": {}
     },
     {
       "lot_type": "Parkplatz",
@@ -202,8 +226,9 @@
         "lat": 48.59435,
         "lng": 8.869386
       },
-      "total": 47,
-      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1020"
+      "total": 35,
+      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1020",
+      "notes": {}
     },
     {
       "lot_type": "Parkplatz",
@@ -216,7 +241,8 @@
         "lng": 8.874739
       },
       "total": 18,
-      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1023"
+      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1023",
+      "notes": {}
     },
     {
       "lot_type": "Parkplatz",
@@ -230,33 +256,102 @@
       },
       "total": 95,
       "free": 8,
-      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1025"
+      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Service/Parkplaetze/Parkplatz?view=publish&item=parkingLocation&id=1025",
+      "notes": {}
     },
     {
+      "id": "c455d080-fcb1-11e9-9a2d-876c1a6b66b2",
       "lot_type": "Wohnmobilparkplatz",
       "address": "Wohnmobilhafen Herrenberg",
       "name": "Wohnmobilhafen Herrenberg",
       "forecast": false,
-      "state": "nodata",
+      "state": "closed",
       "coords": {
         "lat": 48.59019,
         "lng": 8.87751
       },
       "total": 10,
-      "free": 0,
-      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Tourismus-Gaeste/uebernachten/Wohnmobilstellplaetze"
+      "url": "https://www.herrenberg.de/de/Stadtleben/Erlebnis-Herrenberg/Tourismus-Gaeste/uebernachten/Wohnmobilstellplaetze",
+      "notes": {
+        "de": "Der Herrenberger Wohnmobil Stellplatz ist aufgrund der COVID19-Beschränkungen auch noch im Dezember gesperrt.",
+        "en": "Due to COVID19, the camping site 'Wohnmobilhafen' is currently closed."
+      }
     },
     {
       "lot_type": "Park-Carpool",
-      "address": "Parken + Mitfahren A81/B296",
-      "name": "Parken + Mitfahren A81/B296",
+      "address": "Parken + Mitfahren A81/B296 (Derzeit wg. Bauarbeiten gesperrt)",
+      "name": "Parken + Mitfahren A81/B296 (Derzeit wg. Bauarbeiten gesperrt)",
       "forecast": false,
-      "state": "nodata",
+      "state": "closed",
       "coords": {
         "lat": 48.5807,
         "lng": 8.9022
       },
-      "total": 10
+      "total": 10,
+      "url": "https://rp.baden-wuerttemberg.de/rps/Abt4/Seiten/pressemitteilung.aspx?rid=3035",
+      "notes": {
+        "de": "Derzeit wegen Bauarbeiten gesperrt bis voraussichtlich Frühjahr 2022.",
+        "en": "Currently closed due tu construction works until spring 2022."
+      }
+    },
+    {
+      "lot_type": "Park-Carpool",
+      "address": "Parken + Mitfahren A81 Herrenberg/Gültstein (Ersatzfläche)",
+      "name": "Parken + Mitfahren A81 Herrenberg/Gültstein (Ersatzfläche)",
+      "forecast": false,
+      "state": "nodata",
+      "coords": {
+        "lat": 48.57867,
+        "lng": 8.89462
+      },
+      "total": 50,
+      "url": "https://rp.baden-wuerttemberg.de/rps/Abt4/Seiten/pressemitteilung.aspx?rid=3035",
+      "notes": {}
+    },
+    {
+      "id": "5251cba0-3019-11eb-93e4-7f8bf428cc7a",
+      "lot_type": "Barrierefreier-Parkplatz",
+      "address": "Marktplatz - Parkplatz für Menschen mit Behinderung",
+      "name": "Marktplatz - Parkplatz für Menschen mit Behinderung",
+      "forecast": false,
+      "state": "many",
+      "coords": {
+        "lat": 48.59642,
+        "lng": 8.87042
+      },
+      "total:disabled": 1,
+      "notes": {},
+      "free:disabled": 1
+    },
+    {
+      "id": "e4de7700-3025-11eb-93e4-7f8bf428cc7a",
+      "lot_type": "Barrierefreier-Parkplatz",
+      "address": "Stuttgarter Straße - Parkplatz für Menschen mit Behinderung",
+      "name": "Stuttgarter Straße - Parkplatz für Menschen mit Behinderung",
+      "forecast": false,
+      "state": "many",
+      "coords": {
+        "lat": 48.59799,
+        "lng": 8.87116
+      },
+      "total:disabled": 1,
+      "notes": {},
+      "free:disabled": 1
+    },
+    {
+      "id": "ae89cd60-3022-11eb-93e4-7f8bf428cc7a",
+      "lot_type": "Barrierefreier-Parkplatz",
+      "address": "Oberamt - Parkplatz für Menschen mit Behinderung",
+      "name": "Oberamt - Parkplatz für Menschen mit Behinderung",
+      "forecast": false,
+      "state": "full",
+      "coords": {
+        "lat": 48.5963798,
+        "lng": 8.8705467
+      },
+      "total:disabled": 1,
+      "notes": {},
+      "free:disabled": 0
     }
   ]
 }

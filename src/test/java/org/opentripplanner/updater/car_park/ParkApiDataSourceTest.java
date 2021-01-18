@@ -15,7 +15,7 @@ public class ParkApiDataSourceTest {
         assertTrue(source.update());
         var carParks = source.getCarParks();
 
-        assertEquals(19, carParks.size());
+        assertEquals(23, carParks.size());
 
         carParks.forEach(lot -> assertNotNull(lot.geometry));
 
@@ -30,7 +30,7 @@ public class ParkApiDataSourceTest {
 
         var obererGraben = carParks.get(2);
         assertEquals("Parkplatz Oberer Graben", obererGraben.name.toString());
-        assertEquals(6, obererGraben.spacesAvailable);
+        assertEquals(8, obererGraben.spacesAvailable);
         assertEquals(24, obererGraben.maxCapacity);
         assertFalse(obererGraben.hasFewSpacesAvailable());
 
@@ -39,6 +39,13 @@ public class ParkApiDataSourceTest {
         assertEquals(8, cattleAuctionHall.spacesAvailable);
         assertEquals(95, cattleAuctionHall.maxCapacity);
         assertTrue(cattleAuctionHall.hasFewSpacesAvailable());
+
+        var disabledParking = carParks.get(22);
+        assertEquals("Barrierefreier Parkplatz Oberamt - Parkplatz für Menschen mit Behinderung", disabledParking.name.toString());
+        assertEquals(Integer.MAX_VALUE, disabledParking.spacesAvailable);
+        assertEquals(Integer.MAX_VALUE, disabledParking.maxCapacity);
+        assertEquals(0, disabledParking.disabledSpacesAvailable);
+        assertEquals(1, disabledParking.maxDisabledCapacity);
 
         var epsilon = 0.02;
         assertEquals(8.865461, first.x, epsilon);
