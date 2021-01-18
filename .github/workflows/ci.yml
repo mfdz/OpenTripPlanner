@@ -18,8 +18,7 @@ jobs:
             ${{ runner.os }}-maven-
       - uses: actions/setup-java@v1
         with:
-          java-version: 11.0.9.1
-          java-package: jre
+          java-version: 11
       - name: Run tests
         run: |-
           mvn clean verify
