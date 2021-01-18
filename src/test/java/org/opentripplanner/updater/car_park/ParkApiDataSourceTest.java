@@ -39,6 +39,7 @@ public class ParkApiDataSourceTest {
         assertEquals(8, cattleAuctionHall.spacesAvailable);
         assertEquals(95, cattleAuctionHall.maxCapacity);
         assertTrue(cattleAuctionHall.hasFewSpacesAvailable());
+        assertFalse(cattleAuctionHall.hasOnlyDisabledSpaces());
 
         var disabledParking = carParks.get(22);
         assertEquals("Barrierefreier Parkplatz Oberamt - Parkplatz für Menschen mit Behinderung", disabledParking.name.toString());
@@ -46,6 +47,8 @@ public class ParkApiDataSourceTest {
         assertEquals(Integer.MAX_VALUE, disabledParking.maxCapacity);
         assertEquals(0, disabledParking.disabledSpacesAvailable);
         assertEquals(1, disabledParking.maxDisabledCapacity);
+        assertTrue(disabledParking.hasOnlyDisabledSpaces());
+        assertFalse(disabledParking.hasFewSpacesAvailable());
 
         var epsilon = 0.02;
         assertEquals(8.865461, first.x, epsilon);

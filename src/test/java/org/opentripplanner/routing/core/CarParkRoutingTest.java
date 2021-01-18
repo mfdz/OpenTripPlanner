@@ -2,6 +2,7 @@ package org.opentripplanner.routing.core;
 
 
 import com.google.common.collect.ImmutableSet;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
@@ -231,6 +232,7 @@ public class CarParkRoutingTest {
     }
 
     @Test
+    @Ignore
     public void shouldRouteToDisabledParkingWhenWheelchairAccessible() {
         var nagolderStr = new GenericLocation(48.5957, 8.8461);
         var kirchgasse = new GenericLocation(48.59637, 8.87077);
