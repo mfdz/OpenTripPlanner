@@ -121,11 +121,20 @@ public class CarParkRoutingTest {
     }
 
     private static TripPlan getTripPlan(Graph graph, Instant startTime, boolean carParkAvailability, GenericLocation from, GenericLocation to) {
+        return getTripPlan(graph, startTime, carParkAvailability, false, from, to);
+    }
+
+    private static TripPlan getAccessibleTripPlan(Graph graph, Instant startTime, GenericLocation from, GenericLocation to) {
+        return getTripPlan(graph, startTime, true, true, from, to);
+    }
+
+    private static TripPlan getTripPlan(Graph graph, Instant startTime, boolean carParkAvailability, boolean wheelchairAccessible, GenericLocation from, GenericLocation to) {
         RoutingRequest request = new RoutingRequest();
         request.dateTime = startTime.getEpochSecond();
         request.from = from;
         request.to = to;
         request.useCarParkAvailabilityInformation = carParkAvailability;
+        request.wheelchairAccessible = wheelchairAccessible;
 
         request.modes = new TraverseModeSet(TraverseMode.CAR, TraverseMode.WALK);
         new QualifiedMode(TraverseMode.CAR, QualifiedMode.Qualifier.PARK).applyToRoutingRequest(request, false);
@@ -215,6 +224,18 @@ public class CarParkRoutingTest {
         var kirchgasse = new GenericLocation(48.59637, 8.87077);
 
         var tripPlan = getTripPlan(graph, now, true, nagolderStr, kirchgasse);
+        var polyline = firstTripToPolyline(tripPlan);
+        assertThatPolylinesAreEqual(polyline, "yirgHaw~t@@QBkCDcCDkCD{ABw@@_@FwC@S?[F}EK{DMoCEgB@aCLmEB_BFiDCwBGiAK}AYyEQoCEs@GuA?iA?[?_@FAbA]DElA_AJKRs@DQ?Q\\ENDDJJ^DNPMTQA?UPQLEOK_@EKOE]DAQESSq@?CSo@GSI]O]]aAUe@A?GE?_AAaBAyA@m@?u@@cF@e@?m@@K@MBKBIDGCE?E?C@IBE@KFIFISEK[KYQ{@AGUgBFQIq@CSGWYy@WgA_@eBG@IJAICK@GDO?S");
+
+        assertNull(tripPlan.itinerary.get(0).legs.get(0).alerts);
+    }
+
+    @Test
+    public void shouldRouteToDisabledParkingWhenWheelchairAccessible() {
+        var nagolderStr = new GenericLocation(48.5957, 8.8461);
+        var kirchgasse = new GenericLocation(48.59637, 8.87077);
+
+        var tripPlan = getAccessibleTripPlan(graph, now, nagolderStr, kirchgasse);
         var polyline = firstTripToPolyline(tripPlan);
         assertThatPolylinesAreEqual(polyline, "yirgHaw~t@@QBkCDcCDkCD{ABw@@_@FwC@S?[F}EK{DMoCEgB@aCLmEB_BFiDCwBGiAK}AYyEQoCEs@GuA?iA?[?_@FAbA]DElA_AJKRs@DQ?Q\\ENDDJJ^DNPMTQA?UPQLEOK_@EKOE]DAQESSq@?CSo@GSI]O]]aAUe@A?GE?_AAaBAyA@m@?u@@cF@e@?m@@K@MBKBIDGCE?E?C@IBE@KFIFISEK[KYQ{@AGUgBFQIq@CSGWYy@WgA_@eBG@IJAICK@GDO?S");
 

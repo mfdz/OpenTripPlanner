@@ -143,6 +143,7 @@ public class GraphSerializationTest {
                 SiftingAppender.class,
                 java.util.zip.Inflater.class,
                 ch.qos.logback.classic.Logger.class,
+                org.slf4j.Logger.class,
                 java.lang.invoke.MethodType.class,
                 WeakValueHashMap.class,
                 Method.class,
