@@ -19,6 +19,7 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: 11.0.9.1
+          java-package: jre
       - name: Run tests
         run: |-
           mvn clean verify
