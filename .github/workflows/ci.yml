@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # full history needed for setting the correct version
       - name: Cache local Maven repository
         uses: actions/cache@v2
         with:
@@ -21,15 +23,28 @@ jobs:
           java-version: 11
       - name: Run tests
         run: |-
-          mvn clean test
+          mvn clean test package
 
   docker:
     name: Build docker image
     if: ${{ github.ref == 'refs/heads/master' }}
-
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Cache local Maven repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Run tests
+        run: |-
+          mvn package
+
       - name: Publish to Dockerhub
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
