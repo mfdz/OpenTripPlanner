@@ -133,7 +133,8 @@ public class GraphSerializationTest {
         // The deduplicator in the loaded graph will be empty, because it is transient and only fills up when items
         // are deduplicated.
         objectDiffer.ignoreClasses(HashGridSpatialIndex.class, ThreadPoolExecutor.class, Deduplicator.class, TreeMap.class,
-                LuceneIndex.class, graphql.schema.GraphQLSchema.class, FileAppender.class, java.util.zip.Inflater.class);
+                LuceneIndex.class, graphql.schema.GraphQLSchema.class, FileAppender.class, java.util.zip.Inflater.class,
+                ch.qos.logback.classic.Logger.class);
         objectDiffer.compareTwoObjects(g1, g2);
         // Print differences before assertion so we can see what went wrong.
         assertFalse(objectDiffer.hasDifferences());
