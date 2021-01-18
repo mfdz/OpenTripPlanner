@@ -21,7 +21,7 @@ jobs:
           java-version: 11
       - name: Run tests
         run: |-
-          mvn clean verify
+          mvn clean test
 
   docker:
     name: Build docker image
