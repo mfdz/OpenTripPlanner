@@ -28,7 +28,7 @@ public class ParkApiDataSource extends GenericJsonCarParkDataSource{
 
         var carPark = new CarPark();
 
-        var lot_type = node.path("lot_type").asText("");
+        var lot_type = node.path("lot_type").asText("").replaceAll("-", " ");
         var name = node.path("name").asText("");
         var completeName = (lot_type + " " + name).strip();
         carPark.name = new NonLocalizedString(completeName);
@@ -42,6 +42,10 @@ public class ParkApiDataSource extends GenericJsonCarParkDataSource{
 
         carPark.spacesAvailable = node.path("free").asInt(Integer.MAX_VALUE);
         carPark.maxCapacity = node.path("total").asInt(Integer.MAX_VALUE);
+
+        carPark.disabledSpacesAvailable = node.path("free:disabled").asInt(Integer.MAX_VALUE);
+        carPark.maxDisabledCapacity = node.path("total:disabled").asInt(Integer.MAX_VALUE);
+
         carPark.realTimeData = isRealTimeData(carPark, node.path("state").asText());
 
         carPark.geometry = gf.createPoint(new Coordinate(carPark.x, carPark.y));

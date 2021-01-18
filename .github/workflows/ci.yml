@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+
+jobs:
+  tests:
+    name: Run tests, build docker image on master
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # full history needed for setting the correct version
+
+      - name: Cache local Maven repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            maven-
+
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Run tests, build jar file
+        run: |-
+          mvn clean test package
+
+      - name: Publish to Dockerhub
+        if: ${{ github.ref == 'refs/heads/master' }}
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: mfdz/opentripplanner
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_AUTH}}
+          tags: "latest,${{ github.sha }}"
+

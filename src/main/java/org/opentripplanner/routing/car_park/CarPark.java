@@ -50,6 +50,9 @@ public class CarPark implements Serializable {
     @JsonSerialize
     public int maxCapacity = Integer.MAX_VALUE;
 
+    public int disabledSpacesAvailable = Integer.MAX_VALUE;
+    public int maxDisabledCapacity = Integer.MAX_VALUE;
+
     @XmlAttribute
     @JsonSerialize
     public String openingHours;
@@ -86,6 +89,9 @@ public class CarPark implements Serializable {
 
     public boolean hasFewSpacesAvailable() {
         return hasFewSpacesAvailable(spacesAvailable, maxCapacity);
+    }
+    public boolean hasOnlyDisabledSpaces() {
+        return maxCapacity == Integer.MAX_VALUE && maxDisabledCapacity != Integer.MAX_VALUE;
     }
 
     public static boolean hasFewSpacesAvailable(int spacesAvailable, int maxCapacity) {
