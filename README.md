@@ -4,12 +4,12 @@ OpenTripPlanner (OTP) is an open source multi-modal trip planner. It depends on 
 
 The main Java server code is in `src/main/`. OTP also includes a Javascript client based on the Leaflet mapping library in `src/client/`. The Maven build produces a JAR file at `target/otp-VERSION.jar` containing all necessary code and dependencies to run OpenTripPlanner.
 
-Additional information and instructions are available in the [main documentation](http://opentripplanner.readthedocs.org/en/latest/), including a 
+Additional information and instructions are available in the [main documentation](http://opentripplanner.readthedocs.org/en/latest/), including a
 [quick introduction](http://opentripplanner.readthedocs.org/en/latest/Basic-Usage/).
 
-[![Build Status](https://travis-ci.org/mfdz/OpenTripPlanner.svg?branch=master)](https://travis-ci.org/mfdz/OpenTripPlanner)
+[![Build](https://github.com/hsldevcom/mfdz/workflows/Process%20master%20push%20or%20pr/badge.svg?branch=master)](https://github.com/HSLdevcom/mfdz/actions)
 
-## Development 
+## Development
 
 OpenTripPlanner is a collaborative project incorporating code, translation, and documentation from contributors around the world. We welcome new contributions and prefer to format our code according to GeoTools-based formatting guidelines; an Eclipse autoformatter can be found at the root of this project (https://raw.github.com/openplans/OpenTripPlanner/master/formatter.xml). Further [development guidelines](http://opentripplanner.readthedocs.org/en/latest/Developers-Guide/) can be found in the documentation.
 

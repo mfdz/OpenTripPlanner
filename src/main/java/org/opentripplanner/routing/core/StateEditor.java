@@ -104,7 +104,7 @@ public class StateEditor {
 
         // if something was flagged incorrect, do not make a new state
         if (defectiveTraversal) {
-            LOG.error("Defective traversal flagged on edge " + child.backEdge);
+            LOG.debug("Defective traversal flagged on edge " + child.backEdge);
             return null;
         }
 
@@ -183,7 +183,7 @@ public class StateEditor {
 
     public void incrementWeight(double weight) {
         if (Double.isNaN(weight)) {
-            LOG.warn("A state's weight is being incremented by NaN while traversing edge "
+            LOG.debug("A state's weight is being incremented by NaN while traversing edge "
                     + child.backEdge);
             defectiveTraversal = true;
             return;
