@@ -37,7 +37,7 @@ function download_graph {
   GRAPH_FILE=graph-$NAME.zip
   URL=$(url $3 "graph-$NAME-$VERSION.zip")
   echo "Downloading graph from $URL"
-  for i in {1..6}; do
+  for (( ; ; )) do
     HTTP_STATUS=$(curl --write-out %{http_code} --silent --output $GRAPH_FILE $URL)
 
     if [ "$HTTP_STATUS" -eq 404 ]; then
@@ -49,7 +49,8 @@ function download_graph {
     if [ "$HTTP_STATUS" -eq 200 ]; then break;
     fi;
 
-    rm  $GRAPH_FILE > /dev/null
+    echo "Graph download $URL not available yet, sleeping for $SLEEP_TIME s"
+    rm  $GRAPH_FILE > /dev/null 2> /dev/null
     sleep $SLEEP_TIME;
 
   done
@@ -98,7 +99,11 @@ for ROUTER in "${ROUTER_NAMES[@]}"
 do
   echo ROUTER $ROUTER
 
-  download_graph $ROUTER $VERSION "$j" || process $ROUTER "$j"
+  until download_graph $ROUTER $VERSION "$j"
+  do
+    echo "Error retrieving graph $ROUTER $VERSION "$j" from otp-data-server... retrying in $SLEEP_TIME s..."
+    sleep $SLEEP_TIME
+  done
 
   echo "graphString is: $ROUTER"
   j=$[$j+1]
