@@ -1,5 +1,6 @@
 package org.opentripplanner.graph_builder.module.osm;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opentripplanner.common.model.P2;
 import org.opentripplanner.graph_builder.annotation.ConflictingBikeTags;
 import org.opentripplanner.openstreetmap.model.OSMWay;
@@ -272,6 +273,13 @@ public class OSMFilter {
 
     public static boolean isCovered(OSMWithTags thing) {
         return Optional.ofNullable(thing.getTag("covered")).stream().allMatch(s -> s.strip().equalsIgnoreCase("true"));
+    }
+
+    public static Optional<Integer> getCapacity(OSMWithTags thing) {
+        return Optional.ofNullable(thing.getTag("capacity"))
+                .filter(s -> StringUtils.isNumeric(s.strip()))
+                .map(Float::valueOf)
+                .map(Float::intValue);
     }
 
 }

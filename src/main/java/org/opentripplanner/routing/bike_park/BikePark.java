@@ -29,6 +29,10 @@ public class BikePark implements Serializable {
 
     @XmlAttribute
     @JsonSerialize
+    public int maxCapacity = Integer.MAX_VALUE;
+
+    @XmlAttribute
+    @JsonSerialize
     public int spacesAvailable = Integer.MAX_VALUE;
 
     /**
