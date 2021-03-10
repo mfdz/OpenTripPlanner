@@ -39,6 +39,10 @@ public class BikePark implements Serializable {
     @JsonSerialize
     public boolean realTimeData = true;
 
+    @XmlAttribute
+    @JsonSerialize
+    public boolean covered = false;
+
     public boolean equals(Object o) {
         if (!(o instanceof BikePark)) {
             return false;

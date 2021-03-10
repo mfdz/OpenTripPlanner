@@ -334,6 +334,7 @@ public class OpenStreetMapModule implements GraphBuilderModule {
                 bikePark.id = "" + node.getId();
                 //TODO: localize bikePark name
                 bikePark.name = creativeName.toString();
+                bikePark.covered = OSMFilter.isCovered(node);
                 bikePark.x = node.lon;
                 bikePark.y = node.lat;
                 bikeRentalService.addBikePark(bikePark);
@@ -382,10 +383,11 @@ public class OpenStreetMapModule implements GraphBuilderModule {
             }
             BikePark bikePark = new BikePark();
             bikePark.id = "" + osmId;
-            //TODO: localize 
+            //TODO: localize
             bikePark.name = creativeName.toString();
             bikePark.x = (envelope.getMinX() + envelope.getMaxX()) / 2;
             bikePark.y = (envelope.getMinY() + envelope.getMaxY()) / 2;
+            bikePark.covered = OSMFilter.isCovered(area.parent);
             bikeRentalService.addBikePark(bikePark);
             BikeParkVertex bikeParkVertex = new BikeParkVertex(graph, bikePark);
             new BikeParkEdge(bikeParkVertex);

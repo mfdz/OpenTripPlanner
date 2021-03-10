@@ -10,6 +10,8 @@ import org.opentripplanner.routing.graph.Graph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Optional;
+
 /**
  *
  */
@@ -266,6 +268,10 @@ public class OSMFilter {
             return StreetEdge.CLASS_OTHER_PLATFORM;
         }
         return 0;
+    }
+
+    public static boolean isCovered(OSMWithTags thing) {
+        return Optional.ofNullable(thing.getTag("covered")).stream().allMatch(s -> s.strip().equalsIgnoreCase("true"));
     }
 
 }
