@@ -12,13 +12,11 @@ jobs:
         with:
           fetch-depth: 0 # full history needed for setting the correct version
 
-      - name: Cache local Maven repository
-        uses: actions/cache@v2
+      - uses: actions/cache@v2
+        id: cache
         with:
-          path: ~/.m2/repository
-          key: maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            maven-
+          path: ~/.m2
+          key: maven-local-repo
 
       - uses: actions/setup-java@v1
         with:
