@@ -68,6 +68,12 @@ public class GermanyWayPropertySetSource implements WayPropertySetSource {
         props.setProperties("footway=sidewalk;highway=footway;bicycle=yes",
                 StreetTraversalPermission.PEDESTRIAN_AND_BICYCLE, 1.2, 1.2);
 
+        props.setProperties("highway=tertiary", StreetTraversalPermission.ALL, 1.2, 1.2, true);
+        props.setProperties("maxspeed=70", StreetTraversalPermission.ALL, 1.5, 1.5, true);
+        props.setProperties("maxspeed=80", StreetTraversalPermission.ALL, 1.7, 1.7, true);
+        props.setProperties("maxspeed=90", StreetTraversalPermission.ALL, 1.9, 1.9, true);
+        props.setProperties("maxspeed=100", StreetTraversalPermission.ALL, 2, 2, true);
+
         /** tracktype */
         props.setProperties("tracktype=grade1", StreetTraversalPermission.ALL, 1.0, 1.0, true); // Solid
         props.setProperties("tracktype=grade2", StreetTraversalPermission.ALL, 1.1, 1.1, true); // Solid but unpaved.
