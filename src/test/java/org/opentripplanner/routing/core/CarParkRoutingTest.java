@@ -49,7 +49,8 @@ public class CarParkRoutingTest {
     static GeometryFactory gf = new GeometryFactory();
 
     public static Graph getDefaultGraph() {
-        var graph = TestGraphBuilder.buildGraph(ConstantsForTests.HERRENBERG_OSM);
+        // we don't actually need Deufringen, but we don't want to mess with the cached graphs that other tests are using
+        var graph = TestGraphBuilder.buildGraph(ConstantsForTests.HERRENBERG_OSM, ConstantsForTests.DEUFRINGEN_OSM);
         return addCarParksToGraph(graph);
     }
 
