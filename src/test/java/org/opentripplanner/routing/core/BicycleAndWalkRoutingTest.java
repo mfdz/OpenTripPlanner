@@ -185,6 +185,29 @@ public class BicycleAndWalkRoutingTest {
     }
 
     @Test
+    public void shouldRespectNoThroughTraffic() {
+        var graph = getDefaultGraph();
+        var mozartStr = new GenericLocation(48.59521, 8.88391);
+        var fritzLeharStr = new GenericLocation(48.59460, 8.88291);
+
+        var polyline1 = calculatePolyline(graph, mozartStr, fritzLeharStr);
+        assertThatPolylinesAreEqual(polyline1, "_grgHkcfu@OjBC\\ARGjAKzAfBz@j@n@Rk@E}D");
+
+        var polyline2 = calculatePolyline(graph, fritzLeharStr, mozartStr);
+        assertThatPolylinesAreEqual(polyline2, "gcrgHc}eu@D|DSj@k@o@gB{@J{AFkA@SB]NkB");
+    }
+
+    @Test
+    public void shouldIgnoreNoThroughForCars() {
+        var graph = getDefaultGraph();
+        var vogtHessStr = new GenericLocation(48.59276, 8.86583);
+        var horberStr = new GenericLocation(48.59368, 8.86508);
+
+        var polyline = calculatePolyline(graph, horberStr, vogtHessStr);
+        assertThatPolylinesAreEqual(polyline, "o}qgHumbu@Np@DNDLFH@BBDJLBMDMBIDIHGFEHCJELEd@MPEZKIs@Gq@Eu@");
+    }
+
+    @Test
     public void shouldNotWalkOnRoundaboutsOutsideTowns() {
         var graph = getDefaultGraph();
         var start = new GenericLocation(48.56270, 8.75747);
