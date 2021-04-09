@@ -42,7 +42,7 @@ public abstract class DominanceFunction implements Serializable {
      * The following variable determines how close you have to be to the start or the end point for it to be
      * considered "close enough for a loop".
      */
-    private static final int MAX_METERS_ROUTE_LOOPS = 500;
+    private static final float MAX_LOOP_EUCLIDIAN_DISTANCE = 0.005f;
 
     /**
      * Return true if the first state "defeats" the second state or at least ties with it in terms of suitability. 
@@ -132,8 +132,9 @@ public abstract class DominanceFunction implements Serializable {
         var currentLocation = v.getCoordinate();
         var allNonNull = from != null && to != null && currentLocation != null;
         if(allNonNull) {
-            return currentLocation.distance(req.from.getCoordinate()) < MAX_METERS_ROUTE_LOOPS ||
-                    currentLocation.distance(req.to.getCoordinate()) < MAX_METERS_ROUTE_LOOPS;
+            return currentLocation.distance(req.from.getCoordinate()) < MAX_LOOP_EUCLIDIAN_DISTANCE
+                    ||
+                    currentLocation.distance(req.to.getCoordinate()) < MAX_LOOP_EUCLIDIAN_DISTANCE;
         }
         else return false;
     }
