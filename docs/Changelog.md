@@ -17,6 +17,7 @@
 - Process OSM bicycle routes correctly [#3359](https://github.com/opentripplanner/OpenTripPlanner/pull/3405)
 - Avoid turns across traffic on bicycles [#3359](https://github.com/opentripplanner/OpenTripPlanner/pull/3405)
 - Remove request parameter `driveOnRight` and derive information from way property set [#3359](https://github.com/opentripplanner/OpenTripPlanner/pull/3405)
+- Add no thru traffic debug layer [#3443](https://github.com/opentripplanner/OpenTripPlanner/issues/3443)
 
 ## 2.0.0 (2020-11-27)
 
