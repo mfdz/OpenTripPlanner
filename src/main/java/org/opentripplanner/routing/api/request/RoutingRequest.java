@@ -70,7 +70,7 @@ import java.util.TimeZone;
  *           class, but we want to keep it in the RoutingResource as long as we support the
  *           REST API.
  */
-public class RoutingRequest implements Cloneable, Serializable {
+public class RoutingRequest implements AutoCloseable, Cloneable, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -1073,6 +1073,7 @@ public class RoutingRequest implements Cloneable, Serializable {
         if (streetMode != null) {
             switch (streetMode) {
                 case WALK:
+                case FLEXIBLE:
                     streetRequest.streetSubRequestModes.setWalk(true);
                     break;
                 case BIKE:
@@ -1230,6 +1231,11 @@ public class RoutingRequest implements Cloneable, Serializable {
             rctx.destroy();
             LOG.debug("routing context destroyed");
         }
+    }
+
+    @Override
+    public void close() {
+        cleanup();
     }
 
     /**
