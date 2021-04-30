@@ -275,7 +275,7 @@ public class PruneFloatingIslands implements GraphBuilderModule {
                 ) {
                     continue;
                 }
-                if ((e instanceof StreetEdge && ((StreetEdge) e).isNoThruTraffic())
+                if ((e instanceof StreetEdge && ((StreetEdge) e).isMotorVehicleNoThruTraffic())
                         != noThruTraffic) {
                     continue;
                 }
@@ -365,7 +365,7 @@ public class PruneFloatingIslands implements GraphBuilderModule {
                         if (!isolated.containsKey(e)) {
                             // not a true island edge but has limited access
                             // so convert to noThruTraffic
-                            pse.setNoThruTraffic(true);
+                            pse.setMotorVehicleNoThruTraffic(true);
                             stats.put("noThru", stats.get("noThru") + 1);
                         }
                         else {
