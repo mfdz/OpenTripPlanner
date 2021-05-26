@@ -269,28 +269,13 @@ public class StateEditor {
     }
 
     /**
-     * This has two effects: marks the car as parked, and switches the current mode.
-     * Marking the car parked is important for allowing co-dominance of walking and driving states.
+     * This has two effects: marks the vehicle as parked, and switches the current mode.
+     * Marking the vehicle parked is important for allowing co-dominance of walking and driving states.
      */
-    public void setCarParked(boolean carParked) {
+    public void setVehicleParked(boolean vehicleParked, TraverseMode nonTransitMode) {
         cloneStateDataAsNeeded();
-        child.stateData.carParked = carParked;
-        if (carParked) {
-            // We do not handle mixed-mode P+BIKE...
-            child.stateData.currentMode = TraverseMode.WALK;
-        } else {
-            child.stateData.currentMode = TraverseMode.CAR;
-        }
-    }
-
-    public void setBikeParked(boolean bikeParked) {
-        cloneStateDataAsNeeded();
-        child.stateData.bikeParked = bikeParked;
-        if (bikeParked) {
-            child.stateData.currentMode = TraverseMode.WALK;
-        } else {
-            child.stateData.currentMode = TraverseMode.BICYCLE;
-        }
+        child.stateData.vehicleParked = vehicleParked;
+        child.stateData.currentMode = nonTransitMode;
     }
 
     public void setTimeSeconds(long seconds) {
@@ -311,15 +296,12 @@ public class StateEditor {
     public void setFromState(State state) {
         cloneStateDataAsNeeded();
         child.stateData.carPickupState = state.stateData.carPickupState;
-        child.stateData.carParked = state.stateData.carParked;
-        child.stateData.bikeParked = state.stateData.bikeParked;
+        child.stateData.vehicleParked = state.stateData.vehicleParked;
     }
 
     public void setNonTransitOptionsFromState(State state) {
         cloneStateDataAsNeeded();
         child.stateData.currentMode = state.getNonTransitMode();
-        child.stateData.carParked = state.isCarParked();
-        child.stateData.bikeParked = state.isBikeParked();
         child.stateData.bikeRentalState = state.stateData.bikeRentalState;
     }
 

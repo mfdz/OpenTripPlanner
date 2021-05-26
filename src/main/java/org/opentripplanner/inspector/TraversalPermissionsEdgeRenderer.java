@@ -70,7 +70,7 @@ public class TraversalPermissionsEdgeRenderer implements EdgeVertexRenderer {
         } else if (v instanceof BikeRentalStationVertex) {
             attrs.color = BIKE_RENTAL_COLOR_VERTEX;
             attrs.label = v.getName();
-        } else if (v instanceof ParkAndRideVertex || v instanceof BikeParkVertex) {
+        } else if (v instanceof VehicleParkingEntranceVertex) {
             attrs.color = PARK_AND_RIDE_COLOR_VERTEX;
             attrs.label = v.getName();
         } else {

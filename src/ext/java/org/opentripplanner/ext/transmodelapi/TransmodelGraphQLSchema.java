@@ -1008,11 +1008,11 @@ public class TransmodelGraphQLSchema {
                 .type(new GraphQLNonNull(Scalars.GraphQLString))
                 .build())
             .dataFetcher(environment -> {
+              var bikeParkId = TransitIdMapper.mapIDToDomain(environment.getArgument("id"));
               return GqlUtil.getRoutingService(environment)
-                  .getBikerentalStationService()
+                  .getVehicleParkingService()
                   .getBikeParks()
-                  .stream()
-                  .filter(bikePark -> bikePark.id.equals(environment.getArgument("id")))
+                  .filter(bikePark -> bikePark.getId().equals(bikeParkId))
                   .findFirst()
                   .orElse(null);
             })
@@ -1022,11 +1022,10 @@ public class TransmodelGraphQLSchema {
             .name("bikeParks")
             .description("Get all bike parks")
             .type(new GraphQLNonNull(new GraphQLList(bikeParkType)))
-            .dataFetcher(environment -> {
-              return new ArrayList<>(GqlUtil.getRoutingService(environment)
-                  .getBikerentalStationService()
-                  .getBikeParks());
-            })
+            .dataFetcher(environment -> GqlUtil.getRoutingService(environment)
+                .getVehicleParkingService()
+                .getBikeParks()
+                .collect(Collectors.toCollection(ArrayList::new)))
             .build())
         .field(GraphQLFieldDefinition
             .newFieldDefinition()

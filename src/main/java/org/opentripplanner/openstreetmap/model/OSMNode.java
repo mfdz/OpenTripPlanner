@@ -68,4 +68,9 @@ public class OSMNode extends OSMWithTags {
     public boolean isBollard() {
         return isTag("barrier", "bollard");
     }
+
+    @Override
+    public String getOpenStreetMapLink() {
+        return String.format("http://www.openstreetmap.org/node/%d", getId());
+    }
 }

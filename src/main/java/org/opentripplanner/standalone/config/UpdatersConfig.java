@@ -9,7 +9,7 @@ import org.opentripplanner.ext.siri.updater.SiriETGooglePubsubUpdaterParameters;
 import org.opentripplanner.ext.siri.updater.SiriETUpdaterParameters;
 import org.opentripplanner.ext.siri.updater.SiriSXUpdaterParameters;
 import org.opentripplanner.ext.siri.updater.SiriVMUpdaterParameters;
-import org.opentripplanner.standalone.config.updaters.BikeParkUpdaterConfig;
+import org.opentripplanner.standalone.config.updaters.VehicleParkingUpdaterConfig;
 import org.opentripplanner.standalone.config.updaters.BikeRentalUpdaterConfig;
 import org.opentripplanner.standalone.config.updaters.GtfsRealtimeAlertsUpdaterConfig;
 import org.opentripplanner.standalone.config.updaters.MqttGtfsRealtimeUpdaterConfig;
@@ -22,7 +22,7 @@ import org.opentripplanner.standalone.config.updaters.WFSNotePollingGraphUpdater
 import org.opentripplanner.standalone.config.updaters.WebsocketGtfsRealtimeUpdaterConfig;
 import org.opentripplanner.updater.UpdatersParameters;
 import org.opentripplanner.updater.alerts.GtfsRealtimeAlertsUpdaterParameters;
-import org.opentripplanner.updater.bike_park.BikeParkUpdaterParameters;
+import org.opentripplanner.updater.vehicle_parking.VehicleParkingUpdaterParameters;
 import org.opentripplanner.updater.bike_rental.BikeRentalUpdaterParameters;
 import org.opentripplanner.updater.stoptime.MqttGtfsRealtimeUpdaterParameters;
 import org.opentripplanner.updater.stoptime.PollingStoptimeUpdaterParameters;
@@ -47,7 +47,7 @@ public class UpdatersConfig implements UpdatersParameters {
   private static final String WEBSOCKET_GTFS_RT_UPDATER = "websocket-gtfs-rt-updater";
   private static final String MQTT_GTFS_RT_UPDATER = "mqtt-gtfs-rt-updater";
   private static final String REAL_TIME_ALERTS = "real-time-alerts";
-  private static final String BIKE_PARK = "bike-park";
+  private static final String VEHICLE_PARKING = "vehicle-parking";
   private static final String WINKKI_POLLING_UPDATER = "winkki-polling-updater";
   private static final String SIRI_ET_UPDATER = "siri-et-updater";
   private static final String SIRI_ET_GOOGLE_PUBSUB_UPDATER = "siri-et-google-pubsub-updater";
@@ -58,7 +58,7 @@ public class UpdatersConfig implements UpdatersParameters {
 
   static {
     CONFIG_CREATORS.put(BIKE_RENTAL, BikeRentalUpdaterConfig::create);
-    CONFIG_CREATORS.put(BIKE_PARK, BikeParkUpdaterConfig::create);
+    CONFIG_CREATORS.put(VEHICLE_PARKING, VehicleParkingUpdaterConfig::create);
     CONFIG_CREATORS.put(STOP_TIME_UPDATER, PollingStoptimeUpdaterConfig::create);
     CONFIG_CREATORS.put(WEBSOCKET_GTFS_RT_UPDATER, WebsocketGtfsRealtimeUpdaterConfig::create);
     CONFIG_CREATORS.put(MQTT_GTFS_RT_UPDATER, MqttGtfsRealtimeUpdaterConfig::create);
@@ -149,8 +149,8 @@ public class UpdatersConfig implements UpdatersParameters {
   }
 
   @Override
-  public List<BikeParkUpdaterParameters> getBikeParkUpdaterParameters() {
-    return getParameters(BIKE_PARK);
+  public List<VehicleParkingUpdaterParameters> getVehicleParkingUpdaterParameters() {
+    return getParameters(VEHICLE_PARKING);
   }
 
   @Override

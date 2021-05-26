@@ -986,9 +986,9 @@ connect to a network resource is the `url` field.
             "frequencySec": -1
         },
 
-        // Bike parking availability
+        // Vehicle parking availability
         {
-            "type": "bike-park"
+            "type": "vehicle-parking"
         },
 
         // Polling for GTFS-RT TripUpdates)

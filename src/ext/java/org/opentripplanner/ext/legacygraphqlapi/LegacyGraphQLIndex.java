@@ -13,13 +13,6 @@ import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.idl.SchemaGenerator;
 import graphql.schema.idl.SchemaParser;
 import graphql.schema.idl.TypeDefinitionRegistry;
-import org.opentripplanner.ext.legacygraphqlapi.datafetchers.*;
-import org.opentripplanner.routing.RoutingService;
-import org.opentripplanner.standalone.server.Router;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ws.rs.core.Response;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
@@ -30,6 +23,41 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import javax.ws.rs.core.Response;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLAgencyImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLAlertImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLBikeRentalStationImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLCoordinatesImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLDepartureRowImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLFeedImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLGeometryImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLItineraryImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLLegImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLNodeTypeResolver;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLPatternImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLPlaceImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLPlaceInterfaceTypeResolver;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLPlanImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLQueryTypeImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLRouteImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLStopImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLStoptimeImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLStoptimesInPatternImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLTranslatedStringImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLTripImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLVehicleParkingImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLdebugOutputImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLelevationProfileComponentImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLfareComponentImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLfareImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLplaceAtDistanceImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLserviceTimeRangeImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLstepImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLstopAtDistanceImpl;
+import org.opentripplanner.routing.RoutingService;
+import org.opentripplanner.standalone.server.Router;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class LegacyGraphQLIndex {
 
@@ -54,7 +82,7 @@ class LegacyGraphQLIndex {
           .type("PlaceInterface", type -> type.typeResolver(new LegacyGraphQLPlaceInterfaceTypeResolver()))
           .type(IntrospectionTypeWiring.build(LegacyGraphQLAgencyImpl.class))
           .type(IntrospectionTypeWiring.build(LegacyGraphQLAlertImpl.class))
-          .type(IntrospectionTypeWiring.build(LegacyGraphQLBikeParkImpl.class))
+          .type(IntrospectionTypeWiring.build(LegacyGraphQLVehicleParkingImpl.class))
           .type(IntrospectionTypeWiring.build(LegacyGraphQLBikeRentalStationImpl.class))
           .type(IntrospectionTypeWiring.build(LegacyGraphQLCoordinatesImpl.class))
           .type(IntrospectionTypeWiring.build(LegacyGraphQLdebugOutputImpl.class))
@@ -81,6 +109,7 @@ class LegacyGraphQLIndex {
           .type(IntrospectionTypeWiring.build(LegacyGraphQLStoptimesInPatternImpl.class))
           .type(IntrospectionTypeWiring.build(LegacyGraphQLTranslatedStringImpl.class))
           .type(IntrospectionTypeWiring.build(LegacyGraphQLTripImpl.class))
+          .type(IntrospectionTypeWiring.build(LegacyGraphQLVehicleParkingImpl.class))
           .build();
       SchemaGenerator schemaGenerator = new SchemaGenerator();
       return schemaGenerator.makeExecutableSchema(typeRegistry, runtimeWiring);

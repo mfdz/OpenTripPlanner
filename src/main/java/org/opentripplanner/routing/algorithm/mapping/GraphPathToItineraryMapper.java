@@ -38,12 +38,13 @@ import org.opentripplanner.routing.edgetype.ElevatorAlightEdge;
 import org.opentripplanner.routing.edgetype.FreeEdge;
 import org.opentripplanner.routing.edgetype.PathwayEdge;
 import org.opentripplanner.routing.edgetype.StreetEdge;
+import org.opentripplanner.routing.edgetype.VehicleParkingEdge;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.location.TemporaryStreetLocation;
 import org.opentripplanner.routing.spt.GraphPath;
-import org.opentripplanner.routing.vertextype.BikeParkVertex;
+import org.opentripplanner.routing.vertextype.VehicleParkingEntranceVertex;
 import org.opentripplanner.routing.vertextype.BikeRentalStationVertex;
 import org.opentripplanner.routing.vertextype.ExitVertex;
 import org.opentripplanner.routing.vertextype.StreetVertex;
@@ -210,11 +211,19 @@ public abstract class GraphPathToItineraryMapper {
             var forwardMode = forwardState.getBackMode();
 
             var modeChange = backMode != forwardMode && backMode != null && forwardMode != null;
+            var parkingChange = backState.isVehicleParked() != forwardState.isVehicleParked();
             var rentalChange = isRentalPickUp(backState) || isRentalDropOff(backState);
-            var parkingChange = backState.isBikeParked() != forwardState.isBikeParked()
-                    || backState.isCarParked() != forwardState.isCarParked();
 
-            if (modeChange || rentalChange || parkingChange) {
+            if (parkingChange || rentalChange) {
+                /* Remove the state for actually parking (traversing VehicleParkingEdge) from the
+                 * states so that the leg from/to edges correspond to the actual entrances.
+                 * The actual time for parking is added to the walking leg in generateLeg().
+                 */
+                legIndexPairs[1] = i;
+                legsIndexes.add(legIndexPairs);
+                legIndexPairs = new int[] {i + 1, states.length - 1};
+            }
+            else if (modeChange) {
                 legIndexPairs[1] = i;
                 legsIndexes.add(legIndexPairs);
                 legIndexPairs = new int[] {i, states.length - 1};
@@ -307,6 +316,17 @@ public abstract class GraphPathToItineraryMapper {
 
         if (flexEdge != null) {
             FlexLegMapper.fixFlexTripLeg(leg, flexEdge);
+        }
+
+        /* For the from/to vertices to be in the correct place for vehicle parking
+         * the state for actually parking (traversing the VehicleParkEdge) is excluded
+         * from the list of states.
+         * This add the time for parking to the walking leg.
+         */
+        var previousStateIsVehicleParking = states[0].getBackState() != null
+                && states[0].getBackEdge() instanceof VehicleParkingEdge;
+        if (previousStateIsVehicleParking) {
+            leg.startTime = makeCalendar(states[0].getBackState());
         }
 
         return leg;
@@ -488,8 +508,8 @@ public abstract class GraphPathToItineraryMapper {
             place.bikeShareId = ((BikeRentalStationVertex) vertex).getId();
             LOG.trace("Added bike share Id {} to place", place.bikeShareId);
             place.vertexType = VertexType.BIKESHARE;
-        } else if (vertex instanceof BikeParkVertex) {
-            place.vertexType = VertexType.BIKEPARK;
+        } else if (vertex instanceof VehicleParkingEntranceVertex) {
+            place.vertexType = VertexType.VEHICLEPARK;
         } else {
             place.vertexType = VertexType.NORMAL;
         }

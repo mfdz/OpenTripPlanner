@@ -86,7 +86,7 @@ public abstract class StreetTransitEntityLink<T extends Vertex> extends Edge imp
             return null;
         }
 
-        if (s0.getOptions().bikeParkAndRide && !s0.isBikeParked()) {
+        if (s0.getOptions().parkAndRide && !s0.isVehicleParked()) {
             // Forbid taking your own bike in the station if bike P+R activated.
             return null;
         }

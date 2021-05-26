@@ -400,6 +400,12 @@ public class RoutingRequest implements AutoCloseable, Cloneable, Serializable {
     /** Cost of parking a bike. */
     public int bikeParkCost = 120;
 
+    /** Time to park a car */
+    public int carParkTime = 60;
+
+    /** Cost of parking a car. */
+    public int carParkCost = 120;
+
     /**
      * Time to park a car in a park and ride, w/o taking into account driving and walking cost
      * (time to park, switch off, pick your stuff, lock the car, etc...)
@@ -692,7 +698,6 @@ public class RoutingRequest implements AutoCloseable, Cloneable, Serializable {
       This is a temporary solution, as it only covers parking and rental at the beginning of the trip.
     */
     public boolean bikeRental = false;
-    public boolean bikeParkAndRide = false;
     public boolean parkAndRide  = false;
     public boolean carPickup = false;
 
@@ -1109,7 +1114,7 @@ public class RoutingRequest implements AutoCloseable, Cloneable, Serializable {
                 case BIKE_TO_PARK:
                     streetRequest.streetSubRequestModes.setBicycle(true);
                     streetRequest.streetSubRequestModes.setWalk(true);
-                    streetRequest.bikeParkAndRide = true;
+                    streetRequest.parkAndRide = true;
                     break;
                 case BIKE_RENTAL:
                     streetRequest.streetSubRequestModes.setBicycle(true);
