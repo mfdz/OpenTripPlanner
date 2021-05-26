@@ -77,12 +77,12 @@ public class LegacyGraphQLPlaceImpl implements LegacyGraphQLDataFetchers.LegacyG
   }
 
   @Override
-  public DataFetcher<VehicleParking> bikePark() {
+  public DataFetcher<Object> bikePark() {
     return this::getVehicleParking;
   }
 
   @Override
-  public DataFetcher<VehicleParking> carPark() {
+  public DataFetcher<Object> carPark() {
     return this::getVehicleParking;
   }
 

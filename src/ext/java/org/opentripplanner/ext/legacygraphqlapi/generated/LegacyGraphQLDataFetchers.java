@@ -73,6 +73,17 @@ public class LegacyGraphQLDataFetchers {
     public DataFetcher<Long> effectiveEndDate();
   }
   
+  /** Bike park represents a location where bicycles can be parked. */
+  public interface LegacyGraphQLBikePark {
+    public DataFetcher<graphql.relay.Relay.ResolvedGlobalId> id();
+    public DataFetcher<String> bikeParkId();
+    public DataFetcher<String> name();
+    public DataFetcher<Integer> spacesAvailable();
+    public DataFetcher<Boolean> realtime();
+    public DataFetcher<Double> lon();
+    public DataFetcher<Double> lat();
+  }
+  
   /** Bike rental station represents a location where users can rent bicycles for a fee. */
   public interface LegacyGraphQLBikeRentalStation {
     public DataFetcher<graphql.relay.Relay.ResolvedGlobalId> id();
@@ -88,6 +99,18 @@ public class LegacyGraphQLDataFetchers {
     public DataFetcher<Double> lat();
     public DataFetcher<Integer> capacity();
     public DataFetcher<Boolean> allowOverloading();
+  }
+  
+  /** Car park represents a location where cars can be parked. */
+  public interface LegacyGraphQLCarPark {
+    public DataFetcher<graphql.relay.Relay.ResolvedGlobalId> id();
+    public DataFetcher<String> carParkId();
+    public DataFetcher<String> name();
+    public DataFetcher<Integer> maxCapacity();
+    public DataFetcher<Integer> spacesAvailable();
+    public DataFetcher<Boolean> realtime();
+    public DataFetcher<Double> lon();
+    public DataFetcher<Double> lat();
   }
   
   /** Cluster is a list of stops grouped by name and proximity */
@@ -217,8 +240,8 @@ public class LegacyGraphQLDataFetchers {
     public DataFetcher<Long> departureTime();
     public DataFetcher<Object> stop();
     public DataFetcher<BikeRentalStation> bikeRentalStation();
-    public DataFetcher<VehicleParking> bikePark();
-    public DataFetcher<VehicleParking> carPark();
+    public DataFetcher<Object> bikePark();
+    public DataFetcher<Object> carPark();
   }
   
   /** Interface for places, e.g. stops, stations, parking areas.. */
@@ -269,10 +292,12 @@ public class LegacyGraphQLDataFetchers {
     public DataFetcher<Object> serviceTimeRange();
     public DataFetcher<Iterable<BikeRentalStation>> bikeRentalStations();
     public DataFetcher<BikeRentalStation> bikeRentalStation();
-    public DataFetcher<Iterable<VehicleParking>> bikeParks();
-    public DataFetcher<VehicleParking> bikePark();
-    public DataFetcher<Iterable<VehicleParking>> carParks();
-    public DataFetcher<VehicleParking> carPark();
+    public DataFetcher<Iterable<Object>> bikeParks();
+    public DataFetcher<Object> bikePark();
+    public DataFetcher<Iterable<Object>> carParks();
+    public DataFetcher<Object> carPark();
+    public DataFetcher<Iterable<VehicleParking>> vehicleParkings();
+    public DataFetcher<VehicleParking> vehicleParking();
     public DataFetcher<Object> viewer();
     public DataFetcher<RoutingResponse> plan();
   }

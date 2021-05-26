@@ -26,7 +26,9 @@ import java.util.stream.Collectors;
 import javax.ws.rs.core.Response;
 import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLAgencyImpl;
 import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLAlertImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLBikeParkImpl;
 import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLBikeRentalStationImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLCarParkImpl;
 import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLCoordinatesImpl;
 import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLDepartureRowImpl;
 import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLFeedImpl;
@@ -82,8 +84,9 @@ class LegacyGraphQLIndex {
           .type("PlaceInterface", type -> type.typeResolver(new LegacyGraphQLPlaceInterfaceTypeResolver()))
           .type(IntrospectionTypeWiring.build(LegacyGraphQLAgencyImpl.class))
           .type(IntrospectionTypeWiring.build(LegacyGraphQLAlertImpl.class))
-          .type(IntrospectionTypeWiring.build(LegacyGraphQLVehicleParkingImpl.class))
+          .type(IntrospectionTypeWiring.build(LegacyGraphQLBikeParkImpl.class))
           .type(IntrospectionTypeWiring.build(LegacyGraphQLBikeRentalStationImpl.class))
+          .type(IntrospectionTypeWiring.build(LegacyGraphQLCarParkImpl.class))
           .type(IntrospectionTypeWiring.build(LegacyGraphQLCoordinatesImpl.class))
           .type(IntrospectionTypeWiring.build(LegacyGraphQLdebugOutputImpl.class))
           .type(IntrospectionTypeWiring.build(LegacyGraphQLDepartureRowImpl.class))

@@ -29,8 +29,10 @@ config:
     AlertCauseType: String
     AlertEffectType: String
     AlertSeverityLevelType: String
+    BikePark: Object
     BikeRentalStation: org.opentripplanner.routing.bike_rental.BikeRentalStation#BikeRentalStation
     BikesAllowed: String
+    CarPark: Object
     Cluster: Object
     Coordinates: org.locationtech.jts.geom.Coordinate#Coordinate
     debugOutput: org.opentripplanner.api.resource.DebugOutput#DebugOutput
