@@ -184,6 +184,16 @@ public class LegacyGraphQLLegImpl implements LegacyGraphQLDataFetchers.LegacyGra
     return environment -> getSource(environment).interlineWithPreviousLeg;
   }
 
+  @Override
+  public DataFetcher<Object> dropOffBookingInfo() {
+    return environment -> getSource(environment).dropOffBookingInfo;
+  }
+
+  @Override
+  public DataFetcher<Object> pickupBookingInfo() {
+    return environment -> getSource(environment).pickupBookingInfo;
+  }
+
   private RoutingService getRoutingService(DataFetchingEnvironment environment) {
     return environment.<LegacyGraphQLRequestContext>getContext().getRoutingService();
   }
