@@ -494,9 +494,12 @@ public class TripPattern extends TransitEntity implements Cloneable, Serializabl
                     // The current one must be a subset of the other, because it has no unique via.
                     // Therefore we call it the express.
                     sb.append(" express");
-                } else {
+                } else if(!pattern.getTrips().isEmpty()){
                     // The final fallback: reference a specific trip ID.
                     sb.append(" like trip " + pattern.getTrips().get(0).getId());
+                }
+                else {
+                    sb.append(" like trip <no trips>");
                 }
                 pattern.setName((sb.toString()));
             } // END foreach PATTERN
