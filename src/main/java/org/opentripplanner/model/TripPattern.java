@@ -7,6 +7,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 import com.google.common.io.BaseEncoding;
+import java.util.Optional;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
 import org.opentripplanner.common.geometry.CompactLineString;
@@ -443,7 +444,10 @@ public class TripPattern extends TransitEntity implements Cloneable, Serializabl
             }
             PATTERN : for (TripPattern pattern : routeTripPatterns) {
                 List<Stop> stops = pattern.getStops();
-                StringBuilder sb = new StringBuilder(routeName);
+                StringBuilder sb = new StringBuilder(Optional.ofNullable(routeName).orElseGet(() -> {
+                        LOG.error("Route with id {} doesn't have a name", route.getId());
+                        return "unknown route name";
+                }));
 
                 /* First try to name with destination. */
                 Stop end = stops.get(stops.size() - 1);
