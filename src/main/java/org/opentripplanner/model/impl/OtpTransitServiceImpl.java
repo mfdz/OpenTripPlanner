@@ -194,6 +194,7 @@ class OtpTransitServiceImpl implements OtpTransitService {
             return immutableList(shapePointsByShapeId.get(shapeId));
         }
         else {
+            LOG.error("Shape {} doesn't contain any points", shapeId);
             return List.of();
         }
     }
