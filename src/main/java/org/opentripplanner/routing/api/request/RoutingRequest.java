@@ -345,7 +345,7 @@ public class RoutingRequest implements AutoCloseable, Cloneable, Serializable {
 
     public double bikeReluctance = 2.0;
 
-    public double carReluctance = 2.0;
+    public double carReluctance = 10.0;
 
 
     /**
