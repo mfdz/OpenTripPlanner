@@ -106,11 +106,11 @@ public class CarParkAndRideTest extends ParkAndRideTest {
         assertPath(
                 A, B, StreetMode.CAR_TO_PARK,
                 "null - null (0.00, 0)",
-                "CAR - AB street (15.54, 8)",
-                "null - CarPark #1 Entrance B (16.54, 8)",
-                "null (parked) - CarPark #1 Entrance A (256.54, 188)",
-                "null (parked) - CarPark #1 Entrance A (257.54, 188)",
-                "WALK (parked) - AB street (388.36, 254)"
+                "CAR - AB street (77.68, 8)",
+                "null - CarPark #1 Entrance B (78.68, 8)",
+                "null (parked) - CarPark #1 Entrance A (318.68, 188)",
+                "null (parked) - CarPark #1 Entrance A (319.68, 188)",
+                "WALK (parked) - AB street (450.51, 254)"
         );
     }
 

@@ -53,7 +53,7 @@ public class CarRoutingTest {
                 ConstantsForTests.HERRENBERG_HINDENBURG_STR_UNDER_CONSTRUCTION_OSM
         );
 
-        var gueltsteinerStr = new GenericLocation(48.59240, 8.87024);
+        var gueltsteinerStr = new GenericLocation(48.59364, 8.87078);
         var aufDemGraben = new GenericLocation(48.59487, 8.87133);
 
         var polyline =
@@ -61,7 +61,7 @@ public class CarRoutingTest {
 
         assertThatPolylinesAreEqual(
                 polyline,
-                "ouqgH}mcu@gAE]U}BaA]Q}@]uAs@[SAm@Ee@AUEi@XEQkBQ?Bz@Dt@Dh@@TGBC@KBSHGx@"
+                "g}qgHgqcu@IE}@]uAs@[SAm@Ee@AUEi@XEQkBQ?Bz@Dt@Dh@@TGBC@KBSHGx@"
         );
     }
 

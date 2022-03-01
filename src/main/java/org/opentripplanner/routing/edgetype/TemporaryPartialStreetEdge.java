@@ -1,6 +1,7 @@
 package org.opentripplanner.routing.edgetype;
 
 import java.util.Collection;
+import java.util.List;
 import javax.annotation.Nonnull;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
@@ -10,11 +11,14 @@ import org.opentripplanner.routing.util.ElevationUtils;
 import org.opentripplanner.routing.vertextype.StreetVertex;
 import org.opentripplanner.routing.vertextype.TemporaryVertex;
 import org.opentripplanner.util.I18NString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 final public class TemporaryPartialStreetEdge extends StreetWithElevationEdge implements TemporaryEdge {
 
     private static final long serialVersionUID = 1L;
+    private static final Logger LOG = LoggerFactory.getLogger(TemporaryPartialStreetEdge.class);
 
     /**
      * The edge on which this lies.
@@ -86,7 +90,12 @@ final public class TemporaryPartialStreetEdge extends StreetWithElevationEdge im
     @Nonnull
     @Override
     public Collection<TurnRestriction> getTurnRestrictions() {
-        return parentEdge.getTurnRestrictions();
+        if(parentEdge == null) {
+            LOG.error("{} doesn't have a parent edge!", this);
+            return List.of();
+        } else {
+            return parentEdge.getTurnRestrictions();
+        }
     }
 
     /**

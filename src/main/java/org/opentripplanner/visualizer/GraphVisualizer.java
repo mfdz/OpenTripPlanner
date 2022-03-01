@@ -1473,7 +1473,7 @@ public class GraphVisualizer extends JFrame implements VertexSelectionListener {
         	}
         }
         if(target!=null && spt!=null){
-        	List<GraphPath> paths = spt.getPaths(target,true);
+        	List<GraphPath> paths = spt.getPaths(target);
         	showPathsInPanel( paths );
         }
     }

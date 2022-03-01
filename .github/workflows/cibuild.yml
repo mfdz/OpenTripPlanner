@@ -9,6 +9,7 @@ on:
       - master
       - dev-1.x
       - dev-2.x
+      - mfdz-park-and-ride
   pull_request:
     branches:
       - master
@@ -44,7 +45,7 @@ jobs:
           files: target/site/jacoco/jacoco.xml
 
       - name: Publish to Dockerhub
-        if: ${{ github.repository_owner == 'mfdz' && github.ref == 'refs/heads/dev-2.x' }}
+        if: ${{ github.repository_owner == 'mfdz' && github.ref == 'refs/heads/mfdz-park-and-ride' }}
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
           name: mfdz/opentripplanner
