@@ -1400,7 +1400,7 @@ public class OpenStreetMapModule implements GraphBuilderModule {
 
                 /* If the OSM node represents a transit stop and has a ref=(stop_code) tag, make a special vertex for it. */
                 if (node.isStop()) {
-                    String ref = node.getTag("ref");
+                    String ref = node.hasTag("ref:IFOPT") ? node.getTag("ref:IFOPT") : node.getTag("ref");
                     String name = node.getTag("name");
                     if (ref != null) {
                         iv = new TransitStopStreetVertex(graph, label, coordinate.x, coordinate.y, nid, name, ref);

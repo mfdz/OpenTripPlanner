@@ -9,6 +9,7 @@ import org.locationtech.jts.linearref.LocationIndexedLine;
 import org.opentripplanner.common.geometry.GeometryUtils;
 import org.opentripplanner.common.geometry.SphericalDistanceLibrary;
 import org.opentripplanner.common.model.P2;
+import org.opentripplanner.model.TransitMode;
 import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.core.TraverseModeSet;
 import org.opentripplanner.routing.edgetype.AreaEdge;
@@ -19,6 +20,7 @@ import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.vertextype.SplitterVertex;
 import org.opentripplanner.routing.vertextype.StreetVertex;
 import org.opentripplanner.routing.vertextype.TemporarySplitterVertex;
+import org.opentripplanner.routing.vertextype.TransitStopVertex;
 import org.opentripplanner.util.OTPFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +30,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -223,6 +226,15 @@ public class VertexLinker {
     // Expand more in the longitude direction than the latitude direction to account for converging meridians.
     env.expandBy(radiusDeg / xscale, radiusDeg);
 
+    Predicate<StreetEdge> streetEdgePredicate = e -> true;
+    if (vertex instanceof TransitStopVertex) {
+      Set<TransitMode> modes = ((TransitStopVertex) vertex).getModes();
+      if (modes.contains(TraverseMode.RAIL) || modes.contains(TransitMode.SUBWAY) || modes
+              .contains(TransitMode.TRAM)) {
+        streetEdgePredicate = e -> (e.getStreetClass() & StreetEdge.CLASS_TRAIN_PLATFORM) > 0;
+      }
+    }
+
     // Perform several transformations at once on the edges returned by the index. Only consider
     // street edges traversable by at least one of the given modes and are still present in the
     // graph. Calculate a distance to each of those edges, and keep only the ones within the search
@@ -232,6 +244,7 @@ public class VertexLinker {
         .filter(StreetEdge.class::isInstance)
         .map(StreetEdge.class::cast)
         .filter(e -> e.canTraverse(traverseModes) && edgeReachableFromGraph(e))
+        .filter(streetEdgePredicate)
         .map(e -> new DistanceTo<>(e, distance(vertex, e, xscale)))
         .filter(ead -> ead.distanceDegreesLat < radiusDeg)
         .collect(Collectors.toList());

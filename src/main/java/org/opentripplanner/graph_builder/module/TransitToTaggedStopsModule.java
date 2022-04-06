@@ -87,7 +87,8 @@ public class TransitToTaggedStopsModule implements GraphBuilderModule {
     private boolean connectVertexToStop(TransitStopVertex ts) {
         String stopCode = ts.getStop().getCode();
         if (stopCode == null){
-            return false;
+            //return false;
+            stopCode = ts.getStop().getId().getId();
         }
         Envelope envelope = new Envelope(ts.getCoordinate());
         double xscale = Math.cos(ts.getCoordinate().y * Math.PI / 180);
