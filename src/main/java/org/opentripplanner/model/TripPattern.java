@@ -655,7 +655,11 @@ public final class TripPattern extends TransitEntity implements Cloneable, Seria
   }
 
   public String getTripHeadsign() {
-    return scheduledTimetable.getTripTimes(0).getTrip().getTripHeadsign();
+    if (scheduledTimetable.getTripTimes().size() == 0) {
+      return "";
+    } else {
+      return scheduledTimetable.getTripTimes(0).getTrip().getTripHeadsign();
+    }
   }
 
   public boolean matchesModeOrSubMode(TransitMode mode, String transportSubmode) {
