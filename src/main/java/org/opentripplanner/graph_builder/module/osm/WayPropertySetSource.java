@@ -48,10 +48,7 @@ public interface WayPropertySetSource {
   }
 
   default boolean doesTagValueAllowThroughTraffic(String tagValue) {
-    return (
-      "yes".equals(tagValue) ||
-      "designated".equals(tagValue)
-    );
+    return ("yes".equals(tagValue) || "designated".equals(tagValue));
   }
 
   default boolean isGeneralNoThroughTraffic(OSMWithTags way) {
@@ -81,11 +78,13 @@ public interface WayPropertySetSource {
   default boolean isBicycleNoThroughTrafficExplicitlyDisallowed(OSMWithTags way) {
     String bicycle = way.getTag("bicycle");
     return (
-      (isVehicleThroughTrafficExplicitlyDisallowed(way) &&
+      (
+        isVehicleThroughTrafficExplicitlyDisallowed(way) &&
         // NOTE: specific bicycle tag explicitly overrides access/vehicle tags
         // see https://wiki.openstreetmap.org/wiki/Tag:vehicle%3Ddestination
-        !doesTagValueAllowThroughTraffic(bicycle)) ||
-        doesTagValueDisallowThroughTraffic(bicycle)
+        !doesTagValueAllowThroughTraffic(bicycle)
+      ) ||
+      doesTagValueDisallowThroughTraffic(bicycle)
     );
   }
 
