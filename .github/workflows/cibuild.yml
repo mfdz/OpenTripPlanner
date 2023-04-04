@@ -51,7 +51,7 @@ jobs:
 
       - name: Publish to Dockerhub
         if: ${{ github.repository_owner == 'mfdz' && github.ref == 'refs/heads/dev-2.x' }}
-        uses: elgohr/Publish-Docker-Github-Action@master
+        uses: elgohr/Publish-Docker-Github-Action@v5
         with:
           name: mfdz/opentripplanner
           username: ${{ secrets.DOCKER_USER }}
