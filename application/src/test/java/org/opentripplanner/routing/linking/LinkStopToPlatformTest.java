@@ -144,11 +144,11 @@ public class LinkStopToPlatformTest {
     Graph graph = prepareTest(platform, visibilityPoints, stops);
     linkStops(graph, 100, true);
 
-    // Two bottom edges gets split into half (+2 edges)
-    // both split points are linked to the stop bidirectonally (+4 edges).
-    // both split points also link to 2 visibility points at opposite side (+8 edges)
-    // 14 new edges in total
-    assertEquals(22, graph.getEdges().size());
+    // Two bottom edges gets split into half (+2 edges) by one (reused) split vertex
+    // the split point is linked to the stop bidirectonally (+2 edges).
+    // the split point also links to 2 visibility points at opposite side (+4 edges)
+    // 8 new edges in total
+    assertEquals(16, graph.getEdges().size());
   }
 
   /**
@@ -178,7 +178,7 @@ public class LinkStopToPlatformTest {
     // new vertex connects to all 4 visibility points with 4*2 new edges
     // new vertex connects to the closest edge pair split points with 2*2 edges
     // edge pair splits to 2 edges more
-    assertEquals(24, graph.getEdges().size());
+    assertEquals(22, graph.getEdges().size());
 
     // transit stop is connected in one rectangle corner only to walk no thru trafic edges
     // verify that new area edge connection is also walk no thru
@@ -288,9 +288,9 @@ public class LinkStopToPlatformTest {
     linkStops(graph, 100, true);
 
     // Bottom edge pair splits in the middle (+2)
-    // Stop links to split vertices (+4)
-    // Split vertices link with visibily vertices at top corners (+8)
-    assertEquals(22, graph.getEdges().size());
+    // Stop links to split vertices (+2)
+    // Split vertices link with visibily vertices at top corners (+4)
+    assertEquals(16, graph.getEdges().size());
   }
 
   /**
@@ -314,12 +314,12 @@ public class LinkStopToPlatformTest {
     Graph graph = prepareTest(platform, visibilityPoints, stops);
     linkStops(graph, 100, true);
 
-    // stops are linked with 2 new street vertices with 2 edges each (+4)
+    // stops are linked with 1 new street vertex with 2 edges (+2)
     // new vertices connect to original 4 visibility points with 2*4*2 new edges (+16)
     // stops are also linked directly (+2)
     // each stop links bidirectionally to closest edge pair (+ 2*2*2)
-    // closest edge pairs split into two (+ 2*2)
-    assertEquals(42, graph.getEdges().size());
+    // closest edge pairs split into two (+ 2)
+    assertEquals(38, graph.getEdges().size());
 
     // verify direct linking
     List<TransitStopVertex> transitStops = graph.getVerticesOfType(TransitStopVertex.class);
@@ -371,12 +371,12 @@ public class LinkStopToPlatformTest {
     Graph graph = prepareTest(platform, visibilityPoints, stops);
     linkStops(graph, 100, true);
 
-    // stop links to the edge pair 2-3, which adds 4 new edges
+    // stop links to the edge pair 2-3, which adds 2 new edges
     // edge pair splitting adds 2 edges, and transit vertex linking 2 more
     // new splitting vertices cannot connect with the visibility points
     // because they are hidden behind the corner
     assertEquals(
-      20,
+      18,
       graph.getEdges().size(),
       "Incorrect number of edges, check %s".formatted(GeoJsonIo.toUrl(graph))
     );

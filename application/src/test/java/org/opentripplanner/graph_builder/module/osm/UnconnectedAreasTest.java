@@ -51,7 +51,7 @@ public class UnconnectedAreasTest {
     int nParkAndRideEdge = gg.getEdgesOfType(VehicleParkingEdge.class).size();
 
     assertEquals(12, nParkAndRide);
-    assertEquals(38, nParkAndRideLink);
+    assertEquals(30, nParkAndRideLink);
     assertEquals(42, nParkAndRideEdge);
   }
 
@@ -68,7 +68,7 @@ public class UnconnectedAreasTest {
     int nParkAndRideEdge = gg.getEdgesOfType(VehicleParkingEdge.class).size();
 
     assertEquals(13, nParkAndRideEntrances);
-    assertEquals(32, nParkAndRideLink);
+    assertEquals(26, nParkAndRideLink);
     assertEquals(33, nParkAndRideEdge);
   }
 

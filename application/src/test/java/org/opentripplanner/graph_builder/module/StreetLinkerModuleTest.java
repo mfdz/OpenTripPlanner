@@ -98,12 +98,10 @@ class StreetLinkerModuleTest {
       SplitterVertex walkSplit = (SplitterVertex) linkToWalk.getToVertex();
 
       assertTrue(walkSplit.isConnectedToWalkingEdge());
-      assertFalse(walkSplit.isConnectedToDriveableEdge());
 
       var linkToCar = model.outgoingLinks().getLast();
       SplitterVertex carSplit = (SplitterVertex) linkToCar.getToVertex();
 
-      assertFalse(carSplit.isConnectedToWalkingEdge());
       assertTrue(carSplit.isConnectedToDriveableEdge());
     });
   }
@@ -138,14 +136,11 @@ class StreetLinkerModuleTest {
       SplitterVertex walkSplit = (SplitterVertex) linkToWalk.getToVertex();
 
       assertTrue(walkSplit.isConnectedToWalkingEdge());
-      assertFalse(walkSplit.isConnectedToDriveableEdge());
 
       // lastly we have the link to the drivable street network because vehicles also need to
       // reach the stop if it's part of a flex trip.
       var linkToCar = links.getLast();
       SplitterVertex carSplit = (SplitterVertex) linkToCar.getToVertex();
-
-      assertFalse(carSplit.isConnectedToWalkingEdge());
       assertTrue(carSplit.isConnectedToDriveableEdge());
     });
   }
@@ -169,14 +164,10 @@ class StreetLinkerModuleTest {
     assertThat(model.stopVertex().getOutgoing()).hasSize(2);
     var linkToWalk = model.outgoingLinks().getFirst();
     SplitterVertex walkSplit = (SplitterVertex) linkToWalk.getToVertex();
-
     assertTrue(walkSplit.isConnectedToWalkingEdge());
-    assertFalse(walkSplit.isConnectedToDriveableEdge());
 
     var linkToCar = model.outgoingLinks().getLast();
     SplitterVertex carSplit = (SplitterVertex) linkToCar.getToVertex();
-
-    assertFalse(carSplit.isConnectedToWalkingEdge());
     assertTrue(carSplit.isConnectedToDriveableEdge());
   }
 
