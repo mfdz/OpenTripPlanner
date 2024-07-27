@@ -54,7 +54,7 @@ public final class RoutingPreferences implements Serializable {
     this.itineraryFilter = requireNonNull(builder.itineraryFilter());
   }
 
-  public Builder of() {
+  public static Builder of() {
     return DEFAULT.copyOf();
   }
 
