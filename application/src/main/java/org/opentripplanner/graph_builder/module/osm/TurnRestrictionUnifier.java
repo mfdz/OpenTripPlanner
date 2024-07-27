@@ -92,7 +92,8 @@ class TurnRestrictionUnifier {
               from,
               to,
               restrictionTag.type,
-              restrictionTag.modes
+              restrictionTag.modes,
+              restrictionTag.time
             );
             osmInfoGraphBuildRepository.addTurnRestriction(restriction);
           }
