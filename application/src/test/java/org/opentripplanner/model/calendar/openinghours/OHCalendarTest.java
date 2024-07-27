@@ -121,7 +121,8 @@ class OHCalendarTest {
     calBuilder
       .openingHours("Mondays and Sundays", time(13, 0), time(17, 0))
       .on(DayOfWeek.MONDAY)
-      .on(DayOfWeek.SATURDAY)
+      // ??? Why SATURDAY and not SUNDAY?
+      .on(DayOfWeek.SUNDAY)
       .add();
 
     var c = calBuilder.build();
@@ -147,8 +148,8 @@ class OHCalendarTest {
     assertFalse(open);
 
     // The start of the search, this is used to optimize the calculation
-    // The chosen date is a Saturday
-    dateTime = Instant.parse("2022-10-29T00:30:00Z");
+    // The chosen date is a Sunday
+    dateTime = Instant.parse("2022-10-30T00:30:00Z");
     time = dateTime.getEpochSecond();
 
     // The context is used to cache calculations for a search, use negative
@@ -164,9 +165,9 @@ class OHCalendarTest {
     assertFalse(open);
 
     // Should not be open on a day that has no opening hours
-    dateTime = Instant.parse("2022-10-30T00:30:00Z");
+    dateTime = Instant.parse("2022-10-29T00:30:00Z");
     time = dateTime.getEpochSecond();
-    open = ctx.isOpen(c, time);
+    open = ctx.isOpen(c, time + twelveHours);
     assertFalse(open);
   }
 
