@@ -14,7 +14,7 @@ import java.util.function.Supplier;
  *
  * @author mattwigway
  */
-public class RepeatingTimePeriod implements Serializable {
+public class RepeatingTimePeriod implements Serializable, TimeRestriction {
 
   /**
    * The timezone this is represented in.
@@ -107,6 +107,7 @@ public class RepeatingTimePeriod implements Serializable {
     return ret;
   }
 
+  @Override
   public boolean active(long time) {
     ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(Instant.ofEpochSecond(time), timeZone);
     DayOfWeek dayOfWeek = zonedDateTime.getDayOfWeek();
