@@ -19,9 +19,11 @@ public class TimeRange {
     return time.isAfter(start) && time.isBefore(end);
   }
 
-  public static Comparator<TimeRange> startComparator =
-    Comparator.comparing(timeRange -> timeRange.start);
+  public static Comparator<TimeRange> startComparator = Comparator.comparing(timeRange ->
+    timeRange.start
+  );
 
-  public static Comparator<TimeRange> endComparator =
-    Comparator.comparing(timeRange -> timeRange.end);
+  public static Comparator<TimeRange> endComparator = Comparator.comparing(timeRange ->
+    timeRange.end
+  );
 }
