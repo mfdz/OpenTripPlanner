@@ -28,6 +28,7 @@ Lower safety values make an OSM way more desirable and higher values less desira
 | `highway=track; present(surface)`                       | `PEDESTRIAN_AND_BICYCLE` |                               |             |
 | `highway=residential; junction=roundabout`              | `ALL`                    | 0.98                          |             |
 | `present(highway); junction=roundabout`                 | `BICYCLE_AND_CAR`        |                               |             |
+| `highway=living_street; present(cycleway)`              | `ALL`                    | 0.85                          |             |
 | `highway=pedestrian`                                    | `PEDESTRIAN`             |                               |             |
 | `highway=residential; maxspeed=30`                      | `ALL`                    | 0.9                           |             |
 | `highway=footway; bicycle=yes`                          | `PEDESTRIAN_AND_BICYCLE` | 0.8                           |             |
