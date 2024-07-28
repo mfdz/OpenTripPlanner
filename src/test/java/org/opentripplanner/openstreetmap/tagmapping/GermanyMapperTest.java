@@ -60,6 +60,21 @@ public class GermanyMapperTest {
       assertEquals(0.9, wps.getDataForWay(way).bicycleSafety().forward(), epsilon);
       // walk safety should be default
       assertEquals(1, wps.getDataForWay(way).walkSafety().forward(), epsilon);
+      assertEquals(StreetTraversalPermission.ALL, wps.getDataForWay(way).getPermission());
+    }
+
+    @Test
+    void cyclewayOppositeLivingStreet() {
+      // Test that cyclewayOpposites can be accesses by all modes
+      // way24623452 (Annastraße Aachen)
+      var way = new OSMWithTags();
+      way.addTag("cycleway", "opposite");
+      way.addTag("highway", "living_street");
+      way.addTag("lit", "yes");
+      way.addTag("maxspeed", "30");
+      way.addTag("oneway", "yes");
+      assertEquals(0.85, wps.getDataForWay(way).bicycleSafety().forward(), epsilon);
+      assertEquals(StreetTraversalPermission.ALL, wps.getDataForWay(way).getPermission());
     }
 
     @Test

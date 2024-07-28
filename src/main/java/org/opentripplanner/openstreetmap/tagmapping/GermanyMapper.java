@@ -50,6 +50,13 @@ class GermanyMapper implements OsmTagMapper {
     );
     props.setProperties("highway=*;junction=roundabout", withModes(BICYCLE_AND_CAR));
 
+    // Living streets with cycleways are usually accessible for all modes
+    // https://overpass-turbo.eu/s/1OPP
+    props.setProperties(
+      "highway=living_street;cycleway=*",
+      withModes(ALL).bicycleSafety(0.85)
+    );
+
     // Pedestrian zones in Germany are forbidden for bicycles by default
     props.setProperties("highway=pedestrian", withModes(PEDESTRIAN));
     props.setProperties("highway=residential;maxspeed=30", withModes(ALL).bicycleSafety(0.9));
