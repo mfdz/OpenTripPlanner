@@ -1,5 +1,6 @@
 package org.opentripplanner.graph_builder.module.osm;
 
+import ch.poole.openinghoursparser.OpeningHoursParseException;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterables;
@@ -45,7 +46,7 @@ import org.opentripplanner.openstreetmap.model.OSMRelationMember;
 import org.opentripplanner.openstreetmap.model.OSMTag;
 import org.opentripplanner.openstreetmap.model.OSMWay;
 import org.opentripplanner.openstreetmap.model.OSMWithTags;
-import org.opentripplanner.street.model.RepeatingTimePeriod;
+import org.opentripplanner.street.model.OHRulesRestriction;
 import org.opentripplanner.street.model.StreetTraversalPermission;
 import org.opentripplanner.street.model.TurnRestrictionType;
 import org.opentripplanner.street.search.TraverseMode;
@@ -886,13 +887,16 @@ public class OsmDatabase {
     }
 
     TurnRestrictionTag tag;
-    if (relation.isTag("restriction", "no_right_turn")) {
+    String restriction = relation.hasTag("restriction")
+      ? relation.getTag("restriction")
+      : relation.getConditionalTag("restriction:conditional");
+    if ("no_right_turn".equals(restriction)) {
       tag =
         new TurnRestrictionTag(via, TurnRestrictionType.NO_TURN, Direction.RIGHT, relation.getId());
-    } else if (relation.isTag("restriction", "no_left_turn")) {
+    } else if ("no_left_turn".equals(restriction)) {
       tag =
         new TurnRestrictionTag(via, TurnRestrictionType.NO_TURN, Direction.LEFT, relation.getId());
-    } else if (relation.isTag("restriction", "no_straight_on")) {
+    } else if ("no_straight_on".equals(restriction)) {
       tag =
         new TurnRestrictionTag(
           via,
@@ -900,9 +904,9 @@ public class OsmDatabase {
           Direction.STRAIGHT,
           relation.getId()
         );
-    } else if (relation.isTag("restriction", "no_u_turn")) {
+    } else if ("no_u_turn".equals(restriction)) {
       tag = new TurnRestrictionTag(via, TurnRestrictionType.NO_TURN, Direction.U, relation.getId());
-    } else if (relation.isTag("restriction", "only_straight_on")) {
+    } else if ("only_straight_on".equals(restriction)) {
       tag =
         new TurnRestrictionTag(
           via,
@@ -910,7 +914,7 @@ public class OsmDatabase {
           Direction.STRAIGHT,
           relation.getId()
         );
-    } else if (relation.isTag("restriction", "only_right_turn")) {
+    } else if ("only_right_turn".equals(restriction)) {
       tag =
         new TurnRestrictionTag(
           via,
@@ -918,7 +922,7 @@ public class OsmDatabase {
           Direction.RIGHT,
           relation.getId()
         );
-    } else if (relation.isTag("restriction", "only_left_turn")) {
+    } else if ("only_left_turn".equals(restriction)) {
       tag =
         new TurnRestrictionTag(
           via,
@@ -926,7 +930,7 @@ public class OsmDatabase {
           Direction.LEFT,
           relation.getId()
         );
-    } else if (relation.isTag("restriction", "only_u_turn")) {
+    } else if ("only_u_turn".equals(restriction)) {
       tag =
         new TurnRestrictionTag(via, TurnRestrictionType.ONLY_TURN, Direction.U, relation.getId());
     } else {
@@ -936,22 +940,35 @@ public class OsmDatabase {
     tag.modes = modes.clone();
 
     // set the time periods for this restriction, if applicable
-    if (
+    if (relation.hasTag("restriction:conditional")) {
+      String tagWithCondition = relation.getTag("restriction:conditional");
+      try {
+        tag.time =
+          OHRulesRestriction.parseFromCondition(
+            tagWithCondition,
+            relation.getOsmProvider()::getZoneId
+          );
+      } catch (OpeningHoursParseException e) {
+        LOG.info("Unparseable conditional turn restriction: {}", relation.getId());
+      }
+    } else if (
       relation.hasTag("day_on") &&
       relation.hasTag("day_off") &&
       relation.hasTag("hour_on") &&
       relation.hasTag("hour_off")
     ) {
+      // TODO tagging schemes day_on/day_off(hour_on/hour_off is deprecated and should be converted
+      // to restriction:conditional
       try {
         tag.time =
-          RepeatingTimePeriod.parseFromOsmTurnRestriction(
+          OHRulesRestriction.parseFromOsmTurnRestriction(
             relation.getTag("day_on"),
             relation.getTag("day_off"),
             relation.getTag("hour_on"),
             relation.getTag("hour_off"),
             relation.getOsmProvider()::getZoneId
           );
-      } catch (NumberFormatException e) {
+      } catch (OpeningHoursParseException e) {
         LOG.info("Unparseable turn restriction: {}", relation.getId());
       }
     }

@@ -9,7 +9,7 @@ public class TurnRestriction implements Serializable {
   public final TurnRestrictionType type;
   public final StreetEdge from;
   public final StreetEdge to;
-  public final RepeatingTimePeriod time;
+  public final TimeRestriction time;
   public final TraverseModeSet modes;
 
   public TurnRestriction(
@@ -17,7 +17,7 @@ public class TurnRestriction implements Serializable {
     StreetEdge to,
     TurnRestrictionType type,
     TraverseModeSet modes,
-    RepeatingTimePeriod time
+    TimeRestriction time
   ) {
     this.from = from;
     this.to = to;

@@ -195,6 +195,20 @@ public class OSMWithTags {
     return null;
   }
 
+  /** @return a conditional tag's (tag with ':conditional' appended) restriction value
+   * (value before the first @, without condition).
+   * Note: a conditional tag might have multiple conditions, which is not yet supported. */
+  @Nullable
+  public String getConditionalTag(String tag) {
+    tag = tag.toLowerCase();
+    if (tags != null && tags.containsKey(tag)) {
+      String conditionalValue = tags.get(tag);
+      int indexOfAt = conditionalValue.indexOf('@');
+      return indexOfAt > 0 ? conditionalValue.substring(0, indexOfAt).trim() : conditionalValue;
+    }
+    return null;
+  }
+
   /**
    *
    * @return A tags value converted to lower case. An empty Optional if tags is not present.
