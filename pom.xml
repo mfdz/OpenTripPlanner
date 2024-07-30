@@ -912,11 +912,12 @@
             <artifactId>OpeningHoursParser</artifactId>
             <version>0.28.2</version>
         </dependency>
+        <!-- Temporarilly use patched OpeningHoursEvaluator
         <dependency>
             <groupId>io.leonard</groupId>
             <artifactId>opening-hours-evaluator</artifactId>
             <version>1.3.0</version>
-        </dependency>
+        </dependency>-->
 
         <!-- create zip test files-->
         <dependency>
