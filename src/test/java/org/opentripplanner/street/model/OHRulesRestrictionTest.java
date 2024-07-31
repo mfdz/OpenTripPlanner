@@ -35,7 +35,15 @@ public class OHRulesRestrictionTest {
   @ParameterizedTest
   @ValueSource(
     strings = {
-      "mo-su 06:00-23:00", "fri", "none @ sat", "2024 Jul 26", "2024 Jul 25 - 2024 Jul 27",
+      "mo-su 06:00-23:00",
+      "fri",
+      "none @ sat",
+      "2024 Jul 26",
+      "2024 Jul 25 - 2024 Jul 27",
+      "2024 Jul 25 - 2024 Jul 26",
+      "2024 Jul 26 - 2024 Jul 26",
+      "2024 Jul 25 - 2025 May 27",
+      "2024 Jul 25 - 2024 Jul 27",
     }
   ) // six numbers
   // Note: hours only restrictions (e.g. "06:00-23:00") are not yet supported
@@ -47,6 +55,21 @@ public class OHRulesRestrictionTest {
       }
     );
     Instant dateTime = Instant.parse("2024-07-26T10:30:00Z");
+    long time = dateTime.getEpochSecond();
+    assertTrue(tr.active(time));
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = { "2024 Jul 1 - 2099 Dec 31" }) // six numbers
+  // Note: hours only restrictions (e.g. "06:00-23:00") are not yet supported
+  public void testOHCalendarRestrictionActive(String condition) throws OpeningHoursParseException {
+    TimeRestriction tr = OHRulesRestriction.parseFromCondition(
+      condition,
+      () -> {
+        return zoneId;
+      }
+    );
+    Instant dateTime = Instant.parse("2025-04-01T10:30:00Z");
     long time = dateTime.getEpochSecond();
     assertTrue(tr.active(time));
   }

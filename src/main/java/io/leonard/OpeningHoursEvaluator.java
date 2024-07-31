@@ -202,19 +202,31 @@ public class OpeningHoursEvaluator {
   private static boolean dateMatchesDateRange(LocalDateTime time, DateRange range) {
     // if the end date is null it means that it's just a single date like in "2020 Aug 11"
     DateWithOffset startDate = range.getStartDate();
-    boolean afterStartDate =
-      time.getYear() >= startDate.getYear() &&
-      time.getMonth().ordinal() >= startDate.getMonth().ordinal() &&
-      time.getDayOfMonth() >= startDate.getDay();
+    boolean afterStartDate = isSameDateOrAfter(time, startDate);
+
     if (range.getEndDate() == null) {
       return afterStartDate;
     }
     DateWithOffset endDate = range.getEndDate();
-    boolean beforeEndDate =
-      time.getYear() <= endDate.getYear() &&
-      time.getMonth().ordinal() <= endDate.getMonth().ordinal() &&
-      time.getDayOfMonth() <= endDate.getDay();
+    boolean beforeEndDate = !isSameDateOrAfter(time.minusDays(1), endDate);
     return afterStartDate && beforeEndDate;
+  }
+
+  private static boolean isSameDateOrAfter(LocalDateTime time, DateWithOffset startDate) {
+    return (
+      time.getYear() > startDate.getYear() ||
+      (
+        time.getYear() == startDate.getYear() &&
+        startDate.getMonth() != null &&
+        (
+          time.getMonth().ordinal() > startDate.getMonth().ordinal() ||
+          (
+            time.getMonth().ordinal() == startDate.getMonth().ordinal() &&
+            time.getDayOfMonth() >= startDate.getDay()
+          )
+        )
+      )
+    );
   }
 
   private static boolean timeMatchesHours(LocalDateTime time, TimeSpan timeSpan) {
