@@ -86,21 +86,21 @@ public class TestItineraryBuilder implements PlanTestConstants {
   }
 
   /**
-   * Create a new itinerary that start at a stop and continue with a transit leg.
+   * Create a new itinerary that starts at a stop and continues with a transit leg.
    */
   public static TestItineraryBuilder newItinerary(Place origin) {
     return new TestItineraryBuilder(origin, NOT_SET);
   }
 
   /**
-   * Create a new itinerary that start by waling from a place - the origin.
+   * Create a new itinerary that starts by walking from a place - the origin.
    */
   public static TestItineraryBuilder newItinerary(Place origin, int startTime) {
     return new TestItineraryBuilder(origin, startTime);
   }
 
   /**
-   * Convert a seconds since midnight to a ZonedDateTime
+   * Convert seconds since midnight to a ZonedDateTime
    */
   public static ZonedDateTime newTime(int seconds) {
     return TimeUtils.zonedDateTime(SERVICE_DAY, seconds, UTC);
