@@ -22,6 +22,7 @@ import org.opentripplanner.routing.algorithm.mapping.RoutingResponseMapper;
 import org.opentripplanner.routing.algorithm.raptoradapter.router.AdditionalSearchDays;
 import org.opentripplanner.routing.algorithm.raptoradapter.router.FilterTransitWhenDirectModeIsEmpty;
 import org.opentripplanner.routing.algorithm.raptoradapter.router.TransitRouter;
+import org.opentripplanner.routing.algorithm.raptoradapter.router.street.CarpoolRouter;
 import org.opentripplanner.routing.algorithm.raptoradapter.router.street.DirectFlexRouter;
 import org.opentripplanner.routing.algorithm.raptoradapter.router.street.DirectStreetRouter;
 import org.opentripplanner.routing.api.request.RouteRequest;
@@ -104,13 +105,14 @@ public class RoutingWorker {
         var r1 = CompletableFuture.supplyAsync(this::routeDirectStreet);
         var r2 = CompletableFuture.supplyAsync(this::routeDirectFlex);
         var r3 = CompletableFuture.supplyAsync(this::routeTransit);
+        var r4 = CompletableFuture.supplyAsync(this::routeCarpool);
 
-        result.merge(r1.join(), r2.join(), r3.join());
+        result.merge(r1.join(), r2.join(), r3.join(), r4.join());
       } catch (CompletionException e) {
         RoutingValidationException.unwrapAndRethrowCompletionException(e);
       }
     } else {
-      result.merge(routeDirectStreet(), routeDirectFlex(), routeTransit());
+      result.merge(routeDirectStreet(), routeDirectFlex(), routeTransit(), routeCarpool());
     }
 
     // Set C2 value for Street and FLEX if transit-group-priority is used
@@ -273,6 +275,17 @@ public class RoutingWorker {
       return RoutingResult.failed(e.getRoutingErrors());
     } finally {
       debugTimingAggregator.finishedTransitRouter();
+    }
+  }
+
+  private RoutingResult routeCarpool() {
+    debugTimingAggregator.startedDirectStreetRouter();
+    try {
+      return RoutingResult.ok(CarpoolRouter.route(serverContext, request));
+    } catch (RoutingValidationException e) {
+      return RoutingResult.failed(e.getRoutingErrors());
+    } finally {
+      debugTimingAggregator.finishedDirectStreetRouter();
     }
   }
 
