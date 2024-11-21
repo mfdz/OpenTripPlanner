@@ -435,6 +435,7 @@ public class EnumTypes {
     .value("air", TransitMode.AIRPLANE)
     .value("bus", TransitMode.BUS)
     .value("cableway", TransitMode.GONDOLA)
+    .value("carpool", TransitMode.CARPOOL)
     .value("water", TransitMode.FERRY)
     .value("funicular", TransitMode.FUNICULAR)
     .value("lift", TransitMode.GONDOLA)
