@@ -15,6 +15,7 @@ const getColorForMode = function (mode: Mode) {
   if (mode === Mode.Water) return '#81304C';
   if (mode === Mode.Air) return '#81304C';
   if (mode === Mode.Cableway) return '#81304C';
+  if (mode === Mode.Carpool) return '#9FC727';
   if (mode === Mode.Funicular) return '#81304C';
   if (mode === Mode.Monorail) return '#81304C';
   if (mode === Mode.Taxi) return '#81304C';

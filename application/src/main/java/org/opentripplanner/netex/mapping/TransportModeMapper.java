@@ -49,6 +49,8 @@ class TransportModeMapper {
       case AIR -> TransitMode.AIRPLANE;
       case BUS -> TransitMode.BUS;
       case CABLEWAY -> TransitMode.GONDOLA;
+      // TODO Apparently netex does not define carpool, at least rutebanken did not add it to AllVehicleModesOfTransportEnumeration
+      //case CARPOOL -> TransitMode.CARPOOL;
       case COACH -> TransitMode.COACH;
       case FUNICULAR -> TransitMode.FUNICULAR;
       case METRO -> TransitMode.SUBWAY;

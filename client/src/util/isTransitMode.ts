@@ -10,6 +10,7 @@ export function isTransitMode(mode: Mode) {
     mode === Mode.Water ||
     mode === Mode.Air ||
     mode === Mode.Cableway ||
+    mode === Mode.Carpool ||
     mode === Mode.Funicular ||
     mode === Mode.Trolleybus ||
     mode === Mode.Monorail ||

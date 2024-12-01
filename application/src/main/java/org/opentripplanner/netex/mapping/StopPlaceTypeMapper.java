@@ -30,6 +30,7 @@ class StopPlaceTypeMapper {
       case BUS -> TransitMode.BUS;
       case TROLLEY_BUS -> TransitMode.TROLLEYBUS;
       case CABLEWAY -> TransitMode.GONDOLA;
+      // TODO case CARPOOL -> TransitMode.CARPOOL;
       case COACH -> TransitMode.COACH;
       case FUNICULAR -> TransitMode.FUNICULAR;
       case METRO -> TransitMode.SUBWAY;
