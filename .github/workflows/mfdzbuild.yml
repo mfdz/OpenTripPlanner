@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - aachen
+      - mfbw
 jobs:
   build-linux:
     runs-on: ubuntu-latest
@@ -39,7 +40,7 @@ jobs:
           mvn --batch-mode package -Dmaven.test.skip -P prettierSkip
 
   container-image:
-    if: github.repository_owner == 'mfdz' && github.event_name == 'push' && (github.ref == 'refs/heads/aachen')
+    if: github.repository_owner == 'mfdz' && github.event_name == 'push' && (github.ref == 'refs/heads/aachen' || github.ref == 'refs/heads/mfbw')
     runs-on: ubuntu-latest
     needs:
       - build-linux
@@ -63,8 +64,8 @@ jobs:
           CONTAINER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_AUTH }}
         run: |
           # we give the container two tags
-          #   - "aachen-latest"
-          #   - a string like "aachen-2.3_2022-12-12T21-38"
+          #   - "<branch>-latest"
+          #   - a string like "<branch>-2.3_2022-12-12T21-38"
           
           version_with_snapshot=`mvn -q help:evaluate -Dexpression=project.version -q -DforceStdout`
           version=${version_with_snapshot/-SNAPSHOT/}
@@ -78,4 +79,4 @@ jobs:
             echo "Maven version ${version_with_snapshot} contains SNAPSHOT, adding date to container image tag"
           fi
           
-          mvn --batch-mode -P prettierSkip compile com.google.cloud.tools:jib-maven-plugin:build -Djib.to.tags=aachen-latest,aachen-$image_version
+          mvn --batch-mode -P prettierSkip compile com.google.cloud.tools:jib-maven-plugin:build -Djib.to.image=mfdz/opentripplanner:${GITHUB_REF##*/}-latest -Djib.to.tags=${GITHUB_REF##*/}-$image_version
