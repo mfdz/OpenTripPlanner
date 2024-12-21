@@ -4,6 +4,13 @@ on:
     branches:
       - aachen
       - mfbw
+
+env:
+  # Since version 3.9.0 of Maven it will automatically understand this environment variable.
+  # However, as of 2024-11 the latest versions of Ubuntu and Debian were on 3.8.8 so it will take some
+  # time until we can remove the $MAVEN_ARGS below.
+  MAVEN_ARGS: "--no-transfer-progress -Dstyle.color=always"
+
 jobs:
   build-linux:
     runs-on: ubuntu-latest
@@ -79,4 +86,7 @@ jobs:
             echo "Maven version ${version_with_snapshot} contains SNAPSHOT, adding date to container image tag"
           fi
           
-          mvn --batch-mode -P prettierSkip compile com.google.cloud.tools:jib-maven-plugin:build -Djib.to.image=mfdz/opentripplanner:${GITHUB_REF##*/}-latest -Djib.to.tags=${GITHUB_REF##*/}-$image_version
+          MAVEN_SKIP_ARGS="-P prettierSkip -Dmaven.test.skip=true -Dmaven.source.skip=true"
+          
+          mvn $MAVEN_ARGS $MAVEN_SKIP_ARGS package com.google.cloud.tools:jib-maven-plugin:build -Djib.to.image=mfdz/opentripplanner:${GITHUB_REF##*/}-latest -Djib.to.tags=${GITHUB_REF##*/}-$image_version
+          
