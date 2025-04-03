@@ -20,7 +20,9 @@ import org.opentripplanner.model.plan.ItineraryBuilder;
 import org.opentripplanner.model.plan.leg.ScheduledTransitLegBuilder;
 import org.opentripplanner.routing.api.request.RouteRequest;
 import org.opentripplanner.routing.api.request.request.filter.TransitFilterRequest;
+import org.opentripplanner.routing.graphfinder.NearbyStop;
 import org.opentripplanner.standalone.api.OtpServerRequestContext;
+import org.opentripplanner.street.search.TemporaryVerticesContainer;
 import org.opentripplanner.transit.model.basic.MainAndSubMode;
 import org.opentripplanner.transit.model.basic.TransitMode;
 import org.opentripplanner.transit.model.network.TripPattern;
@@ -72,6 +74,8 @@ public class CarpoolRouter {
       destination,
       distanceInMeters
     );
+    final Collection<NearbyStop> stopsAroundOriginAccess = findAccessStops(request, serverContext);
+
     // find trippatterns which have a pick around start and dropoff at endstops
     final Stream<TripPattern> originTripPatternStream = stopsAroundOrigin
       .stream()
@@ -114,6 +118,26 @@ public class CarpoolRouter {
       .stream()
       .filter(s -> distance(s, location) < distanceInMeters)
       .toList();
+  }
+
+  private static Collection<NearbyStop> findAccessStops(RouteRequest request, OtpServerRequestContext serverContext) {
+    // TODO debug here
+    var temporaryVertices = new TemporaryVerticesContainer(
+      serverContext.graph(),
+      request.from(),
+      request.to(),
+      request.journey().direct().mode(),
+      request.journey().direct().mode()
+    );
+    return AccessEgressRouter.findAccessEgresses(
+      request,
+      temporaryVertices,
+      request.journey().direct(),
+      serverContext.dataOverlayContext(request),
+      AccessEgressType.ACCESS,
+      serverContext.flexParameters().maxAccessWalkDuration(),
+      0
+    );
   }
 
   private static int distance(GenericLocation a, GenericLocation b) {
