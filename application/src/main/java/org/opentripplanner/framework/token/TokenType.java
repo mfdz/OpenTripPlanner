@@ -17,6 +17,7 @@ public enum TokenType {
   BYTE,
   DURATION,
   ENUM,
+  FLOAT,
   INT,
   STRING,
   TIME_INSTANT;
@@ -36,6 +37,7 @@ public enum TokenType {
       case BYTE -> Byte.toString((byte) value);
       case DURATION -> DurationUtils.durationToStr((Duration) value);
       case ENUM -> ((Enum<?>) value).name();
+      case FLOAT -> Float.toString((Float) value);
       case INT -> Integer.toString((int) value);
       case STRING -> (String) value;
       case TIME_INSTANT -> value.toString();
@@ -51,6 +53,7 @@ public enum TokenType {
       case BYTE -> Byte.valueOf(value);
       case DURATION -> DurationUtils.duration(value);
       case ENUM -> value;
+      case FLOAT -> Float.valueOf(value);
       case INT -> Integer.valueOf(value);
       case STRING -> value;
       case TIME_INSTANT -> Instant.parse(value);

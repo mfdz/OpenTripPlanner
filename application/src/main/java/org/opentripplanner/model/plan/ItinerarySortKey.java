@@ -20,6 +20,7 @@ public interface ItinerarySortKey {
   Cost generalizedCostIncludingPenalty();
   int numberOfTransfers();
   boolean isStreetOnly();
+  Float getCarpoolingScore();
 
   default String keyAsString() {
     return ValueObjectToStringBuilder.of()
@@ -33,6 +34,8 @@ public interface ItinerarySortKey {
       .addNum(numberOfTransfers())
       .addText(", ")
       .addBool(isStreetOnly(), "onStreet", "transit")
+      .addText(", CpS")
+      .addNum(getCarpoolingScore())
       .addText("]")
       .toString();
   }

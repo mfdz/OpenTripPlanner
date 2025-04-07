@@ -35,16 +35,17 @@ class PageCursorSerializerTest {
     "x8fHx8";
 
   private static final String PREV_TOKEN = TOKEN_V1 + TOKEN_BODY;
-  private static final String CURR_TOKEN = TOKEN_V2 + TOKEN_BODY + "MTc3fA==";
+  private static final String CURR_TOKEN = TOKEN_V2 + TOKEN_BODY + "MC4wfDE3N3w=";
   private static final String PREV_TOKEN_W_NULLS = TOKEN_V1 + TOKEN_W_NULLS_BODY + "";
-  private static final String CURR_TOKEN_W_NULLS = TOKEN_V2 + TOKEN_W_NULLS_BODY + "fA==";
+  private static final String CURR_TOKEN_W_NULLS = TOKEN_V2 + TOKEN_W_NULLS_BODY + "fHw=";
 
   private static final ItinerarySortKey CUT = new DeduplicationPageCut(
     DT,
     AT,
     Cost.costOfSeconds(1200),
     3,
-    true
+    true,
+    Float.valueOf(0.0f)
   );
 
   private static final PageCursor PAGE_CURSOR = new PageCursor(

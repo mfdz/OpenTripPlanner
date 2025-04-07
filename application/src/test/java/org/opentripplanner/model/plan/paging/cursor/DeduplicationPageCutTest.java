@@ -13,17 +13,19 @@ class DeduplicationPageCutTest {
   public static final Cost GENERALIZED_COST = Cost.costOfSeconds(1700);
   public static final int NUM_OF_TRANSFERS = 2;
   public static final boolean ON_STREET = false;
+  public static final Float CARPOOLING_SCORE = Float.valueOf(0.0f);
 
   @Test
   void testToString() {
     assertEquals(
-      "[1970-01-12T13:46:40Z, 1970-01-24T03:33:20Z, $1700, Tx2, transit]",
+      "[1970-01-12T13:46:40Z, 1970-01-24T03:33:20Z, $1700, Tx2, transit, CpS0.0]",
       new DeduplicationPageCut(
         DEPARTURE_TIME,
         ARRIVAL_TIME,
         GENERALIZED_COST,
         NUM_OF_TRANSFERS,
-        ON_STREET
+        ON_STREET,
+        CARPOOLING_SCORE
       ).toString()
     );
   }

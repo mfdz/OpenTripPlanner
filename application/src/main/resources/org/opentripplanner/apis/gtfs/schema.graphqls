@@ -668,6 +668,13 @@ type Itinerary {
   accessibilityScore: Float
   "Does the itinerary end without dropping off the rented bicycle:"
   arrivedAtDestinationWithRentedBicycle: Boolean
+  """
+  Computes a numeric carpooling score between 0 and 1.
+    
+  The closer the value is to 1 the better the attractiveness for driver and rider of this itinerary is.
+  More information is available in the [feature documentation](https://docs.opentripplanner.org/en/dev-2.x/sandbox/MFDZCarpooling/).
+  """
+  carpoolingScore: Float
   "Duration of the trip on this itinerary, in seconds."
   duration: Long
   "How much elevation is gained, in total, over the course of the itinerary, in meters."

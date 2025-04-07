@@ -54,7 +54,7 @@ class PageCursorTest implements PlanTestConstants {
     .bus(23, 0, 50, B)
     .build();
   private static final Cost GENERALIZED_COST_MAX_LIMIT = Cost.costOfSeconds(200);
-
+  private static final float CUT_CARPOOL_COST = 0.0f;
   private TimeZone originalTimeZone;
   private PageCursor subjectDepartAfter;
   private PageCursor subjectArriveBy;
@@ -116,7 +116,7 @@ class PageCursorTest implements PlanTestConstants {
       ", lat: " +
       LAT_STR +
       ", searchWindow: 2h, generalizedCostMaxLimit: $200, " +
-      "itineraryPageCut: [2020-02-02T00:00:00Z, 2020-02-02T00:00:50Z, $194, Tx0, transit]}",
+      "itineraryPageCut: [2020-02-02T00:00:00Z, 2020-02-02T00:00:50Z, $194, Tx0, transit, CpS0.0]}",
       subjectArriveBy.toString()
     );
   }

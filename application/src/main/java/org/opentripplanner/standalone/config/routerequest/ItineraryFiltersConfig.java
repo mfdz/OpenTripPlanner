@@ -250,6 +250,17 @@ public class ItineraryFiltersConfig {
           )
           .asBoolean(dft.useAccessibilityScore())
       )
+      .withCarpoolingScore(
+        c
+          .of("carpoolingScore")
+          .since(V2_7)
+          .summary(
+            "An experimental feature contributed by MFDZ which adds a sandbox carpool " +
+            "*score* between 0 and 1 for itinerary and activates sorting itineraries by this score."
+          )
+          .description("This can be used by frontend developers to implement a carpooling UI.")
+          .asBoolean(dft.useCarpoolingScore())
+      )
       .withMinBikeParkingDistance(
         c
           .of("minBikeParkingDistance")

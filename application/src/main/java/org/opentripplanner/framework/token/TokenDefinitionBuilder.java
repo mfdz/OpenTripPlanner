@@ -42,6 +42,10 @@ public class TokenDefinitionBuilder {
     return add(fieldName, TokenType.INT);
   }
 
+  public TokenDefinitionBuilder addFloat(String fieldName) {
+    return add(fieldName, TokenType.FLOAT);
+  }
+
   public TokenDefinitionBuilder addString(String fieldName) {
     return add(fieldName, TokenType.STRING);
   }

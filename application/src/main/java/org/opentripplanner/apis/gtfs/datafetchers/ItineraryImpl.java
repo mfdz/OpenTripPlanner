@@ -101,6 +101,11 @@ public class ItineraryImpl implements GraphQLDataFetchers.GraphQLItinerary {
   }
 
   @Override
+  public DataFetcher<Double> carpoolingScore() {
+    return environment -> NumberMapper.toDouble(getSource(environment).getCarpoolingScore());
+  }
+
+  @Override
   public DataFetcher<Emission> emissionsPerPerson() {
     return environment -> getSource(environment).emissionPerPerson();
   }

@@ -33,6 +33,10 @@ public class TokenBuilder {
     return with(fieldName, TokenType.INT, v);
   }
 
+  public TokenBuilder withFloat(String fieldName, Float v) {
+    return with(fieldName, TokenType.FLOAT, v);
+  }
+
   public TokenBuilder withString(String fieldName, String v) {
     return with(fieldName, TokenType.STRING, v);
   }

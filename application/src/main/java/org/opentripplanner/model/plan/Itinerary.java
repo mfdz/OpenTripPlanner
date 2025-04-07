@@ -65,6 +65,8 @@ public class Itinerary implements ItinerarySortKey {
   /* WAIT */
   private final Duration totalWaitingDuration;
 
+  private Float carpoolingScore = Float.valueOf(0.0f);
+
   /* ELEVATION */
   // TODO See #elevationGained()
   private final double elevationGained_edges_m;
@@ -390,6 +392,24 @@ public class Itinerary implements ItinerarySortKey {
    */
   public Float accessibilityScore() {
     return accessibilityScore;
+  }
+
+  /**
+   * A sandbox feature for calculating a numeric score between 0 and 1 which indicates how
+   * attractive a carpool itinerary is as a whole, for driver and rider.
+   * This is not a very scientific method but just a rough
+   * guidance that expresses certainty or uncertainty about the attractiveness.
+   *
+   * Note: the information to calculate this score are all available to the frontend, however
+   * calculating them on the backend makes life a little easier and changes are automatically
+   * applied to all frontends.
+   */
+  public Float getCarpoolingScore() {
+    return carpoolingScore;
+  }
+
+  public void setCarpoolingScore(Float carpoolingScore) {
+    this.carpoolingScore = carpoolingScore;
   }
 
   /**

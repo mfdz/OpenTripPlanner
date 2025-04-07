@@ -489,6 +489,8 @@ public class GraphQLDataFetchers {
 
     public DataFetcher<Boolean> arrivedAtDestinationWithRentedBicycle();
 
+    public DataFetcher<Double> carpoolingScore();
+
     public DataFetcher<Long> duration();
 
     public DataFetcher<Double> elevationGained();

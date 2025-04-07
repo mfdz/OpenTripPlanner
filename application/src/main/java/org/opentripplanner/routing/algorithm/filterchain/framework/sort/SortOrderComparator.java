@@ -42,6 +42,12 @@ public class SortOrderComparator extends CompositeComparator<ItinerarySortKey> {
     ItinerarySortKey::numberOfTransfers
   );
 
+  // Sort highest carpooling_score first
+  static final Comparator<ItinerarySortKey> CARPOOLING_SCORE_COMP = comparing(
+    ItinerarySortKey::getCarpoolingScore
+  ).reversed();
+
+  /** Sort latest arrival-time first */
   private static final SortOrderComparator STREET_AND_ARRIVAL_TIME = new SortOrderComparator(
     STREET_ONLY_FIRST_COMP,
     ARRIVAL_TIME_COMP,
@@ -56,6 +62,9 @@ public class SortOrderComparator extends CompositeComparator<ItinerarySortKey> {
     GENERALIZED_COST_COMP,
     NUM_OF_TRANSFERS_COMP,
     ARRIVAL_TIME_COMP
+  );
+  private static final SortOrderComparator CARPOOLING_SCORE = new SortOrderComparator(
+    CARPOOLING_SCORE_COMP
   );
 
   private static final SortOrderComparator GENERALIZED_COST = new SortOrderComparator(
@@ -103,6 +112,7 @@ public class SortOrderComparator extends CompositeComparator<ItinerarySortKey> {
     return switch (sortOrder) {
       case STREET_AND_ARRIVAL_TIME -> STREET_AND_ARRIVAL_TIME;
       case STREET_AND_DEPARTURE_TIME -> STREET_AND_DEPARTURE_TIME;
+      case CARPOOLING_SCORE -> CARPOOLING_SCORE;
     };
   }
 }

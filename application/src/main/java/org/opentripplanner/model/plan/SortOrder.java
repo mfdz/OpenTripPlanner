@@ -29,7 +29,12 @@ public enum SortOrder {
    * </ol>
    * This is the default for an arrive-by search ({@code arriveBy=true}).
    */
-  STREET_AND_DEPARTURE_TIME;
+  STREET_AND_DEPARTURE_TIME,
+
+  /**
+   * Sort itineraries by Carpooling score.
+   */
+  CARPOOLING_SCORE;
 
   /**
    * The itineraries are sorted by arrival time with the earliest arrival time first. When

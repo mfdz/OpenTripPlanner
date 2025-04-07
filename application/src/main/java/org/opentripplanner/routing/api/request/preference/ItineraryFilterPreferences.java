@@ -20,6 +20,7 @@ public final class ItineraryFilterPreferences {
 
   private final boolean accessibilityScore;
   private final double bikeRentalDistanceRatio;
+  private final boolean carpoolingScore;
   private final ItineraryFilterDebugProfile debug;
   private final boolean filterItinerariesWithSameFirstOrLastTrip;
   private final double groupedOtherThanSameLegsMaxCostMultiplier;
@@ -36,6 +37,7 @@ public final class ItineraryFilterPreferences {
   private ItineraryFilterPreferences() {
     this.accessibilityScore = false;
     this.bikeRentalDistanceRatio = 0.0;
+    this.carpoolingScore = false;
     this.debug = ItineraryFilterDebugProfile.OFF;
     this.filterItinerariesWithSameFirstOrLastTrip = false;
     this.groupedOtherThanSameLegsMaxCostMultiplier = 2.0;
@@ -59,6 +61,7 @@ public final class ItineraryFilterPreferences {
   private ItineraryFilterPreferences(Builder builder) {
     this.accessibilityScore = builder.accessibilityScore;
     this.bikeRentalDistanceRatio = Units.ratio(builder.bikeRentalDistanceRatio);
+    this.carpoolingScore = builder.carpoolingScore;
     this.debug = builder.debug;
     this.filterItinerariesWithSameFirstOrLastTrip =
       builder.filterItinerariesWithSameFirstOrLastTrip;
@@ -94,6 +97,10 @@ public final class ItineraryFilterPreferences {
 
   public double bikeRentalDistanceRatio() {
     return bikeRentalDistanceRatio;
+  }
+
+  public boolean useCarpoolingScore() {
+    return carpoolingScore;
   }
 
   public ItineraryFilterDebugProfile debug() {
@@ -149,6 +156,7 @@ public final class ItineraryFilterPreferences {
     return ToStringBuilder.of(ItineraryFilterPreferences.class)
       .addBoolIfTrue("accessibilityScore", accessibilityScore)
       .addNum("bikeRentalDistanceRatio", bikeRentalDistanceRatio, DEFAULT.bikeRentalDistanceRatio)
+      .addBoolIfTrue("carpoolingScore", carpoolingScore)
       .addEnum("debug", debug, ItineraryFilterDebugProfile.OFF)
       .addBoolIfTrue(
         "filterItinerariesWithSameFirstOrLastTrip",
@@ -202,6 +210,7 @@ public final class ItineraryFilterPreferences {
     return (
       accessibilityScore == that.accessibilityScore &&
       Double.compare(that.bikeRentalDistanceRatio, bikeRentalDistanceRatio) == 0 &&
+      carpoolingScore == that.carpoolingScore &&
       debug == that.debug &&
       filterItinerariesWithSameFirstOrLastTrip == that.filterItinerariesWithSameFirstOrLastTrip &&
       Double.compare(
@@ -229,6 +238,7 @@ public final class ItineraryFilterPreferences {
     return Objects.hash(
       accessibilityScore,
       bikeRentalDistanceRatio,
+      carpoolingScore,
       debug,
       filterItinerariesWithSameFirstOrLastTrip,
       groupedOtherThanSameLegsMaxCostMultiplier,
@@ -249,6 +259,7 @@ public final class ItineraryFilterPreferences {
     private final ItineraryFilterPreferences original;
     private boolean accessibilityScore;
     private double bikeRentalDistanceRatio;
+    private boolean carpoolingScore;
     private ItineraryFilterDebugProfile debug;
     private boolean filterItinerariesWithSameFirstOrLastTrip;
     private double groupedOtherThanSameLegsMaxCostMultiplier;
@@ -273,6 +284,11 @@ public final class ItineraryFilterPreferences {
 
     public Builder withBikeRentalDistanceRatio(double bikeRentalDistanceRatio) {
       this.bikeRentalDistanceRatio = bikeRentalDistanceRatio;
+      return this;
+    }
+
+    public Builder withCarpoolingScore(boolean carpoolingScore) {
+      this.carpoolingScore = carpoolingScore;
       return this;
     }
 

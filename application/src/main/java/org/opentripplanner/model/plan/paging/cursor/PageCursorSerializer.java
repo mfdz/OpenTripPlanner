@@ -23,6 +23,7 @@ final class PageCursorSerializer {
   private static final String CUT_N_TRANSFERS_FIELD = "cutTx";
   private static final String CUT_COST_FIELD = "cutCost";
   private static final String GENERALIZED_COST_MAX_LIMIT = "generalizedCostMaxLimit";
+  private static final String CUT_ON_CARPOOLING_SCORE = "cutCarpoolingCost";
 
   private static final TokenSchema SCHEMA_TOKEN = TokenSchema.ofVersion(VERSION_ONE)
     .addEnum(TYPE_FIELD)
@@ -35,6 +36,7 @@ final class PageCursorSerializer {
     .addTimeInstant(CUT_ARRIVAL_TIME_FIELD)
     .addInt(CUT_N_TRANSFERS_FIELD)
     .addInt(CUT_COST_FIELD)
+    .addFloat(CUT_ON_CARPOOLING_SCORE)
     // VERSION_TWO
     .newVersion()
     .addInt(GENERALIZED_COST_MAX_LIMIT)
@@ -59,7 +61,8 @@ final class PageCursorSerializer {
         .withTimeInstant(CUT_DEPARTURE_TIME_FIELD, cut.startTimeAsInstant())
         .withTimeInstant(CUT_ARRIVAL_TIME_FIELD, cut.endTimeAsInstant())
         .withInt(CUT_N_TRANSFERS_FIELD, cut.numberOfTransfers())
-        .withInt(CUT_COST_FIELD, cut.generalizedCostIncludingPenalty().toSeconds());
+        .withInt(CUT_COST_FIELD, cut.generalizedCostIncludingPenalty().toSeconds())
+        .withFloat(CUT_ON_CARPOOLING_SCORE, cut.getCarpoolingScore());
     }
     if (cursor.containsGeneralizedCostMaxLimit()) {
       tokenBuilder.withInt(
@@ -97,7 +100,8 @@ final class PageCursorSerializer {
           token.getTimeInstant(CUT_ARRIVAL_TIME_FIELD).orElseThrow(),
           Cost.costOfSeconds(token.getInt(CUT_COST_FIELD).orElseThrow()),
           token.getInt(CUT_N_TRANSFERS_FIELD).orElseThrow(),
-          token.getBoolean(CUT_ON_STREET_FIELD).orElseThrow()
+          token.getBoolean(CUT_ON_STREET_FIELD).orElseThrow(),
+          token.getFloat(CUT_ON_CARPOOLING_SCORE).orElse(0.0f)
         );
       }
 

@@ -184,6 +184,9 @@ public class RouteRequest implements Serializable {
     if (pageCursor != null) {
       return pageCursor.originalSortOrder();
     }
+    if (preferences.itineraryFilter().useCarpoolingScore()) {
+      return SortOrder.CARPOOLING_SCORE;
+    }
     return arriveBy ? SortOrder.STREET_AND_DEPARTURE_TIME : SortOrder.STREET_AND_ARRIVAL_TIME;
   }
 

@@ -43,6 +43,10 @@ public class Token {
     return v == null ? OptionalInt.empty() : OptionalInt.of(v);
   }
 
+  public Optional<Float> getFloat(String fieldName) {
+    return Optional.ofNullable((Float) get(fieldName, TokenType.FLOAT));
+  }
+
   public Optional<String> getString(String fieldName) {
     return Optional.ofNullable((String) get(fieldName, TokenType.STRING));
   }

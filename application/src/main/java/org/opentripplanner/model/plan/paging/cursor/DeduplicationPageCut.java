@@ -16,7 +16,8 @@ record DeduplicationPageCut(
   Instant arrivalTime,
   Cost generalizedCost,
   int numOfTransfers,
-  boolean onStreet
+  boolean onStreet,
+  Float carpoolingScore
 )
   implements ItinerarySortKey {
   @Override
@@ -42,6 +43,11 @@ record DeduplicationPageCut(
   @Override
   public boolean isStreetOnly() {
     return onStreet;
+  }
+
+  @Override
+  public Float getCarpoolingScore() {
+    return carpoolingScore;
   }
 
   @Override

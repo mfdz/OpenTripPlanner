@@ -4,9 +4,11 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.locationtech.jts.geom.Coordinate;
@@ -33,6 +35,8 @@ import org.opentripplanner.utils.time.ServiceDateUtils;
 
 public class CarpoolRouter {
 
+  public static final double MIN_CARPOOLING_SCORE = 0.05;
+
   public static boolean isCarpoolOnlyRequest(RouteRequest request) {
     if (
       request.journey().transit().filters().size() == 1 &&
@@ -50,7 +54,7 @@ public class CarpoolRouter {
     return true;
   }
 
-  public static List<Itinerary> route(OtpServerRequestContext serverContext, RouteRequest request) {
+  public List<Itinerary> route(OtpServerRequestContext serverContext, RouteRequest request) {
     if (!isCarpoolOnlyRequest(request)) {
       return Collections.emptyList();
     }
@@ -61,20 +65,31 @@ public class CarpoolRouter {
     final GenericLocation origin = request.from();
     final GenericLocation destination = request.to();
 
+    return getItineraries(serverContext, request, origin, destination)
+      .stream()
+      .filter(it -> it.getCarpoolingScore() > MIN_CARPOOLING_SCORE)
+      .toList();
+  }
+
+  protected List<Itinerary> getItineraries(
+    OtpServerRequestContext serverContext,
+    RouteRequest request,
+    GenericLocation origin,
+    GenericLocation destination
+  ) {
     // distance should not be larger than half the distance of origin/dest.
     // and not larger than a max distance for now
     final int distanceInMeters = distance(origin, destination) / 2;
-    final Collection<RegularStop> stopsAroundOrigin = findStopsAround(
+    final Collection<StopLocation> stopsAroundOrigin = findStopsAround(
       serverContext,
       origin,
       distanceInMeters
     );
-    final Collection<RegularStop> stopsAroundDestination = findStopsAround(
+    final Collection<StopLocation> stopsAroundDestination = findStopsAround(
       serverContext,
       destination,
       distanceInMeters
     );
-    final Collection<NearbyStop> stopsAroundOriginAccess = findAccessStops(request, serverContext);
 
     // find trippatterns which have a pick around start and dropoff at endstops
     final Stream<TripPattern> originTripPatternStream = stopsAroundOrigin
@@ -91,7 +106,7 @@ public class CarpoolRouter {
     );
     originTripPatterns.retainAll(destinationTripPatterns);
 
-    return originTripPatterns
+    final Stream<TripPattern> tripPatternStream = originTripPatterns
       .stream()
       .filter(tripPattern ->
         hasBoardingAlightingStopsAroundOriginDestination(
@@ -99,12 +114,24 @@ public class CarpoolRouter {
           stopsAroundOrigin,
           stopsAroundDestination
         )
-      )
-      .map(tripPattern -> getItineraryForTripPattern(tripPattern, origin, destination))
-      .toList();
+      );
+    return createItinerariesFromTripPatterns(origin, destination, tripPatternStream);
   }
 
-  private static Collection<RegularStop> findStopsAround(
+  protected static List<Itinerary> createItinerariesFromTripPatterns(
+    GenericLocation origin,
+    GenericLocation destination,
+    Stream<TripPattern> tripPatternStream
+  ) {
+    final List<Itinerary> sortedItineraries = tripPatternStream
+      .map(tripPattern -> getItineraryForTripPattern(tripPattern, origin, destination))
+      .sorted(Comparator.comparingDouble(it -> -it.getCarpoolingScore()))
+      .toList();
+
+    return sortedItineraries;
+  }
+
+  private static Collection<StopLocation> findStopsAround(
     OtpServerRequestContext serverContext,
     GenericLocation location,
     int distanceInMeters
@@ -117,27 +144,8 @@ public class CarpoolRouter {
       .findRegularStopsByBoundingBox(envelope)
       .stream()
       .filter(s -> distance(s, location) < distanceInMeters)
+      .map(s -> (StopLocation) s)
       .toList();
-  }
-
-  private static Collection<NearbyStop> findAccessStops(RouteRequest request, OtpServerRequestContext serverContext) {
-    // TODO debug here
-    var temporaryVertices = new TemporaryVerticesContainer(
-      serverContext.graph(),
-      request.from(),
-      request.to(),
-      request.journey().direct().mode(),
-      request.journey().direct().mode()
-    );
-    return AccessEgressRouter.findAccessEgresses(
-      request,
-      temporaryVertices,
-      request.journey().direct(),
-      serverContext.dataOverlayContext(request),
-      AccessEgressType.ACCESS,
-      serverContext.flexParameters().maxAccessWalkDuration(),
-      0
-    );
   }
 
   private static int distance(GenericLocation a, GenericLocation b) {
@@ -154,10 +162,14 @@ public class CarpoolRouter {
     );
   }
 
-  private static boolean hasBoardingAlightingStopsAroundOriginDestination(
+  private static int distance(StopLocation a, StopLocation b) {
+    return (int) SphericalDistanceLibrary.distance(a.getLat(), a.getLon(), b.getLat(), b.getLon());
+  }
+
+  protected static boolean hasBoardingAlightingStopsAroundOriginDestination(
     TripPattern tripPattern,
-    Collection<RegularStop> stopsAroundOrigin,
-    Collection<RegularStop> stopsAroundDestination
+    Collection<StopLocation> stopsAroundOrigin,
+    Collection<StopLocation> stopsAroundDestination
   ) {
     boolean canBoardCloseToOrigin = false;
     boolean canAlightCloseToOrigin = false;
@@ -182,7 +194,7 @@ public class CarpoolRouter {
     return false;
   }
 
-  private static Itinerary getItineraryForTripPattern(
+  protected static Itinerary getItineraryForTripPattern(
     TripPattern tripPattern,
     GenericLocation from,
     GenericLocation to
@@ -194,14 +206,45 @@ public class CarpoolRouter {
     int accessLegCost = boardingStop[1];
     int egressLegCost = alightingStop[1];
 
-    // duration or distance as Cost?
     final int alightingTime = tripTimes.getArrivalTime(alightingStop[0]);
     final int boardingTime = tripTimes.getDepartureTime(boardingStop[0]);
-    int carpoolLegCost = alightingTime - boardingTime;
+    // duration or distance as Cost?
+    //int carpoolLegCostTime = alightingTime - boardingTime;
     ZoneId timeZone = tripPattern.getRoute().getAgency().getTimezone();
-    System.out.println("Cost: " + accessLegCost + " " + carpoolLegCost + " " + egressLegCost);
-    // TODO: kosten aus mitfahrersicht: Anreise zu Zustieg, gemeinsame Fahrt, Weiterfahrt nach Ausstieg
-    // TODO: kosten aus fahrersicht: inverser Anteil zu gemeinsamer Fahrt (mindestens 50% der Strecke, je mehr umso besser)
+
+    // Rating
+    int directCost = distance(from, to);
+    int carpoolLegCostDistance = distance(
+      tripPattern.getStop(boardingStop[0]),
+      tripPattern.getStop(alightingStop[0])
+    );
+    int carpoolLegCost = IntStream
+      .range(boardingStop[0], alightingStop[0])
+      .map(i -> (int) SphericalDistanceLibrary.length(tripPattern.getHopGeometry(i)))
+      .sum();
+    int carpoolPassengerCost = accessLegCost + carpoolLegCostDistance + egressLegCost;
+
+    int prePickupCost = IntStream
+      .range(0, boardingStop[0])
+      .map(i -> (int) SphericalDistanceLibrary.length(tripPattern.getHopGeometry(i)))
+      .sum();
+    int postDropoffCost = IntStream
+      .range(alightingStop[0], tripPattern.numberOfStops() - 1)
+      .map(i -> (int) SphericalDistanceLibrary.length(tripPattern.getHopGeometry(i)))
+      .sum();
+    int carpoolDriverCost = prePickupCost + carpoolLegCost + postDropoffCost;
+
+    // Rating aus Fahrerrsighted: inverser Anteil zu gemeinsamer Fahrt (mindestens 50% der Strecke, je mehr umso besser)
+    // oder TODO 200km...
+    double carpoolDriverRating = Math.max(2.0 * carpoolLegCost / carpoolDriverCost - 1.0, 0);
+    // Kosten aus mitfahrersicht: Anreise zu Zustieg, gemeinsame Fahrt, Weiterfahrt nach Ausstieg
+    double carpoolPassengerRating = Math.max(4.0 * directCost / carpoolPassengerCost - 3.0, 0);
+    double carpoolPassengerSharingRating = Math.max(
+      2.0 * carpoolLegCostDistance / carpoolPassengerCost - 1.0,
+      0
+    );
+
+    // System.out.println("Trip: "+ tripPattern.getName()+" SharingRatio "+carpoolPassengerSharingRating+ " Rating: "+ carpoolPassengerRating + " carpoolPassengerCost: "+carpoolPassengerCost+ " carpoolDriverRating "+carpoolDriverRating);
 
     final LocalDate serviceDate = LocalDate.now(); // TODO should use the first possible service day for this tripPattern
     var leg = new ScheduledTransitLegBuilder()
@@ -218,6 +261,11 @@ public class CarpoolRouter {
     final ItineraryBuilder itineraryBuilder = Itinerary.ofScheduledTransit(List.of(leg));
     itineraryBuilder.withGeneralizedCost(Cost.costOfSeconds(accessLegCost + carpoolLegCost + egressLegCost));
     Itinerary itinerary = itineraryBuilder.build();
+
+    // Ranking
+    itinerary.setCarpoolingScore(
+      (float) (Math.pow(Math.pow(carpoolPassengerSharingRating, 3) * carpoolPassengerRating, 0.25))
+    );
 
     return itinerary;
   }

@@ -174,6 +174,7 @@ public class PageCursorFactory {
     }
 
     Cost generalizedCostMaxLimit = pageCursorInput.generalizedCostMaxLimit();
+    float cutCarpoolScore = 0.0f; // TODO.
 
     prevCursor = new PageCursor(
       PREVIOUS_PAGE,
