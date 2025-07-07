@@ -40,11 +40,12 @@ public class CarpoolRouter {
   public static boolean isCarpoolOnlyRequest(RouteRequest request) {
     if (
       request.journey().transit().filters().size() == 1 &&
-      request.journey().transit().filters().get(0) instanceof TransitFilterRequest filterRequest
+      request.journey().transit().filters().getFirst() instanceof TransitFilterRequest filterRequest
     ) {
-      List<MainAndSubMode> transportModes = filterRequest.select().get(0).transportModes();
+      List<MainAndSubMode> transportModes = filterRequest.select().getFirst().transportModes();
       if (
-        transportModes.size() != 1 || !TransitMode.CARPOOL.equals(transportModes.get(0).mainMode())
+        transportModes.size() != 1 ||
+        !TransitMode.CARPOOL.equals(transportModes.getFirst().mainMode())
       ) {
         return false;
       }
@@ -54,7 +55,7 @@ public class CarpoolRouter {
     return true;
   }
 
-  public List<Itinerary> route(OtpServerRequestContext serverContext, RouteRequest request) {
+  public static List<Itinerary> route(OtpServerRequestContext serverContext, RouteRequest request) {
     if (!isCarpoolOnlyRequest(request)) {
       return Collections.emptyList();
     }
@@ -71,7 +72,7 @@ public class CarpoolRouter {
       .toList();
   }
 
-  protected List<Itinerary> getItineraries(
+  protected static List<Itinerary> getItineraries(
     OtpServerRequestContext serverContext,
     RouteRequest request,
     GenericLocation origin,
@@ -218,29 +219,26 @@ public class CarpoolRouter {
       tripPattern.getStop(boardingStop[0]),
       tripPattern.getStop(alightingStop[0])
     );
-    int carpoolLegCost = IntStream
-      .range(boardingStop[0], alightingStop[0])
+    int carpoolLegCost = IntStream.range(boardingStop[0], alightingStop[0])
       .map(i -> (int) SphericalDistanceLibrary.length(tripPattern.getHopGeometry(i)))
       .sum();
     int carpoolPassengerCost = accessLegCost + carpoolLegCostDistance + egressLegCost;
 
-    int prePickupCost = IntStream
-      .range(0, boardingStop[0])
+    int prePickupCost = IntStream.range(0, boardingStop[0])
       .map(i -> (int) SphericalDistanceLibrary.length(tripPattern.getHopGeometry(i)))
       .sum();
-    int postDropoffCost = IntStream
-      .range(alightingStop[0], tripPattern.numberOfStops() - 1)
+    int postDropoffCost = IntStream.range(alightingStop[0], tripPattern.numberOfStops() - 1)
       .map(i -> (int) SphericalDistanceLibrary.length(tripPattern.getHopGeometry(i)))
       .sum();
     int carpoolDriverCost = prePickupCost + carpoolLegCost + postDropoffCost;
 
     // Rating aus Fahrerrsighted: inverser Anteil zu gemeinsamer Fahrt (mindestens 50% der Strecke, je mehr umso besser)
     // oder TODO 200km...
-    double carpoolDriverRating = Math.max(2.0 * carpoolLegCost / carpoolDriverCost - 1.0, 0);
+    double carpoolDriverRating = Math.max((2.0 * carpoolLegCost) / carpoolDriverCost - 1.0, 0);
     // Kosten aus mitfahrersicht: Anreise zu Zustieg, gemeinsame Fahrt, Weiterfahrt nach Ausstieg
-    double carpoolPassengerRating = Math.max(4.0 * directCost / carpoolPassengerCost - 3.0, 0);
+    double carpoolPassengerRating = Math.max((4.0 * directCost) / carpoolPassengerCost - 3.0, 0);
     double carpoolPassengerSharingRating = Math.max(
-      2.0 * carpoolLegCostDistance / carpoolPassengerCost - 1.0,
+      (2.0 * carpoolLegCostDistance) / carpoolPassengerCost - 1.0,
       0
     );
 
@@ -259,7 +257,9 @@ public class CarpoolRouter {
       .withGeneralizedCost(carpoolLegCost)
       .build();
     final ItineraryBuilder itineraryBuilder = Itinerary.ofScheduledTransit(List.of(leg));
-    itineraryBuilder.withGeneralizedCost(Cost.costOfSeconds(accessLegCost + carpoolLegCost + egressLegCost));
+    itineraryBuilder.withGeneralizedCost(
+      Cost.costOfSeconds(accessLegCost + carpoolLegCost + egressLegCost)
+    );
     Itinerary itinerary = itineraryBuilder.build();
 
     // Ranking
@@ -279,7 +279,8 @@ public class CarpoolRouter {
     Coordinate c = location.getCoordinate();
     for (int stopIndex = 0; stopIndex < tripPattern.numberOfStops(); stopIndex++) {
       if (
-        boarding && tripPattern.canBoard(stopIndex) || !boarding && tripPattern.canAlight(stopIndex)
+        (boarding && tripPattern.canBoard(stopIndex)) ||
+        (!boarding && tripPattern.canAlight(stopIndex))
       ) {
         int distance = distance(tripPattern.getStop(stopIndex), location);
         if (distance < closestDistanceInMeters) {

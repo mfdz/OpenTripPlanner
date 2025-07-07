@@ -104,15 +104,20 @@ public class RoutingWorker {
       try {
         var r1 = CompletableFuture.supplyAsync(this::routeDirectStreet);
         var r2 = CompletableFuture.supplyAsync(this::routeDirectFlex);
-        var r3 = CompletableFuture.supplyAsync(this::routeTransit);
-        var r4 = CompletableFuture.supplyAsync(this::routeCarpool);
+        var r3 = (!CarpoolRouter.isCarpoolOnlyRequest(request))
+          ? CompletableFuture.supplyAsync(this::routeTransit)
+          : CompletableFuture.supplyAsync(this::routeCarpool);
 
-        result.merge(r1.join(), r2.join(), r3.join(), r4.join());
+        result.merge(r1.join(), r2.join(), r3.join());
       } catch (CompletionException e) {
         RoutingValidationException.unwrapAndRethrowCompletionException(e);
       }
     } else {
-      result.merge(routeDirectStreet(), routeDirectFlex(), routeTransit(), routeCarpool());
+      result.merge(
+        routeDirectStreet(),
+        routeDirectFlex(),
+        !CarpoolRouter.isCarpoolOnlyRequest(request) ? routeTransit() : routeCarpool()
+      );
     }
 
     // Set C2 value for Street and FLEX if transit-group-priority is used
