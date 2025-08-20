@@ -22,13 +22,10 @@ import org.opentripplanner.model.plan.ItineraryBuilder;
 import org.opentripplanner.model.plan.leg.ScheduledTransitLegBuilder;
 import org.opentripplanner.routing.api.request.RouteRequest;
 import org.opentripplanner.routing.api.request.request.filter.TransitFilterRequest;
-import org.opentripplanner.routing.graphfinder.NearbyStop;
 import org.opentripplanner.standalone.api.OtpServerRequestContext;
-import org.opentripplanner.street.search.TemporaryVerticesContainer;
 import org.opentripplanner.transit.model.basic.MainAndSubMode;
 import org.opentripplanner.transit.model.basic.TransitMode;
 import org.opentripplanner.transit.model.network.TripPattern;
-import org.opentripplanner.transit.model.site.RegularStop;
 import org.opentripplanner.transit.model.site.StopLocation;
 import org.opentripplanner.transit.model.timetable.TripTimes;
 import org.opentripplanner.utils.time.ServiceDateUtils;
@@ -125,6 +122,9 @@ public class CarpoolRouter {
     Stream<TripPattern> tripPatternStream
   ) {
     final List<Itinerary> sortedItineraries = tripPatternStream
+      // For now we avoid an exception for updated trips.
+      // TODO: figure out how to retrieve tripTimes
+      .filter(tripPattern -> !tripPattern.getScheduledTimetable().getTripTimes().isEmpty())
       .map(tripPattern -> getItineraryForTripPattern(tripPattern, origin, destination))
       .sorted(Comparator.comparingDouble(it -> -it.getCarpoolingScore()))
       .toList();
