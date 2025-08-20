@@ -102,7 +102,8 @@ public class OpeningHoursEvaluator {
       var closed = getClosedRules(rules);
 
       var time = nextTime;
-      if (isOpenAt(time, rules)) return Optional.of(time); else {
+      if (isOpenAt(time, rules)) return Optional.of(time);
+      else {
         var openRangesOnThatDay = getTimeRangesOnThatDay(time, open);
         var closedRangesThatDay = getTimeRangesOnThatDay(time, closed);
 
@@ -128,10 +129,9 @@ public class OpeningHoursEvaluator {
 
         // if we cannot find time on the same day when the POI is open, we skip forward to the start
         // of the following day and try again
-        nextTime =
-          forward
-            ? time.toLocalDate().plusDays(1).atStartOfDay()
-            : time.toLocalDate().minusDays(1).atTime(LocalTime.MAX);
+        nextTime = forward
+          ? time.toLocalDate().plusDays(1).atStartOfDay()
+          : time.toLocalDate().minusDays(1).atTime(LocalTime.MAX);
       }
     }
 
@@ -168,11 +168,8 @@ public class OpeningHoursEvaluator {
 
   private static boolean timeMatchesRule(LocalDateTime time, Rule rule) {
     return (
-      (
-        timeMatchesDayRanges(time, rule.getDays()) ||
-        rule.getDays() == null &&
-        dateMatchesDateRanges(time, rule.getDates())
-      ) &&
+      (timeMatchesDayRanges(time, rule.getDays()) ||
+        (rule.getDays() == null && dateMatchesDateRanges(time, rule.getDates()))) &&
       nullToEntireDay(rule.getTimes())
         .stream()
         .anyMatch(timeSpan -> timeMatchesHours(time, timeSpan))
@@ -202,19 +199,25 @@ public class OpeningHoursEvaluator {
   private static boolean dateMatchesDateRange(LocalDateTime time, DateRange range) {
     // if the end date is null it means that it's just a single date like in "2020 Aug 11"
     DateWithOffset startDate = range.getStartDate();
-    boolean afterStartDate =
-      time.getYear() >= startDate.getYear() &&
-      time.getMonth().ordinal() >= startDate.getMonth().ordinal() &&
-      time.getDayOfMonth() >= startDate.getDay();
+    boolean afterStartDate = isSameDateOrAfter(time, startDate);
+
     if (range.getEndDate() == null) {
       return afterStartDate;
     }
     DateWithOffset endDate = range.getEndDate();
-    boolean beforeEndDate =
-      time.getYear() <= endDate.getYear() &&
-      time.getMonth().ordinal() <= endDate.getMonth().ordinal() &&
-      time.getDayOfMonth() <= endDate.getDay();
+    boolean beforeEndDate = !isSameDateOrAfter(time.minusDays(1), endDate);
     return afterStartDate && beforeEndDate;
+  }
+
+  private static boolean isSameDateOrAfter(LocalDateTime time, DateWithOffset startDate) {
+    return (
+      time.getYear() > startDate.getYear() ||
+      (time.getYear() == startDate.getYear() &&
+        startDate.getMonth() != null &&
+        (time.getMonth().ordinal() > startDate.getMonth().ordinal() ||
+          (time.getMonth().ordinal() == startDate.getMonth().ordinal() &&
+            time.getDayOfMonth() >= startDate.getDay())))
+    );
   }
 
   private static boolean timeMatchesHours(LocalDateTime time, TimeSpan timeSpan) {
@@ -227,7 +230,8 @@ public class OpeningHoursEvaluator {
   }
 
   private static <T> List<T> nullToEmptyList(List<T> list) {
-    if (list == null) return Collections.emptyList(); else return list;
+    if (list == null) return Collections.emptyList();
+    else return list;
   }
 
   private static List<TimeSpan> nullToEntireDay(List<TimeSpan> span) {
