@@ -259,15 +259,8 @@ public class CarpoolRouter {
     final ItineraryBuilder itineraryBuilder = Itinerary.ofScheduledTransit(List.of(leg));
     itineraryBuilder.withGeneralizedCost(
       Cost.costOfSeconds(accessLegCost + carpoolLegCost + egressLegCost)
-    );
-    Itinerary itinerary = itineraryBuilder.build();
-
-    // Ranking
-    itinerary.setCarpoolingScore(
-      (float) (Math.pow(Math.pow(carpoolPassengerSharingRating, 3) * carpoolPassengerRating, 0.25))
-    );
-
-    return itinerary;
+    ).withCarpoolingScore((float) (Math.pow(Math.pow(carpoolPassengerSharingRating, 3) * carpoolPassengerRating, 0.25)));
+    return itineraryBuilder.build();
   }
 
   private static int[] findClosestStop(

@@ -113,6 +113,7 @@ public class Itinerary implements ItinerarySortKey {
     this.accessibilityScore = builder.accessibilityScore;
     this.emissionPerPerson = builder.emissionPerPerson;
     this.fare = builder.fare;
+    this.carpoolingScore = builder.carpoolingScore;
 
     // Set aggregated data
     ItinerariesCalculateLegTotals totals = new ItinerariesCalculateLegTotals(legs);
@@ -406,10 +407,6 @@ public class Itinerary implements ItinerarySortKey {
    */
   public Float getCarpoolingScore() {
     return carpoolingScore;
-  }
-
-  public void setCarpoolingScore(Float carpoolingScore) {
-    this.carpoolingScore = carpoolingScore;
   }
 
   /**

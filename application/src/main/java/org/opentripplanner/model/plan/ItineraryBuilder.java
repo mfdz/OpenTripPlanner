@@ -40,6 +40,7 @@ public class ItineraryBuilder {
   Float accessibilityScore;
   Emission emissionPerPerson;
   ItineraryFare fare = ItineraryFare.empty();
+  Float carpoolingScore = 0.0f;
 
   ItineraryBuilder(List<Leg> legs, boolean searchWindowAware) {
     this.legs = legs;
@@ -77,6 +78,7 @@ public class ItineraryBuilder {
     this.accessibilityScore = original.accessibilityScore();
     this.emissionPerPerson = original.emissionPerPerson();
     this.fare = original.fare();
+    this.carpoolingScore = original.getCarpoolingScore();
   }
 
   /**
@@ -111,6 +113,11 @@ public class ItineraryBuilder {
 
   public ItineraryBuilder withAccessPenalty(TimeAndCost accessPenalty) {
     this.accessPenalty = accessPenalty;
+    return this;
+  }
+
+  public ItineraryBuilder withCarpoolingScore(Float carpoolingScore) {
+    this.carpoolingScore = carpoolingScore;
     return this;
   }
 
