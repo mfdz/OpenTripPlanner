@@ -1,11 +1,13 @@
 package org.opentripplanner.routing.algorithm.raptoradapter.router.street;
 
+import gnu.trove.set.TIntSet;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -16,13 +18,16 @@ import org.locationtech.jts.geom.Envelope;
 import org.opentripplanner.framework.application.OTPRequestTimeoutException;
 import org.opentripplanner.framework.geometry.SphericalDistanceLibrary;
 import org.opentripplanner.framework.model.Cost;
+import org.opentripplanner.framework.time.ZoneIdFallback;
 import org.opentripplanner.model.GenericLocation;
+import org.opentripplanner.model.Timetable;
 import org.opentripplanner.model.plan.Itinerary;
 import org.opentripplanner.model.plan.ItineraryBuilder;
 import org.opentripplanner.model.plan.leg.ScheduledTransitLegBuilder;
 import org.opentripplanner.routing.api.request.RouteRequest;
 import org.opentripplanner.routing.api.request.request.filter.TransitFilterRequest;
 import org.opentripplanner.standalone.api.OtpServerRequestContext;
+import org.opentripplanner.transit.configure.TransitModule;
 import org.opentripplanner.transit.model.basic.MainAndSubMode;
 import org.opentripplanner.transit.model.basic.TransitMode;
 import org.opentripplanner.transit.model.network.TripPattern;
@@ -33,6 +38,23 @@ import org.opentripplanner.utils.time.ServiceDateUtils;
 public class CarpoolRouter {
 
   public static final double MIN_CARPOOLING_SCORE = 0.05;
+  private final OtpServerRequestContext serverContext;
+  private final RouteRequest request;
+  private final ZoneId timeZone;
+
+  public CarpoolRouter(OtpServerRequestContext serverContext, RouteRequest request) {
+    this.serverContext = serverContext;
+    this.request = request;
+    this.timeZone = ZoneIdFallback.zoneId(serverContext.transitService().getTimeZone());
+  }
+
+  public static List<Itinerary> route(OtpServerRequestContext serverContext, RouteRequest request) {
+    if (!isCarpoolOnlyRequest(request)) {
+      return Collections.emptyList();
+    }
+
+    return new CarpoolRouter(serverContext, request).route();
+  }
 
   public static boolean isCarpoolOnlyRequest(RouteRequest request) {
     if (
@@ -52,28 +74,29 @@ public class CarpoolRouter {
     return true;
   }
 
-  public static List<Itinerary> route(OtpServerRequestContext serverContext, RouteRequest request) {
-    if (!isCarpoolOnlyRequest(request)) {
-      return Collections.emptyList();
-    }
+  protected List<Itinerary> route() {
     OTPRequestTimeoutException.checkForTimeout();
 
     // Find all appropriate tripPatterns --------------------------
 
     final GenericLocation origin = request.from();
     final GenericLocation destination = request.to();
+    // TODO verify if we better should use ServceDateUtils.asServiceDay (+12h...)
+    final LocalDate serviceDate = ServiceDateUtils.asStartOfService(
+      request.dateTime(),
+      timeZone
+    ).toLocalDate();
 
-    return getItineraries(serverContext, request, origin, destination)
+    return getItineraries(origin, destination, serviceDate)
       .stream()
       .filter(it -> it.getCarpoolingScore() > MIN_CARPOOLING_SCORE)
       .toList();
   }
 
-  protected static List<Itinerary> getItineraries(
-    OtpServerRequestContext serverContext,
-    RouteRequest request,
+  protected List<Itinerary> getItineraries(
     GenericLocation origin,
-    GenericLocation destination
+    GenericLocation destination,
+    LocalDate serviceDate
   ) {
     // distance should not be larger than half the distance of origin/dest.
     // and not larger than a max distance for now
@@ -88,7 +111,6 @@ public class CarpoolRouter {
       destination,
       distanceInMeters
     );
-
     // find trippatterns which have a pick around start and dropoff at endstops
     final Stream<TripPattern> originTripPatternStream = stopsAroundOrigin
       .stream()
@@ -106,6 +128,7 @@ public class CarpoolRouter {
 
     final Stream<TripPattern> tripPatternStream = originTripPatterns
       .stream()
+      .filter(tripPattern -> isValidForServiceDate(tripPattern, serviceDate))
       .filter(tripPattern ->
         hasBoardingAlightingStopsAroundOriginDestination(
           tripPattern,
@@ -113,19 +136,39 @@ public class CarpoolRouter {
           stopsAroundDestination
         )
       );
-    return createItinerariesFromTripPatterns(origin, destination, tripPatternStream);
+
+    return createItinerariesFromTripPatterns(origin, destination, serviceDate, tripPatternStream);
   }
 
-  protected static List<Itinerary> createItinerariesFromTripPatterns(
+  private boolean isValidForServiceDate(TripPattern tripPattern, LocalDate serviceDate) {
+    final Timetable timetable = serverContext
+      .transitService()
+      .findTimetable(tripPattern, serviceDate);
+    if (timetable.isCreatedByRealTimeUpdater()) {
+      return timetable.isValidFor(serviceDate);
+    } else {
+      final TIntSet serviceCodesRunningForDate = serverContext
+        .transitService()
+        .getServiceCodesRunningForDate(serviceDate);
+      return tripPattern
+        .scheduledTripsAsStream()
+        .anyMatch(trip ->
+          serviceCodesRunningForDate.contains(
+            serverContext.transitService().getServiceCode(trip.getServiceId())
+          )
+        );
+    }
+  }
+
+  protected List<Itinerary> createItinerariesFromTripPatterns(
     GenericLocation origin,
     GenericLocation destination,
+    LocalDate serviceDate,
     Stream<TripPattern> tripPatternStream
   ) {
     final List<Itinerary> sortedItineraries = tripPatternStream
-      // For now we avoid an exception for updated trips.
-      // TODO: figure out how to retrieve tripTimes
-      .filter(tripPattern -> !tripPattern.getScheduledTimetable().getTripTimes().isEmpty())
-      .map(tripPattern -> getItineraryForTripPattern(tripPattern, origin, destination))
+      .map(tripPattern -> getItineraryForTripPattern(tripPattern, origin, destination, serviceDate))
+      .filter(Objects::nonNull)
       .sorted(Comparator.comparingDouble(it -> -it.getCarpoolingScore()))
       .toList();
 
@@ -195,13 +238,21 @@ public class CarpoolRouter {
     return false;
   }
 
-  protected static Itinerary getItineraryForTripPattern(
+  protected Itinerary getItineraryForTripPattern(
     TripPattern tripPattern,
     GenericLocation from,
-    GenericLocation to
+    GenericLocation to,
+    LocalDate serviceDate
   ) {
-    TripTimes tripTimes = tripPattern.getScheduledTimetable().getTripTimes().get(0);
-
+    final Timetable timetable = serverContext
+      .transitService()
+      .findTimetable(tripPattern, serviceDate);
+    final List<TripTimes> tripTable = timetable.getTripTimes();
+    if (tripTable.isEmpty()) {
+      // in case no trip is running at current service day, we return null (which is filtered afterwards)
+      return null;
+    }
+    TripTimes tripTimes = tripTable.getFirst();
     int[] boardingStop = findClosestStop(from, tripPattern, true);
     int[] alightingStop = findClosestStop(to, tripPattern, false);
     int accessLegCost = boardingStop[1];
@@ -244,7 +295,6 @@ public class CarpoolRouter {
 
     // System.out.println("Trip: "+ tripPattern.getName()+" SharingRatio "+carpoolPassengerSharingRating+ " Rating: "+ carpoolPassengerRating + " carpoolPassengerCost: "+carpoolPassengerCost+ " carpoolDriverRating "+carpoolDriverRating);
 
-    final LocalDate serviceDate = LocalDate.now(); // TODO should use the first possible service day for this tripPattern
     var leg = new ScheduledTransitLegBuilder()
       .withTripTimes(tripTimes)
       .withTripPattern(tripPattern)
@@ -255,11 +305,17 @@ public class CarpoolRouter {
       .withEndTime(ServiceDateUtils.toZonedDateTime(serviceDate, timeZone, alightingTime))
       .withZoneId(timeZone)
       .withGeneralizedCost(carpoolLegCost)
+      .withDistanceMeters(carpoolLegCostDistance) // TODO
       .build();
     final ItineraryBuilder itineraryBuilder = Itinerary.ofScheduledTransit(List.of(leg));
-    itineraryBuilder.withGeneralizedCost(
-      Cost.costOfSeconds(accessLegCost + carpoolLegCost + egressLegCost)
-    ).withCarpoolingScore((float) (Math.pow(Math.pow(carpoolPassengerSharingRating, 3) * carpoolPassengerRating, 0.25)));
+    itineraryBuilder
+      .withGeneralizedCost(Cost.costOfSeconds(accessLegCost + carpoolLegCost + egressLegCost))
+      .withCarpoolingScore(
+        (float) (Math.pow(
+            Math.pow(carpoolPassengerSharingRating, 3) * carpoolPassengerRating,
+            0.25
+          ))
+      );
     return itineraryBuilder.build();
   }
 
