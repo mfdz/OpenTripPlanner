@@ -27,7 +27,6 @@ import org.opentripplanner.model.plan.leg.ScheduledTransitLegBuilder;
 import org.opentripplanner.routing.api.request.RouteRequest;
 import org.opentripplanner.routing.api.request.request.filter.TransitFilterRequest;
 import org.opentripplanner.standalone.api.OtpServerRequestContext;
-import org.opentripplanner.transit.configure.TransitModule;
 import org.opentripplanner.transit.model.basic.MainAndSubMode;
 import org.opentripplanner.transit.model.basic.TransitMode;
 import org.opentripplanner.transit.model.network.TripPattern;
@@ -210,28 +209,36 @@ public class CarpoolRouter {
     return (int) SphericalDistanceLibrary.distance(a.getLat(), a.getLon(), b.getLat(), b.getLon());
   }
 
+  /**
+   * Returns TRUE, if any of stopsAroundOrigin is a boarding stop of tripPattern and
+   * any tripPattern stop with stopIndex greater than the first boardable stop is contained in
+   * stopsAroundDestination
+   * @param tripPattern
+   * @param stopsAroundOrigin
+   * @param stopsAroundDestination
+   * @return
+   */
   protected static boolean hasBoardingAlightingStopsAroundOriginDestination(
     TripPattern tripPattern,
     Collection<StopLocation> stopsAroundOrigin,
     Collection<StopLocation> stopsAroundDestination
   ) {
     boolean canBoardCloseToOrigin = false;
-    boolean canAlightCloseToOrigin = false;
 
     for (int stopIndex = 0; stopIndex < tripPattern.numberOfStops(); stopIndex++) {
       if (
+        !canBoardCloseToOrigin &&
         tripPattern.canBoard(stopIndex) &&
         stopsAroundOrigin.contains(tripPattern.getStop(stopIndex))
       ) {
         canBoardCloseToOrigin = true;
+        continue;
       }
       if (
+        canBoardCloseToOrigin &&
         tripPattern.canAlight(stopIndex) &&
         stopsAroundDestination.contains(tripPattern.getStop(stopIndex))
       ) {
-        canAlightCloseToOrigin = true;
-      }
-      if (canBoardCloseToOrigin && canAlightCloseToOrigin) {
         return true;
       }
     }
@@ -255,6 +262,10 @@ public class CarpoolRouter {
     TripTimes tripTimes = tripTable.getFirst();
     int[] boardingStop = findClosestStop(from, tripPattern, true);
     int[] alightingStop = findClosestStop(to, tripPattern, false);
+    if (boardingStop[0] >= alightingStop[0]) {
+      // trip pattern is in reverse direction, boarding has stopIndex greeator or equal to alighting stop
+      return null;
+    }
     int accessLegCost = boardingStop[1];
     int egressLegCost = alightingStop[1];
 
